@@ -1,0 +1,185 @@
+include "TriggerLibs/HeroesLib_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Starting Experience
+//--------------------------------------------------------------------------------------------------
+// Preset Declarations
+const int libStEx_ge_TutorialCommandButton_None = 0;
+const int libStEx_ge_TutorialCommandButton_Ability1 = 1;
+const int libStEx_ge_TutorialCommandButton_Ability2 = 2;
+const int libStEx_ge_TutorialCommandButton_Ability3 = 3;
+const int libStEx_ge_TutorialCommandButton_Heroic = 4;
+const int libStEx_ge_TutorialCommandButton_Hearth = 5;
+const int libStEx_ge_TutorialCommandButton_Mount = 6;
+const int libStEx_ge_MouseButton_None = 0;
+const int libStEx_ge_MouseButton_LeftButton = 1;
+const int libStEx_ge_MouseButton_RightButton = 2;
+const int libStEx_ge_FreezeOptions_Freeze = 0;
+const int libStEx_ge_FreezeOptions_Unfrezze = 1;
+const int libStEx_ge_SE_TrainingModeTips_None = 0;
+const int libStEx_ge_SE_TrainingModeTips_WatchTower = 1;
+const int libStEx_ge_SE_TrainingModeTips_MercCamps = 2;
+const int libStEx_ge_SE_TrainingModeTips_HealingFountain = 3;
+const int libStEx_ge_SE_TrainingModeTips_Experience = 4;
+const int libStEx_ge_SE_TrainingModeTips_Gates = 5;
+const int libStEx_ge_SE_TrainingModeTips_Ammo1 = 6;
+const int libStEx_ge_SE_TrainingModeTips_Ammo2 = 7;
+const int libStEx_ge_SE_TrainingModeTips_Bushes = 8;
+const int libStEx_ge_SE_TrainingModeTips_Hearthstone = 9;
+const int libStEx_ge_SE_TrainingModeTips_HearthstoneUsed = 10;
+const int libStEx_ge_SE_TrainingModeTips_Mount = 11;
+const int libStEx_ge_SE_TrainingModeTips_Mana = 12;
+const int libStEx_ge_SE_TrainingModeTips_Abilities = 13;
+const int libStEx_ge_SE_TrainingModeTips_Death1 = 14;
+const int libStEx_ge_SE_TrainingModeTips_Death2 = 15;
+const int libStEx_ge_SE_TrainingModeTips_Spacebar = 16;
+const int libStEx_ge_SE_TrainingModeTips_Talents = 17;
+const int libStEx_ge_SE_TrainingModeTips_CoreShield = 18;
+const int libStEx_ge_SE_TrainingModeTips_Forts = 19;
+const int libStEx_ge_SE_TrainingModeTips_NewUserTip_Last = 20;
+string libStEx_ge_SE_TrainingModeTips_Ident (int lp_val);
+
+// Constants
+const int libStEx_gv_sEC_MouseButtonWidth = 38;
+const int libStEx_gv_sEC_MouseButtonHeight = 54;
+const string libStEx_gv_sEC_HotkeyProfile_LeftClick = "2_LeftClick";
+const string libStEx_gv_sEC_HotkeyProfile_RightClick = "0_Default";
+const string libStEx_gv_sE_TrainingModeBankSection_C = "NewUserTrainingMode";
+const string libStEx_gv_sE_TrainingModeBankkey_Tip_C = "NEWUSER_TIP_";
+const string libStEx_gv_sE_TrainingModeBankkey_ReferenceCard_C = "NEWUSER_ReferenceCardTimes";
+const string libStEx_gv_sE_TrainingModeBankkey_Talent_C = "NEWUSER_TalentTeaching";
+const int libStEx_gv_sE_TrainingModeReferenceCardMaxGameCount = 5;
+const fixed libStEx_gv_sE_TrainingModeTipDuration_C = 12.0;
+
+// Structures
+struct libStEx_gs_TrainingModeTip {
+    int lv_iD;
+    text lv_name;
+    text lv_description;
+    string lv_vO;
+    int lv_doneTimes;
+};
+
+// Variable Declarations
+int[11] libStEx_gv_sE_AbilityHighlightFlash;
+int libStEx_gv_sE_HintMsgDialog;
+int libStEx_gv_sE_HintMsgLabel;
+bool libStEx_gv_sETutorialCameraLocked;
+bool[libCore_gv_bALMaxEnginePlayerCount + 1] libStEx_gv_simpleCinematic_CameraLocked2;
+bool libStEx_gv_tutorialCinematicRestoreSelection;
+unitgroup libStEx_gv_sEUnitGroupRemovedRing;
+trigger libStEx_gv_sEMMIntroCallback;
+trigger libStEx_gv_sEMMIntroCallbackPrepare;
+trigger libStEx_gv_sEMMIntroCallbackCleanup;
+playergroup libStEx_gv_sEMMIntroPlayersWatching;
+int libStEx_gv_sE_MoveMouseButton;
+unitgroup libStEx_gv_sE_FrozenUnits;
+bool libStEx_gv_sE_FreezeUnitsGameTimerUnpaused;
+bool libStEx_gv_sE_PracticeMode;
+bool libStEx_gv_sE_TrainingModeTalentTaught;
+bool libStEx_gv_sE_TrainingModeTalentPanelOpened;
+bool libStEx_gv_sE_TrainingModeTalentPicked;
+bool libStEx_gv_sE_TrainingModeTalentTeachingOpenTheGateTimerPaused;
+int libStEx_gv_sE_TrainingModeTalentPanelFlashingImage;
+bool libStEx_gv_sE_TrainingModeReferenceCardReady;
+int libStEx_gv_sE_TrainingModeReferenceCardGamesCount;
+libStEx_gs_TrainingModeTip[31] libStEx_gv_sE_TrainingModeTips;
+bool libStEx_gv_sE_TrainingModeTipDisplaying;
+int libStEx_gv_sE_TrainingModeTipDialog;
+actor libStEx_gv_sE_TrainingModeTipHealingFountainReticle;
+bool libStEx_gv_sE_TrainingModeTipHealingFountainDid;
+bool libStEx_gv_sE_TrainingModeTipHearthstoneDid;
+bool libStEx_gv_sE_TrainingModeTipManaDid;
+
+// Function Declarations
+void libStEx_gf_HighlightCommandButton (bool lp_highlightUnhighlight, int lp_button);
+int libStEx_gf_HeroCount ();
+string libStEx_gf_HeroFromIndex (int lp_index);
+int libStEx_gf_HeroIndex (string lp_hero);
+void libStEx_gf_SpawnHeroAtPoint (int lp_player, string lp_hero, point lp_spawnPoint);
+void libStEx_gf_DisplayHintMessage (text lp_msg, bool lp_writeOut, fixed lp_duration);
+void libStEx_gf_ClearHintMessage ();
+bool libStEx_gf_PlayerIsInCombat ();
+bool libStEx_gf_PlayerIsBeingAttack ();
+bool libStEx_gf_TutorialCameraLocked ();
+void libStEx_gf_DisplayCameraLockNotificationText (bool lp_lockUnlock, int lp_player);
+void libStEx_gf_LockUnlockTutorialCamera (bool lp_lockUnlock);
+void libStEx_gf_RestoreTutorialCameraLockSetting ();
+void libStEx_gf_TurnCinematicCameraOnOff (int lp_player, bool lp_onOff);
+void libStEx_gf_CinematicModeTutorial (bool lp_onOff, playergroup lp_players, fixed lp_duration);
+void libStEx_gf_SemiCinematicModeTutorial (bool lp_onOff, fixed lp_period);
+void libStEx_gf_GlobalCinematicSettingTutorial (bool lp_onOff);
+text libStEx_gf_CameraLockHotkeyText ();
+void libStEx_gf_CinematicFade (bool lp_fadeIn, fixed lp_duration, color lp_color, int lp_player);
+playergroup libStEx_gf_MapMechanicIntroPlayers ();
+void libStEx_gf_SetMapMechanicTutorialCallback (trigger lp_callback);
+void libStEx_gf_SetMapMechanicTutorialCallbackPrepareCleanup (trigger lp_callbackPrepare, trigger lp_callbackCleanup);
+void libStEx_gf_PlayMapMechanicTutorial (int lp_mapMechanic);
+string libStEx_gf_HotkeyProfile_MouseButtonImage (int lp_mouseButton);
+text libStEx_gf_HotkeyProfile_MouseButtonImageStringTag (int lp_mouseButton, int lp_width, int lp_height);
+text libStEx_gf_HotkeyProfile_MouseButtonText (int lp_mouseButton);
+int libStEx_gf_HotkeyProfile_SmartCommandMouseButton (int lp_player);
+void libStEx_gf_HotkeyProfile_SetSmartCommandMouseButton (int lp_player, int lp_button);
+void libStEx_gf_HotkeyProfile_LoadSmartCommandMouseButtonProfile (int lp_player);
+void libStEx_gf_FreezeUnfreezeAllUnits (int lp_freezeOptions);
+void libStEx_gf_FreezeUnfreezeUnit (int lp_freezeOptions, unit lp_target);
+bool libStEx_gf_InTutorial03 ();
+void libStEx_gf_SetPracticeMode (bool lp_practice);
+bool libStEx_gf_InPracticeMode ();
+void libStEx_gf_SE_ShowHideTalentPortraitFlashingImage (bool lp_showHide);
+int libStEx_gf_SE_TrainingModeTipCount ();
+void libStEx_gf_SE_TrainingModeTipSetDisplayed (int lp_tip);
+bool libStEx_gf_SE_TrainingModeTipIsOld (int lp_tip);
+void libStEx_gf_SE_TrainingModeTipDisplay (int lp_tip);
+void libStEx_gf_SE_TrainingModeTipPlayTransmission (int lp_tip);
+void libStEx_gf_SE_TrainingModeTipBushesSendActorMessageToBushes (string lp_message, region lp_area);
+bool libStEx_gf_TargetLocationIsGood (point lp_locationTarget, point lp_locationFrom);
+void libStEx_gf_RestoreUnit (unit lp_unit);
+void libStEx_gf_MoveUnit (unit lp_unit, point lp_targetLocation, bool lp_blend);
+bool libStEx_gf_GameIsSinglePlayer ();
+
+// Trigger Declarations
+trigger libStEx_gt_IncludeStartingExperience;
+trigger libStEx_gt_TrainingModeInit;
+trigger libStEx_gt_TrainingModeBankInit;
+trigger libStEx_gt_SE_TrainingModeTalentsReady;
+trigger libStEx_gt_SE_TrainingModeTalentsSuggestToOpenPanelQ;
+trigger libStEx_gt_SE_TrainingModeTalentsPanelOpened;
+trigger libStEx_gt_SE_TrainingModeTalentsPanelFlashTalents;
+trigger libStEx_gt_SE_TrainingModeTalentsPicked;
+trigger libStEx_gt_SE_TrainingModeTalentsPickedTransmissionQ;
+trigger libStEx_gt_SE_TrainingModeTalentStart;
+trigger libStEx_gt_SE_TrainingModeTalentPause;
+trigger libStEx_gt_SE_TrainingModeTalentUnPause;
+trigger libStEx_gt_SE_TrainingModeReferenceCardDisplay;
+trigger libStEx_gt_SE_TrainingModeTipInitData;
+trigger libStEx_gt_SE_TrainingModeTipAbilities;
+trigger libStEx_gt_SE_TrainingModeTipAbilitiesQWERUsed;
+trigger libStEx_gt_SE_TrainingModeTipAmmunition1;
+trigger libStEx_gt_SE_TrainingModeTipBushes;
+trigger libStEx_gt_SE_TrainingModeTipCore;
+trigger libStEx_gt_SE_TrainingModeTipDeath1;
+trigger libStEx_gt_SE_TrainingModeTipDeath2;
+trigger libStEx_gt_SE_TrainingModeTipExperience;
+trigger libStEx_gt_SE_TrainingModeTipForts;
+trigger libStEx_gt_SE_TrainingModeTipGates;
+trigger libStEx_gt_SE_TrainingModeTipHearthstoneHealingFountainMana;
+trigger libStEx_gt_SE_TrainingModeTipHearthstoneTeachingExpires;
+trigger libStEx_gt_SE_TrainingModeTipManaTeachingExpires;
+trigger libStEx_gt_SE_TrainingModeTipHearthstoneUnhighlightButton;
+trigger libStEx_gt_SE_TrainingModeTipHealingFountainUsed;
+trigger libStEx_gt_SE_TrainingModeTipHealingFountainDrinking;
+trigger libStEx_gt_SE_TrainingModeTipMercCamps;
+trigger libStEx_gt_SE_TrainingModeTipMount;
+trigger libStEx_gt_SE_TrainingModeTipMountUnhighlightButton;
+trigger libStEx_gt_SE_TrainingModeTipSpacebar;
+trigger libStEx_gt_SE_TrainingModeTipTalents;
+trigger libStEx_gt_SE_TrainingModeTipTalentsPanelOpened;
+trigger libStEx_gt_SE_TrainingModeTipTalentsPanelClosed;
+trigger libStEx_gt_SE_TrainingModeTipWatchTower;
+trigger libStEx_gt_SE_TrainingModeTipDebug;
+trigger libStEx_gt_SE_TrainingModeTipEnable;
+
+// Library Initialization
+void libStEx_InitVariables ();
+

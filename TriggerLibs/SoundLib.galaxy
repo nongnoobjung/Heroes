@@ -1,0 +1,1053 @@
+include "TriggerLibs/NativeLib"
+include "TriggerLibs/HeroesLib_h"
+include "TriggerLibs/GameLib_h"
+include "TriggerLibs/AILib_h"
+
+include "TriggerLibs/SoundLib_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Sound
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libSond_InitLibraries () {
+    libNtve_InitVariables();
+    libCore_InitVariables();
+    libGame_InitVariables();
+    libAIAI_InitVariables();
+}
+
+// Variable Initialization
+bool libSond_InitVariables_completed = false;
+
+void libSond_InitVariables () {
+    int init_i;
+
+    if (libSond_InitVariables_completed) {
+        return;
+    }
+
+    libSond_InitVariables_completed = true;
+
+    for (init_i = 0; init_i <= libCore_gv_bALMaxPlayers; init_i += 1) {
+        libSond_gv_heroVO_HeroTakedownVOTimers[init_i] = TimerCreate();
+    }
+    for (init_i = 0; init_i <= libCore_gv_bALMaxPlayers; init_i += 1) {
+        libSond_gv_heroVO_HeroTakedownVOAlliesGroup[init_i] = PlayerGroupEmpty();
+    }
+    for (init_i = 0; init_i <= libCore_gv_bALMaxPlayers; init_i += 1) {
+        libSond_gv_heroVO_TeamKilledVOTimers[init_i] = TimerCreate();
+    }
+    for (init_i = 0; init_i <= libCore_gv_bALMaxPlayers; init_i += 1) {
+        libSond_gv_heroVO_TownKilledVOTimers[init_i] = TimerCreate();
+    }
+    for (init_i = 0; init_i <= libCore_gv_bALMaxPlayers; init_i += 1) {
+        libSond_gv_heroVO_TownKilledVOAlliesGroup[init_i] = PlayerGroupEmpty();
+    }
+    libSond_gv_heroVO_HeroIntroLineTimer = TimerCreate();
+    for (init_i = 0; init_i <= libCore_gv_bALMaxPlayers; init_i += 1) {
+        libSond_gv_heroVO_HealThankYouCooldownTimer[init_i] = TimerCreate();
+    }
+}
+
+// Functions
+void libSond_gf_MuteMostSoundChannelsForGameOverState (bool lp_muteOption) {
+    // Implementation
+    SoundChannelMute(PlayerGroupAll(), c_soundCategoryAlert, lp_muteOption);
+    SoundChannelMute(PlayerGroupAll(), c_soundCategoryBuild, lp_muteOption);
+    SoundChannelMute(PlayerGroupAll(), c_soundCategoryCombat, lp_muteOption);
+    SoundChannelMute(PlayerGroupAll(), c_soundCategoryDeath, lp_muteOption);
+    SoundChannelMute(PlayerGroupAll(), c_soundCategoryDialogue, lp_muteOption);
+    SoundChannelMute(PlayerGroupAll(), c_soundCategoryDoodad, lp_muteOption);
+    SoundChannelMute(PlayerGroupAll(), c_soundCategoryFlames, lp_muteOption);
+    SoundChannelMute(PlayerGroupAll(), c_soundCategoryFoley, lp_muteOption);
+    SoundChannelMute(PlayerGroupAll(), c_soundCategoryGather, lp_muteOption);
+    SoundChannelMute(PlayerGroupAll(), c_soundCategoryME, lp_muteOption);
+    SoundChannelMute(PlayerGroupAll(), c_soundCategoryMission, lp_muteOption);
+    SoundChannelMute(PlayerGroupAll(), c_soundCategoryMovement, lp_muteOption);
+    SoundChannelMute(PlayerGroupAll(), c_soundCategoryMovie, lp_muteOption);
+    SoundChannelMute(PlayerGroupAll(), c_soundCategoryOther, lp_muteOption);
+    SoundChannelMute(PlayerGroupAll(), c_soundCategorySAmbient, lp_muteOption);
+    SoundChannelMute(PlayerGroupAll(), c_soundCategorySEmitters, lp_muteOption);
+    SoundChannelMute(PlayerGroupAll(), c_soundCategorySPieces, lp_muteOption);
+    SoundChannelMute(PlayerGroupAll(), c_soundCategorySpell, lp_muteOption);
+    SoundChannelMute(PlayerGroupAll(), c_soundCategoryTV, lp_muteOption);
+    SoundChannelMute(PlayerGroupAll(), c_soundCategoryVoice, lp_muteOption);
+    SoundChannelMute(PlayerGroupAll(), c_soundCategoryUser2, lp_muteOption);
+    SoundChannelMute(PlayerGroupAll(), c_soundCategoryReady, lp_muteOption);
+}
+
+void libSond_gf_SoundAnnouncerVOPlayAnnouncerVOForPlayer (int lp_event, int lp_player) {
+    // Variable Declarations
+    int lv_vOPack;
+    string lv_soundID;
+
+    // Variable Initialization
+
+    // Implementation
+    if ((lp_player > libCore_gv_bALMaxEnginePlayerCount)) {
+        return ;
+    }
+    else {
+    }
+    lv_vOPack = libGame_gv_players[lp_player].lv_selectedAnnouncerVOPack;
+    if ((lv_vOPack > libCore_gv_dataAnnouncerVONumberOfAnnouncerPacks)) {
+        return ;
+    }
+    else {
+    }
+    if ((libGame_gv_gameOver == true) && (lp_event != libCore_ge_AnnouncerVOEvents_Victory) && (lp_event != libCore_ge_AnnouncerVOEvents_Defeat)) {
+        return ;
+    }
+    else {
+    }
+    lv_soundID = libCore_gv_dataAnnouncerVOPacks[lv_vOPack].lv_soundLinkArray[(lp_event)];
+    if ((lv_soundID == null)) {
+        return ;
+    }
+    else {
+    }
+    SoundPlayForPlayer(SoundLink(lv_soundID, c_soundIndexAny), c_maxPlayers, libCore_gv_playerGroupFromPlayer[lp_player], 100.0, 0.0);
+}
+
+void libSond_gf_SoundAnnouncerVOPlayAnnouncerVOForPlayerGroup (int lp_event, playergroup lp_playerGroup) {
+    int init_i;
+
+    // Variable Declarations
+    int lv_itPlayer;
+    int lv_itPack;
+    playergroup[2] lv_vOPackPlayerGroups;
+    int lv_soundOwner;
+    string lv_soundID;
+
+    // Variable Initialization
+    for (init_i = 0; init_i <= 1; init_i += 1) {
+        lv_vOPackPlayerGroups[init_i] = PlayerGroupEmpty();
+    }
+
+    // Deprecated
+}
+
+string libSond_gf_HeroVOHeroLineForEvent (int lp_vOEvent, int lp_speakingPlayer) {
+    // Variable Declarations
+    int lv_vOEventInt;
+    string lv_soundLink;
+
+    // Variable Initialization
+
+    // Implementation
+    if (((lp_speakingPlayer > libCore_gv_bALMaxPlayers) || (lp_speakingPlayer < 1))) {
+        return null;
+    }
+    else {
+    }
+    lv_vOEventInt = (lp_vOEvent);
+    if (((lv_vOEventInt > libCore_gv_dataHeroVOMaxNumberOfHeroVOEvents) || (lv_vOEventInt < 1))) {
+        return null;
+    }
+    else {
+    }
+    lv_soundLink = libCore_gv_dataHeroVO[libGame_gv_players[lp_speakingPlayer].lv_heroIndex][lp_speakingPlayer].lv_vOEventLines[lv_vOEventInt];
+    if ((CatalogEntryIsValid(c_gameCatalogSound, lv_soundLink) == true)) {
+        return lv_soundLink;
+    }
+    else {
+        return null;
+    }
+}
+
+void libSond_gf_HeroVOPlayHeroLine (int lp_vOEvent, int lp_speakingPlayer, playergroup lp_targetPlayerGroup) {
+    // Variable Declarations
+    string lv_soundID;
+
+    // Variable Initialization
+
+    // Implementation
+    lv_soundID = libSond_gf_HeroVOHeroLineForEvent(lp_vOEvent, lp_speakingPlayer);
+    if ((lv_soundID != null)) {
+        SoundPlayForPlayer(SoundLink(lv_soundID, c_soundIndexAny), lp_speakingPlayer, lp_targetPlayerGroup, 100.0, 0.0);
+    }
+    else {
+    }
+}
+
+void libSond_gf_HeroVOPlayHeroLineInWorld (int lp_vOEvent, int lp_speakingPlayer, playergroup lp_targetPlayerGroup) {
+    // Variable Declarations
+    string lv_soundID;
+    unit lv_heroUnit;
+
+    // Variable Initialization
+
+    // Implementation
+    lv_soundID = libSond_gf_HeroVOHeroLineForEvent(lp_vOEvent, lp_speakingPlayer);
+    lv_heroUnit = libGame_gv_players[lp_speakingPlayer].lv_heroUnit;
+    if ((lv_soundID != null) && (lv_heroUnit != null)) {
+        SoundPlayOnUnitForPlayer(SoundLink(lv_soundID, c_soundIndexAny), lp_speakingPlayer, lp_targetPlayerGroup, lv_heroUnit, 0.0, 100.0, 0.0);
+    }
+    else {
+    }
+}
+
+trigger auto_libSond_gf_HeroVOPlayHeroLineWithDelay_Trigger = null;
+int auto_libSond_gf_HeroVOPlayHeroLineWithDelay_lp_vOEvent;
+int auto_libSond_gf_HeroVOPlayHeroLineWithDelay_lp_speakingPlayer;
+playergroup auto_libSond_gf_HeroVOPlayHeroLineWithDelay_lp_targetPlayerGroup;
+fixed auto_libSond_gf_HeroVOPlayHeroLineWithDelay_lp_delay;
+
+void libSond_gf_HeroVOPlayHeroLineWithDelay (int lp_vOEvent, int lp_speakingPlayer, playergroup lp_targetPlayerGroup, fixed lp_delay) {
+    auto_libSond_gf_HeroVOPlayHeroLineWithDelay_lp_vOEvent = lp_vOEvent;
+    auto_libSond_gf_HeroVOPlayHeroLineWithDelay_lp_speakingPlayer = lp_speakingPlayer;
+    auto_libSond_gf_HeroVOPlayHeroLineWithDelay_lp_targetPlayerGroup = lp_targetPlayerGroup;
+    auto_libSond_gf_HeroVOPlayHeroLineWithDelay_lp_delay = lp_delay;
+
+    if (auto_libSond_gf_HeroVOPlayHeroLineWithDelay_Trigger == null) {
+        auto_libSond_gf_HeroVOPlayHeroLineWithDelay_Trigger = TriggerCreate("auto_libSond_gf_HeroVOPlayHeroLineWithDelay_TriggerFunc");
+    }
+
+    TriggerExecute(auto_libSond_gf_HeroVOPlayHeroLineWithDelay_Trigger, false, false);
+}
+
+bool auto_libSond_gf_HeroVOPlayHeroLineWithDelay_TriggerFunc (bool testConds, bool runActions) {
+    int lp_vOEvent = auto_libSond_gf_HeroVOPlayHeroLineWithDelay_lp_vOEvent;
+    int lp_speakingPlayer = auto_libSond_gf_HeroVOPlayHeroLineWithDelay_lp_speakingPlayer;
+    playergroup lp_targetPlayerGroup = auto_libSond_gf_HeroVOPlayHeroLineWithDelay_lp_targetPlayerGroup;
+    fixed lp_delay = auto_libSond_gf_HeroVOPlayHeroLineWithDelay_lp_delay;
+
+    // Implementation
+    Wait(lp_delay, c_timeGame);
+    libSond_gf_HeroVOPlayHeroLine(lp_vOEvent, lp_speakingPlayer, lp_targetPlayerGroup);
+    return true;
+}
+
+trigger auto_libSond_gf_HeroVOPlayHeroLineWithDelayAndRandomChance_Trigger = null;
+int auto_libSond_gf_HeroVOPlayHeroLineWithDelayAndRandomChance_lp_vOEvent;
+int auto_libSond_gf_HeroVOPlayHeroLineWithDelayAndRandomChance_lp_speakingPlayer;
+playergroup auto_libSond_gf_HeroVOPlayHeroLineWithDelayAndRandomChance_lp_targetPlayerGroup;
+fixed auto_libSond_gf_HeroVOPlayHeroLineWithDelayAndRandomChance_lp_delay;
+int auto_libSond_gf_HeroVOPlayHeroLineWithDelayAndRandomChance_lp_chance;
+
+void libSond_gf_HeroVOPlayHeroLineWithDelayAndRandomChance (int lp_vOEvent, int lp_speakingPlayer, playergroup lp_targetPlayerGroup, fixed lp_delay, int lp_chance) {
+    auto_libSond_gf_HeroVOPlayHeroLineWithDelayAndRandomChance_lp_vOEvent = lp_vOEvent;
+    auto_libSond_gf_HeroVOPlayHeroLineWithDelayAndRandomChance_lp_speakingPlayer = lp_speakingPlayer;
+    auto_libSond_gf_HeroVOPlayHeroLineWithDelayAndRandomChance_lp_targetPlayerGroup = lp_targetPlayerGroup;
+    auto_libSond_gf_HeroVOPlayHeroLineWithDelayAndRandomChance_lp_delay = lp_delay;
+    auto_libSond_gf_HeroVOPlayHeroLineWithDelayAndRandomChance_lp_chance = lp_chance;
+
+    if (auto_libSond_gf_HeroVOPlayHeroLineWithDelayAndRandomChance_Trigger == null) {
+        auto_libSond_gf_HeroVOPlayHeroLineWithDelayAndRandomChance_Trigger = TriggerCreate("auto_libSond_gf_HeroVOPlayHeroLineWithDelayAndRandomChance_TriggerFunc");
+    }
+
+    TriggerExecute(auto_libSond_gf_HeroVOPlayHeroLineWithDelayAndRandomChance_Trigger, false, false);
+}
+
+bool auto_libSond_gf_HeroVOPlayHeroLineWithDelayAndRandomChance_TriggerFunc (bool testConds, bool runActions) {
+    int lp_vOEvent = auto_libSond_gf_HeroVOPlayHeroLineWithDelayAndRandomChance_lp_vOEvent;
+    int lp_speakingPlayer = auto_libSond_gf_HeroVOPlayHeroLineWithDelayAndRandomChance_lp_speakingPlayer;
+    playergroup lp_targetPlayerGroup = auto_libSond_gf_HeroVOPlayHeroLineWithDelayAndRandomChance_lp_targetPlayerGroup;
+    fixed lp_delay = auto_libSond_gf_HeroVOPlayHeroLineWithDelayAndRandomChance_lp_delay;
+    int lp_chance = auto_libSond_gf_HeroVOPlayHeroLineWithDelayAndRandomChance_lp_chance;
+
+    // Implementation
+    if ((RandomInt(1, 100) <= lp_chance)) {
+        Wait(lp_delay, c_timeGame);
+        libSond_gf_HeroVOPlayHeroLine(lp_vOEvent, lp_speakingPlayer, lp_targetPlayerGroup);
+    }
+    else {
+    }
+    return true;
+}
+
+trigger auto_libSond_gf_HeroVOHeroPissedLineLogic_Trigger = null;
+int auto_libSond_gf_HeroVOHeroPissedLineLogic_lp_player;
+
+void libSond_gf_HeroVOHeroPissedLineLogic (int lp_player) {
+    auto_libSond_gf_HeroVOHeroPissedLineLogic_lp_player = lp_player;
+
+    if (auto_libSond_gf_HeroVOHeroPissedLineLogic_Trigger == null) {
+        auto_libSond_gf_HeroVOHeroPissedLineLogic_Trigger = TriggerCreate("auto_libSond_gf_HeroVOHeroPissedLineLogic_TriggerFunc");
+    }
+
+    TriggerExecute(auto_libSond_gf_HeroVOHeroPissedLineLogic_Trigger, false, false);
+}
+
+bool auto_libSond_gf_HeroVOHeroPissedLineLogic_TriggerFunc (bool testConds, bool runActions) {
+    int lp_player = auto_libSond_gf_HeroVOHeroPissedLineLogic_lp_player;
+
+    // Variable Declarations
+    string lv_soundID;
+    int lv_numberofSounds;
+    int lv_oldClickCount;
+
+    // Variable Initialization
+
+    // Implementation
+    if ((libGame_gv_players[lp_player].lv_vOPissedSoundIsPlaying == false)) {
+        libGame_gv_players[lp_player].lv_vOPissedClickCount += 1;
+        lv_oldClickCount = libGame_gv_players[lp_player].lv_vOPissedClickCount;
+        lv_soundID = libSond_gf_HeroVOHeroLineForEvent(libCore_ge_HeroVOEvents_Pissed, lp_player);
+        if ((lv_soundID != null)) {
+            libGame_gv_players[lp_player].lv_vOPissedSoundIsPlaying = true;
+            TransmissionSendForPlayer(PlayerGroupSingle(lp_player), TransmissionSourceFromUnit(libGame_gv_players[lp_player].lv_heroUnit, false, true, ""), PortraitGetGame(), "", "Talk", SoundLink(lv_soundID, libGame_gv_players[lp_player].lv_vOPissedSoundIndex), StringToText(""), StringToText(""), 0.0, c_transmissionDurationAdd, false, lp_player);
+            TransmissionWait(TransmissionLastSent(), 0.0);
+            libGame_gv_players[lp_player].lv_vOPissedSoundIsPlaying = false;
+            libGame_gv_players[lp_player].lv_vOPissedSoundIndex += 1;
+            lv_numberofSounds = CatalogFieldValueCount(c_gameCatalogSound, lv_soundID, "AssetArray", c_playerAny);
+            if ((libGame_gv_players[lp_player].lv_vOPissedSoundIndex >= lv_numberofSounds)) {
+                libGame_gv_players[lp_player].lv_vOPissedSoundIndex = 0;
+            }
+            else {
+            }
+        }
+        else {
+        }
+        Wait(libSond_gv_heroVO_PissedWindow, c_timeGame);
+        if ((lv_oldClickCount == libGame_gv_players[lp_player].lv_vOPissedClickCount)) {
+            libGame_gv_players[lp_player].lv_vOPissedSoundIndex = 0;
+            libGame_gv_players[lp_player].lv_vOPissedClickCount = 0;
+        }
+        else {
+        }
+    }
+    else {
+    }
+    return true;
+}
+
+string libSond_gf_HeroVOHeroTakedownSoundLink (unit lp_killingHero, unit lp_dyingHero) {
+    // Variable Declarations
+    string lv_takedownSound;
+    int lv_roll;
+
+    // Variable Initialization
+
+    // Implementation
+    lv_takedownSound = libCore_gv_dataHeroVO[libCore_gf_GetHeroIndexForUnitType(UnitGetType(lp_killingHero))][UnitGetOwner(lp_killingHero)].lv_specificHeroTakedownLines[libCore_gf_GetHeroIndexForUnitType(UnitGetType(lp_dyingHero))];
+    if ((lv_takedownSound != null)) {
+        lv_roll = RandomInt(1, 100);
+        if ((lv_roll <= libSond_gv_heroVO_SpecialKillLinePercentChance_C)) {
+            return lv_takedownSound;
+        }
+        else {
+        }
+    }
+    else {
+    }
+    lv_takedownSound = libSond_gf_HeroVOHeroLineForEvent(libCore_ge_HeroVOEvents_GenericKill, UnitGetOwner(lp_killingHero));
+    if ((lv_takedownSound != null)) {
+        return lv_takedownSound;
+    }
+    else {
+        return null;
+    }
+}
+
+void libSond_gf_HeroVORegisterHeroTakedownForPlayer (int lp_player, playergroup lp_awardGroup, int lp_enemyPlayerKilled, int lp_deadPlayerKillingSpreeCount, int lp_levelGap) {
+    // Implementation
+    if ((lp_deadPlayerKillingSpreeCount >= libCore_gv_killingSpree_KillThresholdBase_C)) {
+        libSond_gv_heroVO_HeroTakedownVOEnemyWasOnKillingSpree[lp_player] = true;
+    }
+    else {
+    }
+    if ((lp_levelGap >= libSond_gv_heroVO_ComebackLevelGapThreshold_C)) {
+        libSond_gv_heroVO_HeroTakedownVOWasComebackKill[lp_player] = true;
+    }
+    else {
+    }
+    libNtve_gf_AddPlayerGroupToPlayerGroup(lp_awardGroup, libSond_gv_heroVO_HeroTakedownVOAlliesGroup[lp_player]);
+    libSond_gv_heroVO_HeroTakedownVOLastEnemyPlayerKilled[lp_player] = lp_enemyPlayerKilled;
+}
+
+void libSond_gf_HeroVOStartHeroTakedownVOTimerForPlayer (int lp_player, fixed lp_duration) {
+    // Implementation
+    TimerStart(libSond_gv_heroVO_HeroTakedownVOTimers[lp_player], lp_duration, false, c_timeGame);
+}
+
+void libSond_gf_HeroVOStartTeamKilledVOTimerForPlayer (int lp_player, fixed lp_duration) {
+    // Implementation
+    TimerStart(libSond_gv_heroVO_TeamKilledVOTimers[lp_player], lp_duration, false, c_timeGame);
+}
+
+void libSond_gf_HeroVOStartTownKilledVOTimerForPlayer (int lp_player, playergroup lp_allyPlayerGroup) {
+    // Implementation
+    if (((lp_player > libCore_gv_bALMaxPlayers) || (PlayerGroupCount(lp_allyPlayerGroup) < 1))) {
+        return ;
+    }
+    else {
+    }
+    libSond_gv_heroVO_TownKilledVOAlliesGroup[lp_player] = lp_allyPlayerGroup;
+    TimerStart(libSond_gv_heroVO_TownKilledVOTimers[lp_player], libSond_gv_heroVO_CelebrateTownKilledTimerDuration_C, false, c_timeGame);
+}
+
+void libSond_gf_HeroVOStartHeroIntroLinesTimer (fixed lp_duration) {
+    // Implementation
+    TimerStart(libSond_gv_heroVO_HeroIntroLineTimer, lp_duration, false, c_timeGame);
+}
+
+trigger auto_libSond_gf_HeroVOPlayHeroIntroLinesForPlayer_Trigger = null;
+int auto_libSond_gf_HeroVOPlayHeroIntroLinesForPlayer_lp_player;
+int auto_libSond_gf_HeroVOPlayHeroIntroLinesForPlayer_lp_allyPlayer;
+
+void libSond_gf_HeroVOPlayHeroIntroLinesForPlayer (int lp_player, int lp_allyPlayer) {
+    auto_libSond_gf_HeroVOPlayHeroIntroLinesForPlayer_lp_player = lp_player;
+    auto_libSond_gf_HeroVOPlayHeroIntroLinesForPlayer_lp_allyPlayer = lp_allyPlayer;
+
+    if (auto_libSond_gf_HeroVOPlayHeroIntroLinesForPlayer_Trigger == null) {
+        auto_libSond_gf_HeroVOPlayHeroIntroLinesForPlayer_Trigger = TriggerCreate("auto_libSond_gf_HeroVOPlayHeroIntroLinesForPlayer_TriggerFunc");
+    }
+
+    TriggerExecute(auto_libSond_gf_HeroVOPlayHeroIntroLinesForPlayer_Trigger, false, false);
+}
+
+bool auto_libSond_gf_HeroVOPlayHeroIntroLinesForPlayer_TriggerFunc (bool testConds, bool runActions) {
+    int lp_player = auto_libSond_gf_HeroVOPlayHeroIntroLinesForPlayer_lp_player;
+    int lp_allyPlayer = auto_libSond_gf_HeroVOPlayHeroIntroLinesForPlayer_lp_allyPlayer;
+
+    // Variable Declarations
+    int lv_heroIndex;
+    int lv_allyHeroIndex;
+    string lv_callSoundLink;
+    string lv_responseSoundLink;
+
+    // Variable Initialization
+
+    // Implementation
+    if (((lp_allyPlayer > libCore_gv_bALMaxPlayers) || (lp_allyPlayer < 1))) {
+        return true;
+    }
+    else {
+    }
+    lv_heroIndex = libGame_gv_players[lp_player].lv_heroIndex;
+    lv_allyHeroIndex = libGame_gv_players[lp_allyPlayer].lv_heroIndex;
+    lv_responseSoundLink = libCore_gv_dataHeroVO[lv_heroIndex][lp_player].lv_specificHeroIntroResponseLines[lv_allyHeroIndex];
+    if ((lv_responseSoundLink == null)) {
+        if ((RandomInt(1, 2) == 1)) {
+            lv_callSoundLink = libSond_gf_HeroVOHeroLineForEvent(libCore_ge_HeroVOEvents_IntroQuestion, lp_allyPlayer);
+            lv_responseSoundLink = libSond_gf_HeroVOHeroLineForEvent(libCore_ge_HeroVOEvents_IntroResponse, lp_player);
+        }
+        else {
+            lv_callSoundLink = libSond_gf_HeroVOHeroLineForEvent(libCore_ge_HeroVOEvents_IntroBoast, lp_allyPlayer);
+            lv_responseSoundLink = libSond_gf_HeroVOHeroLineForEvent(libCore_ge_HeroVOEvents_IntroAgree, lp_player);
+        }
+    }
+    else {
+        lv_callSoundLink = libCore_gv_dataHeroVO[lv_allyHeroIndex][lp_allyPlayer].lv_specificHeroIntroQuestionLines[lv_heroIndex];
+    }
+    if ((lv_callSoundLink != null) && (lv_responseSoundLink != null)) {
+        SoundPlayForPlayer(SoundLink(lv_callSoundLink, c_soundIndexAny), lp_allyPlayer, libCore_gv_playerGroupFromPlayer[lp_player], 100.0, 0.0);
+        SoundWait(SoundLastPlayed(), 0.0, c_soundOffsetEnd);
+        SoundPlayForPlayer(SoundLink(lv_responseSoundLink, c_soundIndexAny), lp_player, libCore_gv_playerGroupFromPlayer[lp_player], 100.0, 0.0);
+    }
+    else {
+    }
+    return true;
+}
+
+void libSond_gf_HeroVOHeroGetHitResponse (fixed lp_damagingAmount, unit lp_damagedUnit) {
+    // Implementation
+    if ((lp_damagingAmount >= (UnitGetPropertyFixed(lp_damagedUnit, c_unitPropLifeMax, c_unitPropCurrent) * libSond_gv_heroVO_GetHitLifePercentThresholdHigh_C))) {
+        libSond_gf_HeroVOPlayHeroLine(libCore_ge_HeroVOEvents_VOXGetHitLarge, UnitGetOwner(lp_damagedUnit), libCore_gv_playerGroupFromPlayer[UnitGetOwner(lp_damagedUnit)]);
+    }
+    else {
+        if ((lp_damagingAmount >= (UnitGetPropertyFixed(lp_damagedUnit, c_unitPropLifeMax, c_unitPropCurrent) * libSond_gv_heroVO_GetHitLifePercentThreshold_C))) {
+            libSond_gf_HeroVOPlayHeroLine(libCore_ge_HeroVOEvents_VOXGetHit, UnitGetOwner(lp_damagedUnit), libCore_gv_playerGroupFromPlayer[UnitGetOwner(lp_damagedUnit)]);
+        }
+        else {
+            if ((lp_damagingAmount >= (UnitGetPropertyFixed(lp_damagedUnit, c_unitPropLifeMax, c_unitPropCurrent) * libSond_gv_heroVO_GetHitLifePercentThresholdLow_C))) {
+                libSond_gf_HeroVOPlayHeroLine(libCore_ge_HeroVOEvents_VOXGetHitSmall, UnitGetOwner(lp_damagedUnit), libCore_gv_playerGroupFromPlayer[UnitGetOwner(lp_damagedUnit)]);
+            }
+            else {
+            }
+        }
+    }
+}
+
+void libSond_gf_HeroVOPlayHealThankYouLine (int lp_speakingPlayer, playergroup lp_targetPlayerGroup) {
+    // Implementation
+    if (((lp_speakingPlayer > libCore_gv_bALMaxPlayers) || (lp_speakingPlayer < 1))) {
+        return ;
+    }
+    else {
+    }
+    if ((TimerGetRemaining(libSond_gv_heroVO_HealThankYouCooldownTimer[lp_speakingPlayer]) > 0.0)) {
+        return ;
+    }
+    else {
+    }
+    if ((RandomInt(1, 100) > libSond_gv_heroVO_HealThankYouLinePercentChance_C)) {
+        return ;
+    }
+    else {
+    }
+    TimerStart(libSond_gv_heroVO_HealThankYouCooldownTimer[lp_speakingPlayer], libSond_gv_heroVO_HealThankYouLineCooldown_C, false, c_timeGame);
+    libSond_gf_HeroVOPlayHeroLineWithDelay(libCore_ge_HeroVOEvents_Healed, lp_speakingPlayer, lp_targetPlayerGroup, libSond_gv_heroVO_HealThankYouLineDelay_C);
+}
+
+void libSond_gf_SoundtrackUpdateMapSoundtrackIndex (int lp_desiredIndex) {
+    // Variable Declarations
+    int lv_newIndex;
+
+    // Variable Initialization
+
+    // Implementation
+    if (((lp_desiredIndex > libCore_gv_maxMapSoundtracks_C) || (lp_desiredIndex < 0))) {
+        return ;
+    }
+    else {
+    }
+    lv_newIndex = MaxI(lp_desiredIndex, libSond_gv_soundtrack_MapSoundtrackIndex);
+    if ((lv_newIndex != libSond_gv_soundtrack_MapSoundtrackIndex)) {
+        libSond_gv_soundtrack_MapSoundtrackIndex = lv_newIndex;
+        if ((libSond_gv_soundtrack_MapSoundtrackPlaying == true) && ((libSond_gv_soundtrack_MapSoundtrackIndex > 1) || (libSond_gv_soundtrack_IntroSoundtrackPlaying == true))) {
+            libSond_gf_SoundtrackPlayMapSoundtrackAsDefaultSoundtrackForAllPlayers();
+        }
+        else {
+        }
+    }
+    else {
+    }
+}
+
+trigger auto_libSond_gf_SoundtrackPlayMapIntroSoundtrackForAllPlayers_Trigger = null;
+
+void libSond_gf_SoundtrackPlayMapIntroSoundtrackForAllPlayers () {
+    if (auto_libSond_gf_SoundtrackPlayMapIntroSoundtrackForAllPlayers_Trigger == null) {
+        auto_libSond_gf_SoundtrackPlayMapIntroSoundtrackForAllPlayers_Trigger = TriggerCreate("auto_libSond_gf_SoundtrackPlayMapIntroSoundtrackForAllPlayers_TriggerFunc");
+    }
+
+    TriggerExecute(auto_libSond_gf_SoundtrackPlayMapIntroSoundtrackForAllPlayers_Trigger, false, false);
+}
+
+bool auto_libSond_gf_SoundtrackPlayMapIntroSoundtrackForAllPlayers_TriggerFunc (bool testConds, bool runActions) {
+    // Variable Declarations
+    string lv_soundtrack;
+
+    // Variable Initialization
+
+    // Implementation
+    lv_soundtrack = libCore_gv_mAPMapSoundtrack[0];
+    if ((lv_soundtrack == null)) {
+        return true;
+    }
+    else {
+    }
+    libSond_gv_soundtrack_MapSoundtrackPlaying = true;
+    libSond_gv_soundtrack_IntroSoundtrackPlaying = true;
+    SoundtrackPlay(PlayerGroupAll(), c_soundtrackCategoryMusic, lv_soundtrack, c_soundtrackCueAny, c_soundtrackIndexAny, true);
+    SoundtrackWait(lv_soundtrack);
+    libSond_gv_soundtrack_IntroSoundtrackPlaying = false;
+    return true;
+}
+
+void libSond_gf_SoundtrackApplyNewDefaultSoundtrackForPlayerGroup (string lp_soundtrack, playergroup lp_playerGroup) {
+    // Implementation
+    if ((lp_soundtrack == null)) {
+        return ;
+    }
+    else {
+    }
+    libSond_gv_soundtrack_MapSoundtrackPlaying = false;
+    SoundtrackPlay(lp_playerGroup, c_soundtrackCategoryMusic, lp_soundtrack, c_soundtrackCueAny, c_soundtrackIndexAny, true);
+}
+
+void libSond_gf_SoundtrackPlayMapSoundtrackAsDefaultSoundtrackForAllPlayers () {
+    // Variable Declarations
+    string lv_soundtrack;
+
+    // Variable Initialization
+
+    // Implementation
+    lv_soundtrack = libCore_gv_mAPMapSoundtrack[libSond_gv_soundtrack_MapSoundtrackIndex];
+    if ((lv_soundtrack == null)) {
+        return ;
+    }
+    else {
+    }
+    libSond_gv_soundtrack_MapSoundtrackPlaying = true;
+    SoundtrackPlay(PlayerGroupAll(), c_soundtrackCategoryMusic, lv_soundtrack, c_soundtrackCueAny, c_soundtrackIndexAny, true);
+}
+
+void libSond_gf_DigitalSoundEffectsEnableDisableSoundStateForPlayer (bool lp_enableDisable, int lp_player, string lp_soundEffect) {
+    // Variable Declarations
+    fixed lv_deathTimeRemaining;
+    fixed lv_soundOffset;
+
+    // Variable Initialization
+
+    // Implementation
+    if ((lp_enableDisable == true)) {
+        SoundChannelDSPInsert(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryCombat, lp_soundEffect);
+        SoundChannelDSPInsert(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryUser1, lp_soundEffect);
+        SoundChannelDSPInsert(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryUser2, lp_soundEffect);
+        SoundChannelDSPInsert(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryUser3, lp_soundEffect);
+        SoundChannelDSPInsert(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryTV, lp_soundEffect);
+        SoundChannelDSPInsert(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryUser4, lp_soundEffect);
+        SoundChannelDSPInsert(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryUser5, lp_soundEffect);
+        SoundChannelDSPInsert(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryUser6, lp_soundEffect);
+        SoundChannelDSPInsert(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryUser7, lp_soundEffect);
+        SoundChannelDSPInsert(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategorySpell, lp_soundEffect);
+        SoundChannelDSPInsert(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategorySpellOneshotImpact, lp_soundEffect);
+        SoundChannelDSPInsert(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategorySpellOneshotLaunch, lp_soundEffect);
+        SoundChannelDSPInsert(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategorySEmitters, lp_soundEffect);
+        SoundChannelDSPInsert(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryUser8, lp_soundEffect);
+        SoundChannelDSPInsert(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryUser9, lp_soundEffect);
+        SoundChannelDSPInsert(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryUser10, lp_soundEffect);
+        SoundChannelDSPInsert(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryFoley, lp_soundEffect);
+        SoundChannelDSPInsert(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategorySAmbient, lp_soundEffect);
+        SoundChannelDSPInsert(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategorySPieces, lp_soundEffect);
+        SoundChannelDSPInsert(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryTest, lp_soundEffect);
+        SoundChannelDSPInsert(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryMovie, lp_soundEffect);
+        SoundChannelDSPInsert(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryMessage, lp_soundEffect);
+        SoundChannelDSPInsert(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryMovement, lp_soundEffect);
+        SoundChannelDSPInsert(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryFlames, lp_soundEffect);
+        SoundChannelDSPInsert(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryDeath, lp_soundEffect);
+        SoundChannelDSPInsert(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryOther, lp_soundEffect);
+        SoundChannelDSPInsert(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryGather, lp_soundEffect);
+        SoundChannelDSPInsert(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryDoodad, lp_soundEffect);
+    }
+    else {
+        SoundChannelDSPRemove(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryCombat, lp_soundEffect);
+        SoundChannelDSPRemove(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryUser1, lp_soundEffect);
+        SoundChannelDSPRemove(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryUser2, lp_soundEffect);
+        SoundChannelDSPRemove(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryUser3, lp_soundEffect);
+        SoundChannelDSPRemove(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryTV, lp_soundEffect);
+        SoundChannelDSPRemove(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryUser4, lp_soundEffect);
+        SoundChannelDSPRemove(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryUser5, lp_soundEffect);
+        SoundChannelDSPRemove(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryUser6, lp_soundEffect);
+        SoundChannelDSPRemove(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryUser7, lp_soundEffect);
+        SoundChannelDSPRemove(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategorySpell, lp_soundEffect);
+        SoundChannelDSPRemove(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategorySpellOneshotImpact, lp_soundEffect);
+        SoundChannelDSPRemove(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategorySpellOneshotLaunch, lp_soundEffect);
+        SoundChannelDSPRemove(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategorySEmitters, lp_soundEffect);
+        SoundChannelDSPRemove(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryUser8, lp_soundEffect);
+        SoundChannelDSPRemove(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryUser9, lp_soundEffect);
+        SoundChannelDSPRemove(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryUser10, lp_soundEffect);
+        SoundChannelDSPRemove(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryFoley, lp_soundEffect);
+        SoundChannelDSPRemove(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategorySAmbient, lp_soundEffect);
+        SoundChannelDSPRemove(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategorySPieces, lp_soundEffect);
+        SoundChannelDSPRemove(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryTest, lp_soundEffect);
+        SoundChannelDSPRemove(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryMovie, lp_soundEffect);
+        SoundChannelDSPRemove(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryMessage, lp_soundEffect);
+        SoundChannelDSPRemove(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryMovement, lp_soundEffect);
+        SoundChannelDSPRemove(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryFlames, lp_soundEffect);
+        SoundChannelDSPRemove(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryDeath, lp_soundEffect);
+        SoundChannelDSPRemove(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryOther, lp_soundEffect);
+        SoundChannelDSPRemove(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryGather, lp_soundEffect);
+        SoundChannelDSPRemove(libCore_gv_playerGroupFromPlayer[lp_player], c_soundCategoryDoodad, lp_soundEffect);
+    }
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: #Include Sound
+//--------------------------------------------------------------------------------------------------
+bool libSond_gt_IncludeSound_Func (bool testConds, bool runActions) {
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSond_gt_IncludeSound_Init () {
+    libSond_gt_IncludeSound = TriggerCreate("libSond_gt_IncludeSound_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: HeroVO Hero Takedown VO Timer Expires
+//--------------------------------------------------------------------------------------------------
+bool libSond_gt_HeroVOHeroTakedownVOTimerExpires_Func (bool testConds, bool runActions) {
+    int auto402FA4AA_ae;
+    int auto402FA4AA_ai;
+
+    // Variable Declarations
+    int lv_itPlayer;
+    int lv_triggeringPlayer;
+    int lv_numberOfPlayersInAlliesGroup;
+    int lv_speakingPlayer;
+    unit lv_killingHero;
+    unit lv_dyingHero;
+    string lv_soundLink;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    auto402FA4AA_ae = libCore_gv_bALMaxPlayers;
+    auto402FA4AA_ai = 1;
+    lv_itPlayer = 1;
+    for ( ; ( (auto402FA4AA_ai >= 0 && lv_itPlayer <= auto402FA4AA_ae) || (auto402FA4AA_ai <= 0 && lv_itPlayer >= auto402FA4AA_ae) ) ; lv_itPlayer += auto402FA4AA_ai ) {
+        if ((EventTimer() == libSond_gv_heroVO_HeroTakedownVOTimers[lv_itPlayer])) {
+            lv_triggeringPlayer = lv_itPlayer;
+            break;
+        }
+        else {
+        }
+    }
+    lv_numberOfPlayersInAlliesGroup = PlayerGroupCount(libSond_gv_heroVO_HeroTakedownVOAlliesGroup[lv_triggeringPlayer]);
+    if ((lv_numberOfPlayersInAlliesGroup < 1)) {
+        return true;
+    }
+    else {
+    }
+    lv_speakingPlayer = PlayerGroupPlayer(libSond_gv_heroVO_HeroTakedownVOAlliesGroup[lv_triggeringPlayer], RandomInt(1, lv_numberOfPlayersInAlliesGroup));
+    lv_killingHero = libGame_gv_players[lv_triggeringPlayer].lv_heroUnit;
+    lv_dyingHero = libGame_gv_players[libSond_gv_heroVO_HeroTakedownVOLastEnemyPlayerKilled[lv_triggeringPlayer]].lv_heroUnit;
+    if ((libSond_gv_heroVO_HeroTakedownVOWasComebackKill[lv_triggeringPlayer] == true)) {
+        lv_soundLink = libSond_gf_HeroVOHeroLineForEvent(libCore_ge_HeroVOEvents_Comeback, lv_speakingPlayer);
+    }
+    else {
+        if ((libGame_gv_players[lv_speakingPlayer].lv_isDead == true)) {
+            lv_soundLink = libSond_gf_HeroVOHeroLineForEvent(libCore_ge_HeroVOEvents_WorthIt, lv_speakingPlayer);
+        }
+        else {
+            if ((libSond_gv_heroVO_HeroTakedownVOEnemyWasOnKillingSpree[lv_triggeringPlayer] == true)) {
+                lv_soundLink = libSond_gf_HeroVOHeroLineForEvent(libCore_ge_HeroVOEvents_EndEnemyKillingSpree, lv_speakingPlayer);
+            }
+            else {
+                if ((lv_speakingPlayer == lv_triggeringPlayer) && (lv_killingHero != null) && (lv_dyingHero != null)) {
+                    lv_soundLink = libSond_gf_HeroVOHeroTakedownSoundLink(lv_killingHero, lv_dyingHero);
+                }
+                else {
+                    lv_soundLink = libSond_gf_HeroVOHeroLineForEvent(libCore_ge_HeroVOEvents_AIGoodJob, lv_speakingPlayer);
+                }
+            }
+        }
+    }
+    if ((lv_soundLink != null)) {
+        SoundPlayForPlayer(SoundLink(lv_soundLink, c_soundIndexAny), lv_speakingPlayer, libCore_gv_playerGroupFromPlayer[lv_triggeringPlayer], 100.0, 0.0);
+    }
+    else {
+    }
+    PlayerGroupClear(libSond_gv_heroVO_HeroTakedownVOAlliesGroup[lv_triggeringPlayer]);
+    libSond_gv_heroVO_HeroTakedownVOEnemyWasOnKillingSpree[lv_triggeringPlayer] = false;
+    libSond_gv_heroVO_HeroTakedownVOWasComebackKill[lv_triggeringPlayer] = false;
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSond_gt_HeroVOHeroTakedownVOTimerExpires_Init () {
+    libSond_gt_HeroVOHeroTakedownVOTimerExpires = TriggerCreate("libSond_gt_HeroVOHeroTakedownVOTimerExpires_Func");
+    TriggerAddEventTimer(libSond_gt_HeroVOHeroTakedownVOTimerExpires, libSond_gv_heroVO_HeroTakedownVOTimers[1]);
+    TriggerAddEventTimer(libSond_gt_HeroVOHeroTakedownVOTimerExpires, libSond_gv_heroVO_HeroTakedownVOTimers[2]);
+    TriggerAddEventTimer(libSond_gt_HeroVOHeroTakedownVOTimerExpires, libSond_gv_heroVO_HeroTakedownVOTimers[3]);
+    TriggerAddEventTimer(libSond_gt_HeroVOHeroTakedownVOTimerExpires, libSond_gv_heroVO_HeroTakedownVOTimers[4]);
+    TriggerAddEventTimer(libSond_gt_HeroVOHeroTakedownVOTimerExpires, libSond_gv_heroVO_HeroTakedownVOTimers[5]);
+    TriggerAddEventTimer(libSond_gt_HeroVOHeroTakedownVOTimerExpires, libSond_gv_heroVO_HeroTakedownVOTimers[6]);
+    TriggerAddEventTimer(libSond_gt_HeroVOHeroTakedownVOTimerExpires, libSond_gv_heroVO_HeroTakedownVOTimers[7]);
+    TriggerAddEventTimer(libSond_gt_HeroVOHeroTakedownVOTimerExpires, libSond_gv_heroVO_HeroTakedownVOTimers[8]);
+    TriggerAddEventTimer(libSond_gt_HeroVOHeroTakedownVOTimerExpires, libSond_gv_heroVO_HeroTakedownVOTimers[9]);
+    TriggerAddEventTimer(libSond_gt_HeroVOHeroTakedownVOTimerExpires, libSond_gv_heroVO_HeroTakedownVOTimers[10]);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: HeroVO Hero Team Killed VO Timer Expires
+//--------------------------------------------------------------------------------------------------
+bool libSond_gt_HeroVOHeroTeamKilledVOTimerExpires_Func (bool testConds, bool runActions) {
+    int autoCFFE5E37_ae;
+    int autoCFFE5E37_ai;
+    playergroup auto8FB260F0_g;
+    int auto8FB260F0_p;
+
+    // Variable Declarations
+    int lv_itPlayer;
+    int lv_triggeringTimerPlayer;
+    playergroup lv_teamPlayerGroup;
+    int lv_numberOfPlayersInTeamPlayerGroup;
+    int lv_speakingPlayer;
+
+    // Variable Initialization
+    lv_teamPlayerGroup = PlayerGroupEmpty();
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    autoCFFE5E37_ae = libCore_gv_bALMaxPlayers;
+    autoCFFE5E37_ai = 1;
+    lv_itPlayer = 1;
+    for ( ; ( (autoCFFE5E37_ai >= 0 && lv_itPlayer <= autoCFFE5E37_ae) || (autoCFFE5E37_ai <= 0 && lv_itPlayer >= autoCFFE5E37_ae) ) ; lv_itPlayer += autoCFFE5E37_ai ) {
+        if ((EventTimer() == libSond_gv_heroVO_TeamKilledVOTimers[lv_itPlayer])) {
+            lv_triggeringTimerPlayer = lv_itPlayer;
+            break;
+        }
+        else {
+        }
+    }
+    if ((libGame_gv_players[lv_triggeringTimerPlayer].lv_isDead == false)) {
+        return true;
+    }
+    else {
+    }
+    auto8FB260F0_g = libGame_gv_teams[libGame_gf_TeamNumberOfPlayer(lv_triggeringTimerPlayer)].lv_teamPlayerGroupNoNPCPlayers; 
+    auto8FB260F0_p = 1;
+    for ( ; auto8FB260F0_p <= PlayerGroupCount(auto8FB260F0_g) ; auto8FB260F0_p += BoolToInt(lv_itPlayer == PlayerGroupPlayer(auto8FB260F0_g, auto8FB260F0_p)) ) {
+        lv_itPlayer = PlayerGroupPlayer(auto8FB260F0_g, auto8FB260F0_p);
+        if ((libGame_gv_players[lv_itPlayer].lv_isDead == true)) {
+            PlayerGroupAdd(lv_teamPlayerGroup, lv_itPlayer);
+        }
+        else {
+        }
+    }
+    lv_numberOfPlayersInTeamPlayerGroup = PlayerGroupCount(lv_teamPlayerGroup);
+    if ((lv_numberOfPlayersInTeamPlayerGroup == 0)) {
+        return true;
+    }
+    else {
+    }
+    lv_speakingPlayer = PlayerGroupPlayer(lv_teamPlayerGroup, RandomInt(1, lv_numberOfPlayersInTeamPlayerGroup));
+    libSond_gf_HeroVOPlayHeroLine(libCore_ge_HeroVOEvents_TeamKilled, lv_speakingPlayer, libCore_gv_playerGroupFromPlayer[lv_triggeringTimerPlayer]);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSond_gt_HeroVOHeroTeamKilledVOTimerExpires_Init () {
+    libSond_gt_HeroVOHeroTeamKilledVOTimerExpires = TriggerCreate("libSond_gt_HeroVOHeroTeamKilledVOTimerExpires_Func");
+    TriggerAddEventTimer(libSond_gt_HeroVOHeroTeamKilledVOTimerExpires, libSond_gv_heroVO_TeamKilledVOTimers[1]);
+    TriggerAddEventTimer(libSond_gt_HeroVOHeroTeamKilledVOTimerExpires, libSond_gv_heroVO_TeamKilledVOTimers[2]);
+    TriggerAddEventTimer(libSond_gt_HeroVOHeroTeamKilledVOTimerExpires, libSond_gv_heroVO_TeamKilledVOTimers[3]);
+    TriggerAddEventTimer(libSond_gt_HeroVOHeroTeamKilledVOTimerExpires, libSond_gv_heroVO_TeamKilledVOTimers[4]);
+    TriggerAddEventTimer(libSond_gt_HeroVOHeroTeamKilledVOTimerExpires, libSond_gv_heroVO_TeamKilledVOTimers[5]);
+    TriggerAddEventTimer(libSond_gt_HeroVOHeroTeamKilledVOTimerExpires, libSond_gv_heroVO_TeamKilledVOTimers[6]);
+    TriggerAddEventTimer(libSond_gt_HeroVOHeroTeamKilledVOTimerExpires, libSond_gv_heroVO_TeamKilledVOTimers[7]);
+    TriggerAddEventTimer(libSond_gt_HeroVOHeroTeamKilledVOTimerExpires, libSond_gv_heroVO_TeamKilledVOTimers[8]);
+    TriggerAddEventTimer(libSond_gt_HeroVOHeroTeamKilledVOTimerExpires, libSond_gv_heroVO_TeamKilledVOTimers[9]);
+    TriggerAddEventTimer(libSond_gt_HeroVOHeroTeamKilledVOTimerExpires, libSond_gv_heroVO_TeamKilledVOTimers[10]);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: HeroVO Hero Town Killed VO Timer Expires
+//--------------------------------------------------------------------------------------------------
+bool libSond_gt_HeroVOHeroTownKilledVOTimerExpires_Func (bool testConds, bool runActions) {
+    int auto0D665F06_ae;
+    int auto0D665F06_ai;
+
+    // Variable Declarations
+    int lv_itPlayer;
+    int lv_triggeringTimerPlayer;
+    playergroup lv_teamPlayerGroup;
+    int lv_numberOfPlayersInTeamPlayerGroup;
+    int lv_speakingPlayer;
+
+    // Variable Initialization
+    lv_teamPlayerGroup = PlayerGroupEmpty();
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    auto0D665F06_ae = libCore_gv_bALMaxPlayers;
+    auto0D665F06_ai = 1;
+    lv_itPlayer = 1;
+    for ( ; ( (auto0D665F06_ai >= 0 && lv_itPlayer <= auto0D665F06_ae) || (auto0D665F06_ai <= 0 && lv_itPlayer >= auto0D665F06_ae) ) ; lv_itPlayer += auto0D665F06_ai ) {
+        if ((EventTimer() == libSond_gv_heroVO_TownKilledVOTimers[lv_itPlayer])) {
+            lv_triggeringTimerPlayer = lv_itPlayer;
+            break;
+        }
+        else {
+        }
+    }
+    lv_numberOfPlayersInTeamPlayerGroup = PlayerGroupCount(libSond_gv_heroVO_TownKilledVOAlliesGroup[lv_triggeringTimerPlayer]);
+    if ((lv_numberOfPlayersInTeamPlayerGroup == 0)) {
+        return true;
+    }
+    else {
+    }
+    lv_speakingPlayer = PlayerGroupPlayer(libSond_gv_heroVO_TownKilledVOAlliesGroup[lv_triggeringTimerPlayer], RandomInt(1, lv_numberOfPlayersInTeamPlayerGroup));
+    libSond_gf_HeroVOPlayHeroLine(libCore_ge_HeroVOEvents_Celebrate, lv_speakingPlayer, libCore_gv_playerGroupFromPlayer[lv_triggeringTimerPlayer]);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSond_gt_HeroVOHeroTownKilledVOTimerExpires_Init () {
+    libSond_gt_HeroVOHeroTownKilledVOTimerExpires = TriggerCreate("libSond_gt_HeroVOHeroTownKilledVOTimerExpires_Func");
+    TriggerAddEventTimer(libSond_gt_HeroVOHeroTownKilledVOTimerExpires, libSond_gv_heroVO_TownKilledVOTimers[1]);
+    TriggerAddEventTimer(libSond_gt_HeroVOHeroTownKilledVOTimerExpires, libSond_gv_heroVO_TownKilledVOTimers[2]);
+    TriggerAddEventTimer(libSond_gt_HeroVOHeroTownKilledVOTimerExpires, libSond_gv_heroVO_TownKilledVOTimers[3]);
+    TriggerAddEventTimer(libSond_gt_HeroVOHeroTownKilledVOTimerExpires, libSond_gv_heroVO_TownKilledVOTimers[4]);
+    TriggerAddEventTimer(libSond_gt_HeroVOHeroTownKilledVOTimerExpires, libSond_gv_heroVO_TownKilledVOTimers[5]);
+    TriggerAddEventTimer(libSond_gt_HeroVOHeroTownKilledVOTimerExpires, libSond_gv_heroVO_TownKilledVOTimers[6]);
+    TriggerAddEventTimer(libSond_gt_HeroVOHeroTownKilledVOTimerExpires, libSond_gv_heroVO_TownKilledVOTimers[7]);
+    TriggerAddEventTimer(libSond_gt_HeroVOHeroTownKilledVOTimerExpires, libSond_gv_heroVO_TownKilledVOTimers[8]);
+    TriggerAddEventTimer(libSond_gt_HeroVOHeroTownKilledVOTimerExpires, libSond_gv_heroVO_TownKilledVOTimers[9]);
+    TriggerAddEventTimer(libSond_gt_HeroVOHeroTownKilledVOTimerExpires, libSond_gv_heroVO_TownKilledVOTimers[10]);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: HeroVO Hero Intro Lines Timer Expires
+//--------------------------------------------------------------------------------------------------
+bool libSond_gt_HeroVOHeroIntroLinesTimerExpires_Func (bool testConds, bool runActions) {
+    int auto4312A1FA_ae;
+    int auto4312A1FA_ai;
+
+    // Variable Declarations
+    int lv_itPlayer;
+    unit lv_heroUnit;
+    point lv_positionOfHeroUnit;
+    unitgroup lv_alliesNearby;
+    int lv_numberOfAlliesNearby;
+    unit lv_allyUnit;
+
+    // Variable Initialization
+    lv_alliesNearby = UnitGroupEmpty();
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    auto4312A1FA_ae = libCore_gv_bALMaxPlayers;
+    auto4312A1FA_ai = 1;
+    lv_itPlayer = 1;
+    for ( ; ( (auto4312A1FA_ai >= 0 && lv_itPlayer <= auto4312A1FA_ae) || (auto4312A1FA_ai <= 0 && lv_itPlayer >= auto4312A1FA_ae) ) ; lv_itPlayer += auto4312A1FA_ai ) {
+        lv_heroUnit = libGame_gv_players[lv_itPlayer].lv_heroUnit;
+        if ((lv_heroUnit == null)) {
+            continue;
+        }
+        else {
+        }
+        if ((RandomInt(1, 100) > libSond_gv_heroVO_HeroIntroLineChance_C)) {
+            continue;
+        }
+        else {
+        }
+        lv_positionOfHeroUnit = UnitGetPosition(lv_heroUnit);
+        lv_alliesNearby = UnitGroupSearch(null, lv_itPlayer, lv_positionOfHeroUnit, libSond_gv_heroVO_HeroIntroLineAllyCheckRadius_C, UnitFilter((1 << c_targetFilterHeroic), 0, (1 << c_targetFilterPlayer) | (1 << c_targetFilterNeutral) | (1 << c_targetFilterEnemy) | (1 << c_targetFilterHover) | (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)) | (1 << (c_targetFilterHallucination - 32))), 0);
+        lv_numberOfAlliesNearby = UnitGroupCount(lv_alliesNearby, c_unitCountAlive);
+        if ((lv_numberOfAlliesNearby == 0)) {
+            continue;
+        }
+        else {
+        }
+        lv_allyUnit = UnitGroupUnit(lv_alliesNearby, RandomInt(1, lv_numberOfAlliesNearby));
+        libSond_gf_HeroVOPlayHeroIntroLinesForPlayer(lv_itPlayer, UnitGetOwner(lv_allyUnit));
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSond_gt_HeroVOHeroIntroLinesTimerExpires_Init () {
+    libSond_gt_HeroVOHeroIntroLinesTimerExpires = TriggerCreate("libSond_gt_HeroVOHeroIntroLinesTimerExpires_Func");
+    TriggerAddEventTimer(libSond_gt_HeroVOHeroIntroLinesTimerExpires, libSond_gv_heroVO_HeroIntroLineTimer);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: HeroVO Hero Go Heal
+//--------------------------------------------------------------------------------------------------
+bool libSond_gt_HeroVOHeroGoHeal_Func (bool testConds, bool runActions) {
+    playergroup auto06C78789_g;
+    int auto06C78789_p;
+    unitgroup autoA90464AA_g;
+    int autoA90464AA_u;
+
+    // Variable Declarations
+    int lv_player;
+    unit lv_heroUnit;
+    unitgroup lv_nearbyAllyHeroes;
+    unit lv_allyHero;
+
+    // Variable Initialization
+    lv_nearbyAllyHeroes = UnitGroupEmpty();
+
+    // Conditions
+    if (testConds) {
+        if (!((libGame_gv_gameOver == false))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    auto06C78789_g = libCore_gv_activeHumanPlayers; 
+    auto06C78789_p = 1;
+    for ( ; auto06C78789_p <= PlayerGroupCount(auto06C78789_g) ; auto06C78789_p += BoolToInt(lv_player == PlayerGroupPlayer(auto06C78789_g, auto06C78789_p)) ) {
+        lv_player = PlayerGroupPlayer(auto06C78789_g, auto06C78789_p);
+        lv_heroUnit = libGame_gv_players[lv_player].lv_heroUnit;
+        if ((UnitIsAlive(lv_heroUnit) == true) && (libAIAI_gf_HeroAIIsAIEnabledForPlayer(lv_player) == false) && (libSond_gv_heroVO_HeroGoHealCalls[lv_player] <= 2) && (libGame_gv_encouragement_DeathTipData[lv_player].lv_inCombat == false) && (UnitHasBehavior2(lv_heroUnit, "HealingFountainCooldown") == false) && (UnitHasBehavior2(lv_heroUnit, "HomeShieldProtection") == false) && (TimerGetElapsed(libGame_gv_gameTimer) > (libSond_gv_heroVOHeroGoHealLastT[lv_player] + libSond_gv_heroVO_HeroGoHealCooldownTime_C)) && (((UnitGetPropertyFixed(lv_heroUnit, c_unitPropLife, c_unitPropCurrent) + UnitGetPropertyFixed(lv_heroUnit, c_unitPropLifeExpected, c_unitPropCurrent)) / UnitGetPropertyFixed(lv_heroUnit, c_unitPropLifeMax, c_unitPropCurrent)) <= libSond_gv_heroVO_HeroGoHealHPPercentThreshold_C)) {
+            lv_nearbyAllyHeroes = UnitGroupAlliance(lv_player, c_unitAllianceAllyExcludeSelf, RegionCircle(UnitGetPosition(lv_heroUnit), 15.0), UnitFilter((1 << c_targetFilterHeroic), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+            autoA90464AA_g = lv_nearbyAllyHeroes;
+            autoA90464AA_u = 1;
+            for ( ; autoA90464AA_u <= UnitGroupCount(autoA90464AA_g, c_unitCountAll) ; autoA90464AA_u += BoolToInt(lv_allyHero == UnitGroupUnit(autoA90464AA_g, autoA90464AA_u)) ) {
+                lv_allyHero = UnitGroupUnit(autoA90464AA_g, autoA90464AA_u);
+                libSond_gv_heroVO_HeroGoHealCalls[lv_player] += 1;
+                libSond_gv_heroVOHeroGoHealLastT[lv_player] = TimerGetElapsed(libGame_gv_gameTimer);
+                libSond_gf_HeroVOPlayHeroLine(libCore_ge_HeroVOEvents_AIHeal, UnitGetOwner(lv_allyHero), PlayerGroupSingle(lv_player));
+                return true;
+            }
+        }
+        else {
+        }
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSond_gt_HeroVOHeroGoHeal_Init () {
+    libSond_gt_HeroVOHeroGoHeal = TriggerCreate("libSond_gt_HeroVOHeroGoHeal_Func");
+    TriggerAddEventTimePeriodic(libSond_gt_HeroVOHeroGoHeal, 1.0, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: HeroVO Talent Chosen VO
+//--------------------------------------------------------------------------------------------------
+bool libSond_gt_HeroVOTalentChosenVO_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_triggeringPlayer;
+    string lv_soundID;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    if ((RandomInt(1, 100) <= libSond_gv_heroVO_TalentChoicePercentChance_C)) {
+        lv_triggeringPlayer = libGame_gf_HeroGainTalentPlayer();
+        libSond_gf_HeroVOPlayHeroLine(libCore_ge_HeroVOEvents_TalentChosen, lv_triggeringPlayer, libCore_gv_playerGroupFromPlayer[lv_triggeringPlayer]);
+    }
+    else {
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSond_gt_HeroVOTalentChosenVO_Init () {
+    libSond_gt_HeroVOTalentChosenVO = TriggerCreate("libSond_gt_HeroVOTalentChosenVO_Func");
+    libGame_gf_HeroGainTalent(libSond_gt_HeroVOTalentChosenVO);
+}
+
+void libSond_InitTriggers () {
+    libSond_gt_IncludeSound_Init();
+    libSond_gt_HeroVOHeroTakedownVOTimerExpires_Init();
+    libSond_gt_HeroVOHeroTeamKilledVOTimerExpires_Init();
+    libSond_gt_HeroVOHeroTownKilledVOTimerExpires_Init();
+    libSond_gt_HeroVOHeroIntroLinesTimerExpires_Init();
+    libSond_gt_HeroVOHeroGoHeal_Init();
+    libSond_gt_HeroVOTalentChosenVO_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libSond_InitLib_completed = false;
+
+void libSond_InitLib () {
+    if (libSond_InitLib_completed) {
+        return;
+    }
+
+    libSond_InitLib_completed = true;
+
+    libSond_InitLibraries();
+    libSond_InitVariables();
+    libSond_InitTriggers();
+}
+
+include "TriggerLibs/HeroesLib"
+include "TriggerLibs/GameLib"
+include "TriggerLibs/AILib"
+

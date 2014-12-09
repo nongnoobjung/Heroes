@@ -1,0 +1,2933 @@
+include "TriggerLibs/NativeLib"
+include "TriggerLibs/HeroesLib_h"
+include "TriggerLibs/GameLib_h"
+include "TriggerLibs/MapMechanicsLib_h"
+include "TriggerLibs/UILib_h"
+
+include "TriggerLibs/StartingExperienceLib_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Starting Experience
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libStEx_InitLibraries () {
+    libNtve_InitVariables();
+    libCore_InitVariables();
+    libGame_InitVariables();
+    libMapM_InitVariables();
+    libUIUI_InitVariables();
+}
+
+// Variable Initialization
+bool libStEx_InitVariables_completed = false;
+
+void libStEx_InitVariables () {
+    int init_i;
+
+    if (libStEx_InitVariables_completed) {
+        return;
+    }
+
+    libStEx_InitVariables_completed = true;
+
+    for (init_i = 0; init_i <= 10; init_i += 1) {
+        libStEx_gv_sE_AbilityHighlightFlash[init_i] = c_invalidDialogControlId;
+    }
+    libStEx_gv_sE_HintMsgDialog = c_invalidDialogId;
+    libStEx_gv_sE_HintMsgLabel = c_invalidDialogControlId;
+    libStEx_gv_tutorialCinematicRestoreSelection = true;
+    libStEx_gv_sEUnitGroupRemovedRing = UnitGroupEmpty();
+    libStEx_gv_sEMMIntroPlayersWatching = PlayerGroupEmpty();
+    libStEx_gv_sE_MoveMouseButton = libStEx_ge_MouseButton_RightButton;
+    libStEx_gv_sE_FrozenUnits = UnitGroupEmpty();
+    libStEx_gv_sE_TrainingModeTalentPanelFlashingImage = c_invalidDialogControlId;
+    libStEx_gv_sE_TrainingModeReferenceCardReady = true;
+    for (init_i = 0; init_i <= 30; init_i += 1) {
+        libStEx_gv_sE_TrainingModeTips[init_i].lv_iD = libStEx_ge_SE_TrainingModeTips_None;
+        libStEx_gv_sE_TrainingModeTips[init_i].lv_vO = "TutorialVO|Line00568";
+    }
+    libStEx_gv_sE_TrainingModeTipDialog = c_invalidDialogId;
+}
+
+// Presets
+string libStEx_ge_SE_TrainingModeTips_Ident (int lp_val) {
+         if (lp_val == libStEx_ge_SE_TrainingModeTips_None) { return "None"; }
+    else if (lp_val == libStEx_ge_SE_TrainingModeTips_WatchTower) { return "WatchTower"; }
+    else if (lp_val == libStEx_ge_SE_TrainingModeTips_MercCamps) { return "MercCamps"; }
+    else if (lp_val == libStEx_ge_SE_TrainingModeTips_HealingFountain) { return "HealingFountain"; }
+    else if (lp_val == libStEx_ge_SE_TrainingModeTips_Experience) { return "Experience"; }
+    else if (lp_val == libStEx_ge_SE_TrainingModeTips_Gates) { return "Gates"; }
+    else if (lp_val == libStEx_ge_SE_TrainingModeTips_Ammo1) { return "Ammo1"; }
+    else if (lp_val == libStEx_ge_SE_TrainingModeTips_Ammo2) { return "Ammo2"; }
+    else if (lp_val == libStEx_ge_SE_TrainingModeTips_Bushes) { return "Bushes"; }
+    else if (lp_val == libStEx_ge_SE_TrainingModeTips_Hearthstone) { return "Hearthstone"; }
+    else if (lp_val == libStEx_ge_SE_TrainingModeTips_HearthstoneUsed) { return "HearthstoneUsed"; }
+    else if (lp_val == libStEx_ge_SE_TrainingModeTips_Mount) { return "Mount"; }
+    else if (lp_val == libStEx_ge_SE_TrainingModeTips_Mana) { return "Mana"; }
+    else if (lp_val == libStEx_ge_SE_TrainingModeTips_Abilities) { return "Abilities"; }
+    else if (lp_val == libStEx_ge_SE_TrainingModeTips_Death1) { return "Death1"; }
+    else if (lp_val == libStEx_ge_SE_TrainingModeTips_Death2) { return "Death2"; }
+    else if (lp_val == libStEx_ge_SE_TrainingModeTips_Spacebar) { return "Spacebar"; }
+    else if (lp_val == libStEx_ge_SE_TrainingModeTips_Talents) { return "Talents"; }
+    else if (lp_val == libStEx_ge_SE_TrainingModeTips_CoreShield) { return "CoreShield"; }
+    else if (lp_val == libStEx_ge_SE_TrainingModeTips_Forts) { return "Forts"; }
+    else if (lp_val == libStEx_ge_SE_TrainingModeTips_NewUserTip_Last) { return "NewUserTip_Last"; }
+    return null;
+}
+
+// Functions
+void libStEx_gf_HighlightCommandButton (bool lp_highlightUnhighlight, int lp_button) {
+    int autoFA2999E1_val;
+
+    // Implementation
+    if ((libStEx_gv_sE_AbilityHighlightFlash[(lp_button)] == c_invalidDialogControlId)) {
+        autoFA2999E1_val = lp_button;
+        if (autoFA2999E1_val == libStEx_ge_TutorialCommandButton_Ability1) {
+            DialogControlHookupStandard(c_triggerControlTypePanel, "UIContainer/ConsoleUIContainer/CommandPanel/TutorialArrow00");
+            libStEx_gv_sE_AbilityHighlightFlash[(lp_button)] = DialogControlLastCreated();
+        }
+        else if (autoFA2999E1_val == libStEx_ge_TutorialCommandButton_Ability2) {
+            DialogControlHookupStandard(c_triggerControlTypePanel, "UIContainer/ConsoleUIContainer/CommandPanel/TutorialArrow01");
+            libStEx_gv_sE_AbilityHighlightFlash[(lp_button)] = DialogControlLastCreated();
+        }
+        else if (autoFA2999E1_val == libStEx_ge_TutorialCommandButton_Ability3) {
+            DialogControlHookupStandard(c_triggerControlTypePanel, "UIContainer/ConsoleUIContainer/CommandPanel/TutorialArrow04");
+            libStEx_gv_sE_AbilityHighlightFlash[(lp_button)] = DialogControlLastCreated();
+        }
+        else if (autoFA2999E1_val == libStEx_ge_TutorialCommandButton_Heroic) {
+            DialogControlHookupStandard(c_triggerControlTypePanel, "UIContainer/ConsoleUIContainer/CommandPanel/TutorialArrow05");
+            libStEx_gv_sE_AbilityHighlightFlash[(lp_button)] = DialogControlLastCreated();
+        }
+        else if (autoFA2999E1_val == libStEx_ge_TutorialCommandButton_Hearth) {
+            DialogControlHookupStandard(c_triggerControlTypePanel, "UIContainer/ConsoleUIContainer/CommandPanel/TutorialArrow02");
+            libStEx_gv_sE_AbilityHighlightFlash[(lp_button)] = DialogControlLastCreated();
+        }
+        else if (autoFA2999E1_val == libStEx_ge_TutorialCommandButton_Mount) {
+            DialogControlHookupStandard(c_triggerControlTypePanel, "UIContainer/ConsoleUIContainer/CommandPanel/TutorialArrow03");
+            libStEx_gv_sE_AbilityHighlightFlash[(lp_button)] = DialogControlLastCreated();
+        }
+        else {
+        }
+    }
+    else {
+    }
+    if ((lp_highlightUnhighlight == true)) {
+        DialogControlSetVisible(libStEx_gv_sE_AbilityHighlightFlash[(lp_button)], PlayerGroupAll(), true);
+    }
+    else {
+        DialogControlSetVisible(libStEx_gv_sE_AbilityHighlightFlash[(lp_button)], PlayerGroupAll(), false);
+    }
+}
+
+int libStEx_gf_HeroCount () {
+    // Implementation
+    return CatalogFieldValueCount(c_gameCatalogConfig, "HeroList", "HeroArray", 1);
+}
+
+string libStEx_gf_HeroFromIndex (int lp_index) {
+    // Variable Declarations
+    string lv_value;
+
+    // Variable Initialization
+    lv_value = "";
+
+    // Implementation
+    lv_value = CatalogFieldValueGet(c_gameCatalogConfig, "HeroList", "HeroArray[" + IntToString((lp_index - 1)) + "]", 1);
+    return (lv_value);
+}
+
+int libStEx_gf_HeroIndex (string lp_hero) {
+    int autoE65E0063_ae;
+    int autoE65E0063_ai;
+
+    // Variable Declarations
+    int lv_index;
+
+    // Variable Initialization
+
+    // Implementation
+    autoE65E0063_ae = libStEx_gf_HeroCount();
+    autoE65E0063_ai = 1;
+    lv_index = 1;
+    for ( ; ( (autoE65E0063_ai >= 0 && lv_index <= autoE65E0063_ae) || (autoE65E0063_ai <= 0 && lv_index >= autoE65E0063_ae) ) ; lv_index += autoE65E0063_ai ) {
+        if ((libStEx_gf_HeroFromIndex(lv_index) == lp_hero)) {
+            return lv_index;
+        }
+        else {
+        }
+    }
+    return 0;
+}
+
+void libStEx_gf_SpawnHeroAtPoint (int lp_player, string lp_hero, point lp_spawnPoint) {
+    // Implementation
+    libGame_gf_SpawnHero(lp_player, libStEx_gf_HeroIndex(lp_hero), lp_spawnPoint);
+}
+
+void libStEx_gf_DisplayHintMessage (text lp_msg, bool lp_writeOut, fixed lp_duration) {
+    // Implementation
+    if ((libStEx_gv_sE_HintMsgDialog == c_invalidDialogId)) {
+        DialogCreate(1000, 200, c_anchorTop, 0, 175, false);
+        libStEx_gv_sE_HintMsgDialog = DialogLastCreated();
+        DialogSetImageVisible(DialogLastCreated(), false);
+        DialogSetVisible(DialogLastCreated(), PlayerGroupAll(), true);
+    }
+    else {
+    }
+    if ((libStEx_gv_sE_HintMsgLabel != c_invalidDialogControlId)) {
+        DialogControlDestroy(libStEx_gv_sE_HintMsgLabel);
+    }
+    else {
+    }
+    SoundPlay(SoundLink("UI_CampaignHintNotify", -1), PlayerGroupAll(), 100.0, 0.0);
+    TextExpressionSetToken("Param/Expression/lib_StEx_DA15D6DD", "A", lp_msg);
+    libNtve_gf_CreateDialogItemLabel(libStEx_gv_sE_HintMsgDialog, 200, 50, c_anchorCenter, 0, 0, TextExpressionAssemble("Param/Expression/lib_StEx_DA15D6DD"), ColorWithAlpha(0,0,0,0), lp_writeOut, lp_duration);
+    libStEx_gv_sE_HintMsgLabel = DialogControlLastCreated();
+    DialogControlSetFullDialog(DialogControlLastCreated(), PlayerGroupAll(), true);
+    libNtve_gf_SetDialogItemStyle(DialogControlLastCreated(), "TutorialHintMessage", PlayerGroupAll());
+}
+
+void libStEx_gf_ClearHintMessage () {
+    // Implementation
+    if ((libStEx_gv_sE_HintMsgLabel != c_invalidDialogControlId)) {
+        DialogControlFadeTransparency(libStEx_gv_sE_HintMsgLabel, PlayerGroupAll(), 2.0, 100.0);
+    }
+    else {
+    }
+}
+
+bool libStEx_gf_PlayerIsInCombat () {
+    // Variable Declarations
+    fixed lv_combatTime;
+
+    // Variable Initialization
+
+    // Implementation
+    if ((libNtve_gf_PlayerInCinematicMode(1) == true)) {
+        return false;
+    }
+    else {
+    }
+    lv_combatTime = MaxF(PlayerGetPropertyFixed(1, c_playerPropDamageDealtTime), PlayerGetPropertyFixed(1, c_playerPropDamageTakenTime));
+    lv_combatTime = (TimerGetElapsed(libGame_gv_gobalTimer) - lv_combatTime);
+    return (lv_combatTime < 4.0);
+}
+
+bool libStEx_gf_PlayerIsBeingAttack () {
+    // Variable Declarations
+    fixed lv_combatTime;
+
+    // Variable Initialization
+
+    // Implementation
+    if ((libNtve_gf_PlayerInCinematicMode(1) == true)) {
+        return false;
+    }
+    else {
+    }
+    lv_combatTime = PlayerGetPropertyFixed(1, c_playerPropDamageTakenTime);
+    lv_combatTime = (TimerGetElapsed(libGame_gv_gobalTimer) - lv_combatTime);
+    return (lv_combatTime < 4.0);
+}
+
+bool libStEx_gf_TutorialCameraLocked () {
+    // Implementation
+    return libStEx_gv_sETutorialCameraLocked;
+}
+
+void libStEx_gf_DisplayCameraLockNotificationText (bool lp_lockUnlock, int lp_player) {
+    // Variable Declarations
+    text lv_label;
+
+    // Variable Initialization
+
+    // Implementation
+    if ((lp_lockUnlock == true)) {
+        lv_label = StringExternal("Param/Value/lib_StEx_AFF24376");
+        SoundPlayForPlayer(SoundLink("UI_Game_Camera_Locked", -1), c_maxPlayers, libCore_gv_playerGroupFromPlayer[lp_player], 100.0, 0.0);
+    }
+    else {
+        lv_label = StringExternal("Param/Value/lib_StEx_4C9338EF");
+        SoundPlayForPlayer(SoundLink("UI_Game_Camera_Unlocked", -1), c_maxPlayers, libCore_gv_playerGroupFromPlayer[lp_player], 100.0, 0.0);
+    }
+    DialogControlHookupStandard(c_triggerControlTypeLabel, "UIContainer/ConsoleUIContainer/CameraLockChanges");
+    libNtve_gf_SetDialogItemText(DialogControlLastCreated(), lv_label, libCore_gv_playerGroupFromPlayer[lp_player]);
+    DialogControlFadeTransparency(DialogControlLastCreated(), libCore_gv_playerGroupFromPlayer[lp_player], 0.0, 0.0);
+    DialogControlSetEnabled(DialogControlLastCreated(), libCore_gv_playerGroupFromPlayer[lp_player], false);
+    DialogControlSetEnabled(DialogControlLastCreated(), libCore_gv_playerGroupFromPlayer[lp_player], true);
+}
+
+void libStEx_gf_LockUnlockTutorialCamera (bool lp_lockUnlock) {
+    // Implementation
+    if ((lp_lockUnlock == false)) {
+        libStEx_gv_sETutorialCameraLocked = false;
+        PlayerOptionOverride(1, "camerafollow", "0");
+    }
+    else {
+        libStEx_gv_sETutorialCameraLocked = true;
+        PlayerOptionOverride(1, "camerafollow", "1");
+    }
+}
+
+void libStEx_gf_RestoreTutorialCameraLockSetting () {
+    // Implementation
+    if ((libStEx_gv_sETutorialCameraLocked == true)) {
+        PlayerOptionOverride(1, "camerafollow", "1");
+    }
+    else {
+        PlayerOptionOverride(1, "camerafollow", "0");
+    }
+}
+
+void libStEx_gf_TurnCinematicCameraOnOff (int lp_player, bool lp_onOff) {
+    int auto756E83E4_val;
+
+    // Implementation
+    if ((libStEx_gv_simpleCinematic_CameraLocked2[lp_player] == lp_onOff)) {
+        return ;
+    }
+    else {
+    }
+    libStEx_gv_simpleCinematic_CameraLocked2[lp_player] = lp_onOff;
+    if ((lp_onOff == true)) {
+        PlayerOptionOverride(lp_player, "camerafollow", "0");
+        CameraLockInput(lp_player, true);
+    }
+    else {
+        auto756E83E4_val = libCore_gv_sYSGameMode;
+        if (auto756E83E4_val == libCore_ge_GameModes_Tutorial1) {
+            if ((libStEx_gv_sETutorialCameraLocked == true)) {
+                libStEx_gf_LockUnlockTutorialCamera(true);
+            }
+            else {
+                libStEx_gf_LockUnlockTutorialCamera(false);
+            }
+        }
+        else if (auto756E83E4_val == libCore_ge_GameModes_Tutorial2) {
+            PlayerOptionOverride(lp_player, "camerafollow", null);
+        }
+        else {
+            PlayerOptionOverride(lp_player, "camerafollow", null);
+        }
+        CameraLockInput(lp_player, false);
+    }
+}
+
+void libStEx_gf_CinematicModeTutorial (bool lp_onOff, playergroup lp_players, fixed lp_duration) {
+    playergroup autoDD6E9A98_g;
+    int autoDD6E9A98_p;
+    playergroup auto7CFBEC26_g;
+    int auto7CFBEC26_p;
+    playergroup auto0202F0E6_g;
+    int auto0202F0E6_p;
+    unitgroup autoF771BC5C_g;
+    int autoF771BC5C_u;
+    unitgroup autoB61E6A86_g;
+    int autoB61E6A86_u;
+    playergroup auto6C8C05E5_g;
+    int auto6C8C05E5_p;
+    playergroup auto797452B9_g;
+    int auto797452B9_p;
+
+    // Variable Declarations
+    playergroup lv_validPlayers;
+    int lv_itPlayer;
+    unit lv_itUnit;
+    int lv_deathStunFrame;
+
+    // Variable Initialization
+    lv_validPlayers = PlayerGroupEmpty();
+    lv_deathStunFrame = c_invalidDialogControlId;
+
+    // Implementation
+    lv_validPlayers = PlayerGroupCopy(lp_players);
+    if ((lp_onOff == true)) {
+        auto7CFBEC26_g = lv_validPlayers; 
+        auto7CFBEC26_p = 1;
+        for ( ; auto7CFBEC26_p <= PlayerGroupCount(auto7CFBEC26_g) ; auto7CFBEC26_p += BoolToInt(lv_itPlayer == PlayerGroupPlayer(auto7CFBEC26_g, auto7CFBEC26_p)) ) {
+            lv_itPlayer = PlayerGroupPlayer(auto7CFBEC26_g, auto7CFBEC26_p);
+            if ((libNtve_gf_PlayerInCinematicMode(lv_itPlayer) == true)) {
+                PlayerGroupRemove(lv_validPlayers, lv_itPlayer);
+            }
+            else {
+            }
+        }
+        if ((PlayerGroupCount(lv_validPlayers) == 0)) {
+            return ;
+        }
+        else {
+        }
+    }
+    else {
+        autoDD6E9A98_g = lv_validPlayers; 
+        autoDD6E9A98_p = 1;
+        for ( ; autoDD6E9A98_p <= PlayerGroupCount(autoDD6E9A98_g) ; autoDD6E9A98_p += BoolToInt(lv_itPlayer == PlayerGroupPlayer(autoDD6E9A98_g, autoDD6E9A98_p)) ) {
+            lv_itPlayer = PlayerGroupPlayer(autoDD6E9A98_g, autoDD6E9A98_p);
+            if ((libNtve_gf_PlayerInCinematicMode(lv_itPlayer) == false)) {
+                PlayerGroupRemove(lv_validPlayers, lv_itPlayer);
+            }
+            else {
+            }
+        }
+        if ((PlayerGroupCount(lv_validPlayers) == 0)) {
+            return ;
+        }
+        else {
+        }
+    }
+    libNtve_gf_CinematicMode(lp_onOff, lv_validPlayers, lp_duration);
+    if ((lp_onOff == true)) {
+        UISetFrameVisible(lv_validPlayers, c_syncFrameTypeTextTag, false);
+        UnitGroupClear(libStEx_gv_sEUnitGroupRemovedRing);
+        autoB61E6A86_g = UnitGroup(null, c_playerAny, RegionEntireMap(), UnitFilter((1 << c_targetFilterHeroic), 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32))), 0);
+        autoB61E6A86_u = 1;
+        for ( ; autoB61E6A86_u <= UnitGroupCount(autoB61E6A86_g, c_unitCountAll) ; autoB61E6A86_u += BoolToInt(lv_itUnit == UnitGroupUnit(autoB61E6A86_g, autoB61E6A86_u)) ) {
+            lv_itUnit = UnitGroupUnit(autoB61E6A86_g, autoB61E6A86_u);
+            if ((UnitHasBehavior2(lv_itUnit, "VideoDebug") == false)) {
+                UnitGroupAdd(libStEx_gv_sEUnitGroupRemovedRing, lv_itUnit);
+                UnitBehaviorAddPlayer(lv_itUnit, "VideoDebug", UnitGetOwner(lv_itUnit), 1);
+            }
+            else {
+            }
+        }
+        auto6C8C05E5_g = lv_validPlayers; 
+        auto6C8C05E5_p = 1;
+        for ( ; auto6C8C05E5_p <= PlayerGroupCount(auto6C8C05E5_g) ; auto6C8C05E5_p += BoolToInt(lv_itPlayer == PlayerGroupPlayer(auto6C8C05E5_g, auto6C8C05E5_p)) ) {
+            lv_itPlayer = PlayerGroupPlayer(auto6C8C05E5_g, auto6C8C05E5_p);
+            if ((lv_itPlayer <= libCore_gv_bALMaxPlayers) && (libGame_gv_players[lv_itPlayer].lv_heroUnit != null)) {
+                PlayerCreateEffectUnit(lv_itPlayer, "GodRayDestroyPersistent", libGame_gv_players[lv_itPlayer].lv_heroUnit);
+            }
+            else {
+            }
+        }
+        auto797452B9_g = lv_validPlayers; 
+        auto797452B9_p = 1;
+        for ( ; auto797452B9_p <= PlayerGroupCount(auto797452B9_g) ; auto797452B9_p += BoolToInt(lv_itPlayer == PlayerGroupPlayer(auto797452B9_g, auto797452B9_p)) ) {
+            lv_itPlayer = PlayerGroupPlayer(auto797452B9_g, auto797452B9_p);
+            libNtve_gf_StoreUnitSelection(lv_itPlayer, libNtve_ge_UnitSelectionStoreOption_ClearUnitSelection);
+        }
+        if (((libCore_gv_sYSGameMode == libCore_ge_GameModes_Tutorial1) || (libCore_gv_sYSGameMode == libCore_ge_GameModes_Tutorial2))) {
+            DialogControlHookupStandard(c_triggerControlTypePanel, "UIContainer/FullscreenUpperContainer/ChatBar");
+            DialogControlSetPosition(DialogControlLastCreated(), PlayerGroupAll(), c_anchorBottom, 0, 10);
+        }
+        else {
+        }
+    }
+    else {
+        if ((libStEx_gv_tutorialCinematicRestoreSelection == true)) {
+            auto0202F0E6_g = lv_validPlayers; 
+            auto0202F0E6_p = 1;
+            for ( ; auto0202F0E6_p <= PlayerGroupCount(auto0202F0E6_g) ; auto0202F0E6_p += BoolToInt(lv_itPlayer == PlayerGroupPlayer(auto0202F0E6_g, auto0202F0E6_p)) ) {
+                lv_itPlayer = PlayerGroupPlayer(auto0202F0E6_g, auto0202F0E6_p);
+                libNtve_gf_RestoreUnitSelection(lv_itPlayer);
+            }
+        }
+        else {
+        }
+        autoF771BC5C_g = libStEx_gv_sEUnitGroupRemovedRing;
+        autoF771BC5C_u = 1;
+        for ( ; autoF771BC5C_u <= UnitGroupCount(autoF771BC5C_g, c_unitCountAll) ; autoF771BC5C_u += BoolToInt(lv_itUnit == UnitGroupUnit(autoF771BC5C_g, autoF771BC5C_u)) ) {
+            lv_itUnit = UnitGroupUnit(autoF771BC5C_g, autoF771BC5C_u);
+            UnitBehaviorRemovePlayer(lv_itUnit, "VideoDebug", UnitGetOwner(lv_itUnit), 1);
+        }
+        UnitGroupClear(libStEx_gv_sEUnitGroupRemovedRing);
+        UISetFrameVisible(lv_validPlayers, c_syncFrameTypeTextTag, true);
+        if ((libCore_gv_sYSGameMode == libCore_ge_GameModes_Tutorial1)) {
+            UISetHotkeyAllowed(PlayerGroupAll(), c_hotkeyCameraFollow, false);
+        }
+        else {
+        }
+        if (((libCore_gv_sYSGameMode == libCore_ge_GameModes_Tutorial1) || (libCore_gv_sYSGameMode == libCore_ge_GameModes_Tutorial2))) {
+            DialogControlHookupStandard(c_triggerControlTypePanel, "UIContainer/ConsoleUIContainer/HeroDeathStunFrame");
+            lv_deathStunFrame = DialogControlLastCreated();
+            DialogControlHookupStandard(c_triggerControlTypePanel, "UIContainer/FullscreenUpperContainer/ChatBar");
+            DialogControlSetPositionRelative(DialogControlLastCreated(), PlayerGroupAll(), c_anchorBottom, lv_deathStunFrame, c_anchorTop, 0, 0);
+        }
+        else {
+        }
+    }
+}
+
+void libStEx_gf_SemiCinematicModeTutorial (bool lp_onOff, fixed lp_period) {
+    // Implementation
+    if ((lp_onOff == true)) {
+        libStEx_gf_TurnCinematicCameraOnOff(1, true);
+        libStEx_gf_FreezeUnfreezeAllUnits(libStEx_ge_FreezeOptions_Freeze);
+        UISetCursorVisible(PlayerGroupAll(), false);
+        DialogControlHookupStandard(c_triggerControlTypePanel, "UIContainer/ConsolePanel/GameHudBackFill");
+        DialogControlFadeTransparency(DialogControlLastCreated(), PlayerGroupAll(), lp_period, 100.0);
+        DialogControlHookupStandard(c_triggerControlTypePanel, "UIContainer/ConsoleUIContainer/CommandPanel");
+        DialogControlFadeTransparency(DialogControlLastCreated(), PlayerGroupAll(), lp_period, 100.0);
+    }
+    else {
+        libStEx_gf_TurnCinematicCameraOnOff(1, false);
+        libStEx_gf_FreezeUnfreezeAllUnits(libStEx_ge_FreezeOptions_Unfrezze);
+        UISetCursorVisible(PlayerGroupAll(), true);
+        DialogControlHookupStandard(c_triggerControlTypePanel, "UIContainer/ConsolePanel/GameHudBackFill");
+        DialogControlFadeTransparency(DialogControlLastCreated(), PlayerGroupAll(), lp_period, 0.0);
+        DialogControlHookupStandard(c_triggerControlTypePanel, "UIContainer/ConsoleUIContainer/CommandPanel");
+        DialogControlFadeTransparency(DialogControlLastCreated(), PlayerGroupAll(), lp_period, 0.0);
+    }
+}
+
+void libStEx_gf_GlobalCinematicSettingTutorial (bool lp_onOff) {
+    // Implementation
+    libNtve_gf_GlobalCinematicSetting(lp_onOff);
+    if ((lp_onOff == false)) {
+        GameSetSpeedLocked(true);
+    }
+    else {
+    }
+}
+
+text libStEx_gf_CameraLockHotkeyText () {
+    // Implementation
+    if ((libCore_gv_sYSGameMode == libCore_ge_GameModes_Tutorial1)) {
+        return StringExternal("Param/Value/lib_StEx_CD8C6CA4");
+    }
+    else {
+        TextExpressionSetToken("Param/Expression/lib_StEx_FD910C68", "A", StringExternal("Param/Value/lib_StEx_E5D4F3E4"));
+        return TextExpressionAssemble("Param/Expression/lib_StEx_FD910C68");
+    }
+}
+
+trigger auto_libStEx_gf_CinematicFade_Trigger = null;
+bool auto_libStEx_gf_CinematicFade_lp_fadeIn;
+fixed auto_libStEx_gf_CinematicFade_lp_duration;
+color auto_libStEx_gf_CinematicFade_lp_color;
+int auto_libStEx_gf_CinematicFade_lp_player;
+
+void libStEx_gf_CinematicFade (bool lp_fadeIn, fixed lp_duration, color lp_color, int lp_player) {
+    auto_libStEx_gf_CinematicFade_lp_fadeIn = lp_fadeIn;
+    auto_libStEx_gf_CinematicFade_lp_duration = lp_duration;
+    auto_libStEx_gf_CinematicFade_lp_color = lp_color;
+    auto_libStEx_gf_CinematicFade_lp_player = lp_player;
+
+    if (auto_libStEx_gf_CinematicFade_Trigger == null) {
+        auto_libStEx_gf_CinematicFade_Trigger = TriggerCreate("auto_libStEx_gf_CinematicFade_TriggerFunc");
+    }
+
+    TriggerExecute(auto_libStEx_gf_CinematicFade_Trigger, false, false);
+}
+
+bool auto_libStEx_gf_CinematicFade_TriggerFunc (bool testConds, bool runActions) {
+    bool lp_fadeIn = auto_libStEx_gf_CinematicFade_lp_fadeIn;
+    fixed lp_duration = auto_libStEx_gf_CinematicFade_lp_duration;
+    color lp_color = auto_libStEx_gf_CinematicFade_lp_color;
+    int lp_player = auto_libStEx_gf_CinematicFade_lp_player;
+
+    // Variable Declarations
+    int lv_control;
+
+    // Variable Initialization
+    lv_control = c_invalidDialogControlId;
+
+    // Implementation
+    DialogControlHookupStandard(c_triggerControlTypeImage, "FadeImagePlayer");
+    lv_control = DialogControlLastCreated();
+    DialogControlSetVisible(DialogControlLastCreated(), libCore_gv_playerGroupFromPlayer[lp_player], true);
+    libNtve_gf_SetDialogItemColor(DialogControlLastCreated(), lp_color, libCore_gv_playerGroupFromPlayer[lp_player]);
+    if ((lp_fadeIn == true)) {
+        DialogControlFadeTransparency(DialogControlLastCreated(), libCore_gv_playerGroupFromPlayer[lp_player], 0.0, 0.0);
+        DialogControlFadeTransparency(DialogControlLastCreated(), libCore_gv_playerGroupFromPlayer[lp_player], lp_duration, 100.0);
+        Wait(lp_duration, c_timeGame);
+        DialogControlSetVisible(DialogControlLastCreated(), libCore_gv_playerGroupFromPlayer[lp_player], false);
+    }
+    else {
+        DialogControlFadeTransparency(DialogControlLastCreated(), libCore_gv_playerGroupFromPlayer[lp_player], 0.0, 100.0);
+        DialogControlFadeTransparency(DialogControlLastCreated(), libCore_gv_playerGroupFromPlayer[lp_player], lp_duration, 0.0);
+    }
+    return true;
+}
+
+playergroup libStEx_gf_MapMechanicIntroPlayers () {
+    // Implementation
+    return libStEx_gv_sEMMIntroPlayersWatching;
+}
+
+void libStEx_gf_SetMapMechanicTutorialCallback (trigger lp_callback) {
+    // Implementation
+    libStEx_gv_sEMMIntroCallback = lp_callback;
+}
+
+void libStEx_gf_SetMapMechanicTutorialCallbackPrepareCleanup (trigger lp_callbackPrepare, trigger lp_callbackCleanup) {
+    // Implementation
+    libStEx_gv_sEMMIntroCallbackPrepare = lp_callbackPrepare;
+    libStEx_gv_sEMMIntroCallbackCleanup = lp_callbackCleanup;
+}
+
+trigger auto_libStEx_gf_PlayMapMechanicTutorial_Trigger = null;
+int auto_libStEx_gf_PlayMapMechanicTutorial_lp_mapMechanic;
+
+void libStEx_gf_PlayMapMechanicTutorial (int lp_mapMechanic) {
+    auto_libStEx_gf_PlayMapMechanicTutorial_lp_mapMechanic = lp_mapMechanic;
+
+    if (auto_libStEx_gf_PlayMapMechanicTutorial_Trigger == null) {
+        auto_libStEx_gf_PlayMapMechanicTutorial_Trigger = TriggerCreate("auto_libStEx_gf_PlayMapMechanicTutorial_TriggerFunc");
+    }
+
+    TriggerExecute(auto_libStEx_gf_PlayMapMechanicTutorial_Trigger, false, false);
+}
+
+bool auto_libStEx_gf_PlayMapMechanicTutorial_TriggerFunc (bool testConds, bool runActions) {
+    int lp_mapMechanic = auto_libStEx_gf_PlayMapMechanicTutorial_lp_mapMechanic;
+
+    int auto9BA547CA_val;
+    int autoD146BB97_ae;
+    int autoD146BB97_ai;
+    playergroup auto90121117_g;
+    int auto90121117_p;
+    playergroup autoC85A5C0E_g;
+    int autoC85A5C0E_p;
+    playergroup auto0AC6F8C5_g;
+    int auto0AC6F8C5_p;
+    playergroup auto8B09191C_g;
+    int auto8B09191C_p;
+    int autoAB371E74_ae;
+    int autoAB371E74_ai;
+
+    // Variable Declarations
+    int lv_itPlayer;
+    string lv_cutScene;
+    int lv_heroModelPickedCount;
+    const int lv_heroModelPickedTotalCount_C = 4;
+    string lv_heroModel;
+    actor[lv_heroModelPickedTotalCount_C + 1] lv_heroActors;
+    playergroup lv_players;
+    playergroup lv_playersModelGood;
+    int lv_itIndex;
+    playergroup lv_playersFinished;
+
+    // Variable Initialization
+    lv_players = PlayerGroupEmpty();
+    lv_playersModelGood = PlayerGroupEmpty();
+    lv_playersFinished = PlayerGroupEmpty();
+
+    // Implementation
+    if ((libCore_gv_mAPMapStringID == "")) {
+        return true;
+    }
+    else {
+    }
+    auto9BA547CA_val = lp_mapMechanic;
+    if (auto9BA547CA_val == libMapM_ge_MapMechanicType_Cannonballs) {
+        lv_cutScene = "Cutscenes\\Tutorial_BlackheartsBay.StormCutscene";
+    }
+    else if (auto9BA547CA_val == libMapM_ge_MapMechanicType_GardensDragon) {
+        lv_cutScene = "Cutscenes\\Tutorial_Dragonshire.StormCutscene";
+    }
+    else if (auto9BA547CA_val == libMapM_ge_MapMechanicType_HauntedWoods) {
+        lv_cutScene = "Cutscenes\\Tutorial_GardenOfTerror.StormCutscene";
+    }
+    else {
+        return true;
+    }
+    libGame_gv_heroSpawnBlockGame = true;
+    PlayerGroupClear(libStEx_gv_sEMMIntroPlayersWatching);
+    autoD146BB97_ae = libCore_gv_bALMaxPlayers;
+    autoD146BB97_ai = 1;
+    lv_itPlayer = 1;
+    for ( ; ( (autoD146BB97_ai >= 0 && lv_itPlayer <= autoD146BB97_ae) || (autoD146BB97_ai <= 0 && lv_itPlayer >= autoD146BB97_ae) ) ; lv_itPlayer += autoD146BB97_ai ) {
+        if ((PlayerStatus(lv_itPlayer) != c_playerStatusUnused) && (PlayerType(lv_itPlayer) == c_playerTypeUser)) {
+            if (((libStEx_gf_InPracticeMode() == true) || (libGame_gv_players[lv_itPlayer].lv_bankData.lv_mapPlayCount <= libGame_gv_mapMechanicHelpNumberOfGamesToDisplay_C))) {
+                PlayerGroupAdd(libStEx_gv_sEMMIntroPlayersWatching, lv_itPlayer);
+            }
+            else {
+                libGame_gv_heroSpawnBlockGame = false;
+            }
+        }
+        else {
+        }
+    }
+    if ((PlayerGroupCount(libStEx_gv_sEMMIntroPlayersWatching) <= 0)) {
+        return true;
+    }
+    else {
+    }
+    auto90121117_g = libStEx_gv_sEMMIntroPlayersWatching; 
+    auto90121117_p = 1;
+    for ( ; auto90121117_p <= PlayerGroupCount(auto90121117_g) ; auto90121117_p += BoolToInt(lv_itPlayer == PlayerGroupPlayer(auto90121117_g, auto90121117_p)) ) {
+        lv_itPlayer = PlayerGroupPlayer(auto90121117_g, auto90121117_p);
+        libStEx_gf_CinematicFade(false, 0.0, Color(0.00, 0.00, 0.00), lv_itPlayer);
+        CutsceneFade(false, 0.0, Color(0,0,0), 0.0, libCore_gv_playerGroupFromPlayer[lv_itPlayer], true);
+    }
+    while (!((libGame_gv_heroPickDone == true))) {
+        Wait(0.0625, c_timeGame);
+    }
+    libNtve_gf_AddPlayerGroupToPlayerGroup(libGame_gf_PlayersOnTeamHeroes(libGame_gv_teamOrderIndex_C, false), lv_players);
+    libNtve_gf_AddPlayerGroupToPlayerGroup(libGame_gf_PlayersOnTeamHeroes(libGame_gv_teamChaosIndex_C, false), lv_players);
+    autoC85A5C0E_g = lv_players; 
+    autoC85A5C0E_p = 1;
+    for ( ; autoC85A5C0E_p <= PlayerGroupCount(autoC85A5C0E_g) ; autoC85A5C0E_p += BoolToInt(lv_itPlayer == PlayerGroupPlayer(autoC85A5C0E_g, autoC85A5C0E_p)) ) {
+        lv_itPlayer = PlayerGroupPlayer(autoC85A5C0E_g, autoC85A5C0E_p);
+        if ((libGame_gv_players[lv_itPlayer].lv_heroIndex > 0) && (libCore_gv_dataHeroesHeroData[libGame_gv_players[lv_itPlayer].lv_heroIndex].lv_heroCatalogLink != null) && (CatalogFieldValueGet(c_gameCatalogHero, libCore_gv_dataHeroesHeroData[libGame_gv_players[lv_itPlayer].lv_heroIndex].lv_heroCatalogLink, "Flags[" + IntToString(4) + "]", c_playerAny) != "1")) {
+            PlayerGroupAdd(lv_playersModelGood, lv_itPlayer);
+        }
+        else {
+        }
+    }
+    while (true) {
+        if (((lv_heroModelPickedCount >= lv_heroModelPickedTotalCount_C) || (PlayerGroupCount(lv_playersModelGood) == 0))) {
+            break;
+        }
+        else {
+        }
+        lv_itPlayer = PlayerGroupPlayer(lv_playersModelGood, RandomInt(1, PlayerGroupCount(lv_playersModelGood)));
+        PlayerGroupRemove(lv_playersModelGood, lv_itPlayer);
+        lv_heroModel = (CatalogFieldValueGet(c_gameCatalogHero, libCore_gv_dataHeroesHeroData[libGame_gv_players[lv_itPlayer].lv_heroIndex].lv_heroCatalogLink, "Model", c_playerAny));
+        if ((lv_heroModel != null)) {
+            lv_heroModelPickedCount += 1;
+            libNtve_gf_CreateModelAtPoint(lv_heroModel, RegionGetBoundsMax(RegionPlayableMap()));
+            lv_heroActors[lv_heroModelPickedCount] = libNtve_gf_ActorLastCreated();
+            ActorSend(libNtve_gf_ActorLastCreated(), "ExternalFinderAdd");
+            ActorSend(libNtve_gf_ActorLastCreated(), (("AliasAdd HeroModel_" + IntToString(lv_heroModelPickedCount))));
+        }
+        else {
+        }
+    }
+    if ((libStEx_gv_sEMMIntroCallback != null)) {
+        TriggerExecute(libStEx_gv_sEMMIntroCallback, true, false);
+    }
+    else {
+    }
+    if ((libStEx_gv_sEMMIntroCallbackPrepare != null)) {
+        TriggerExecute(libStEx_gv_sEMMIntroCallbackPrepare, true, false);
+    }
+    else {
+    }
+    auto0AC6F8C5_g = libStEx_gv_sEMMIntroPlayersWatching; 
+    auto0AC6F8C5_p = 1;
+    for ( ; auto0AC6F8C5_p <= PlayerGroupCount(auto0AC6F8C5_g) ; auto0AC6F8C5_p += BoolToInt(lv_itPlayer == PlayerGroupPlayer(auto0AC6F8C5_g, auto0AC6F8C5_p)) ) {
+        lv_itPlayer = PlayerGroupPlayer(auto0AC6F8C5_g, auto0AC6F8C5_p);
+        libMapM_gf_PlayMapMechanicIntroForPlayer(lv_itPlayer, lv_cutScene);
+    }
+    while (true) {
+        PlayerGroupClear(lv_playersFinished);
+        auto8B09191C_g = libStEx_gv_sEMMIntroPlayersWatching; 
+        auto8B09191C_p = 1;
+        for ( ; auto8B09191C_p <= PlayerGroupCount(auto8B09191C_g) ; auto8B09191C_p += BoolToInt(lv_itPlayer == PlayerGroupPlayer(auto8B09191C_g, auto8B09191C_p)) ) {
+            lv_itPlayer = PlayerGroupPlayer(auto8B09191C_g, auto8B09191C_p);
+            if ((libMapM_gf_MapMechanicIntroFinished(lv_itPlayer) == true)) {
+                PlayerGroupAdd(lv_playersFinished, lv_itPlayer);
+            }
+            else {
+            }
+        }
+        if ((PlayerGroupCount(lv_playersFinished) > 0)) {
+            libNtve_gf_RemovePlayerGroupFromPlayerGroup(lv_playersFinished, libStEx_gv_sEMMIntroPlayersWatching);
+            if ((libStEx_gv_sEMMIntroCallbackCleanup != null)) {
+                TriggerExecute(libStEx_gv_sEMMIntroCallbackCleanup, true, false);
+            }
+            else {
+            }
+        }
+        else {
+        }
+        if ((PlayerGroupCount(libStEx_gv_sEMMIntroPlayersWatching) == 0)) {
+            break;
+        }
+        else {
+        }
+        Wait(0.0625, c_timeGame);
+    }
+    autoAB371E74_ae = lv_heroModelPickedCount;
+    autoAB371E74_ai = 1;
+    lv_itIndex = 1;
+    for ( ; ( (autoAB371E74_ai >= 0 && lv_itIndex <= autoAB371E74_ae) || (autoAB371E74_ai <= 0 && lv_itIndex >= autoAB371E74_ae) ) ; lv_itIndex += autoAB371E74_ai ) {
+        ActorSend(lv_heroActors[lv_itIndex], "Destroy Immediate");
+    }
+    return true;
+}
+
+string libStEx_gf_HotkeyProfile_MouseButtonImage (int lp_mouseButton) {
+    int auto22816B09_val;
+
+    // Implementation
+    auto22816B09_val = lp_mouseButton;
+    if (auto22816B09_val == libStEx_ge_MouseButton_LeftButton) {
+        return "Assets\\Textures\\ui_tutorial_mouseleftbuttondown.dds";
+    }
+    else if (auto22816B09_val == libStEx_ge_MouseButton_RightButton) {
+        return "Assets\\Textures\\ui_tutorial_mouserightbuttondown.dds";
+    }
+    else {
+    }
+    return null;
+}
+
+text libStEx_gf_HotkeyProfile_MouseButtonImageStringTag (int lp_mouseButton, int lp_width, int lp_height) {
+    // Variable Declarations
+    text lv_value;
+    int lv_width_L;
+    int lv_height_L;
+
+    // Variable Initialization
+
+    // Implementation
+    lv_width_L = lp_width;
+    lv_height_L = lp_height;
+    if ((lv_width_L <= 0)) {
+        lv_width_L = libStEx_gv_sEC_MouseButtonWidth;
+    }
+    else {
+    }
+    if ((lv_height_L <= 0)) {
+        lv_height_L = libStEx_gv_sEC_MouseButtonHeight;
+    }
+    else {
+    }
+    TextExpressionSetToken("Param/Expression/lib_StEx_1B0DBA0D", "A", StringToText((libStEx_gf_HotkeyProfile_MouseButtonImage(lp_mouseButton))));
+    TextExpressionSetToken("Param/Expression/lib_StEx_1B0DBA0D", "B", IntToText(lv_width_L));
+    TextExpressionSetToken("Param/Expression/lib_StEx_1B0DBA0D", "C", IntToText(lv_height_L));
+    lv_value = TextExpressionAssemble("Param/Expression/lib_StEx_1B0DBA0D");
+    return lv_value;
+}
+
+text libStEx_gf_HotkeyProfile_MouseButtonText (int lp_mouseButton) {
+    int auto6D367A5D_val;
+
+    // Implementation
+    auto6D367A5D_val = lp_mouseButton;
+    if (auto6D367A5D_val == libStEx_ge_MouseButton_LeftButton) {
+        return StringExternal("Param/Value/lib_StEx_963CE12D");
+    }
+    else if (auto6D367A5D_val == libStEx_ge_MouseButton_RightButton) {
+        return StringExternal("Param/Value/lib_StEx_8F25EE33");
+    }
+    else {
+    }
+    return StringExternal("Param/Value/lib_StEx_70B526BF");
+}
+
+int libStEx_gf_HotkeyProfile_SmartCommandMouseButton (int lp_player) {
+    // Implementation
+    return libStEx_gv_sE_MoveMouseButton;
+}
+
+void libStEx_gf_HotkeyProfile_SetSmartCommandMouseButton (int lp_player, int lp_button) {
+    int autoDC44CD62_val;
+
+    // Variable Declarations
+    string lv_profile;
+
+    // Variable Initialization
+    lv_profile = "";
+
+    // Implementation
+    libStEx_gv_sE_MoveMouseButton = lp_button;
+    autoDC44CD62_val = lp_button;
+    if (autoDC44CD62_val == libStEx_ge_MouseButton_LeftButton) {
+        lv_profile = libStEx_gv_sEC_HotkeyProfile_LeftClick;
+    }
+    else if (autoDC44CD62_val == libStEx_ge_MouseButton_RightButton) {
+        lv_profile = libStEx_gv_sEC_HotkeyProfile_RightClick;
+    }
+    else {
+        lv_profile = libStEx_gv_sEC_HotkeyProfile_RightClick;
+    }
+    UISetHotkeyProfile(libCore_gv_playerGroupFromPlayer[lp_player], lv_profile);
+}
+
+void libStEx_gf_HotkeyProfile_LoadSmartCommandMouseButtonProfile (int lp_player) {
+    string auto000E9E93_val;
+
+    // Implementation
+    auto000E9E93_val = PlayerGetHotkeyProfile(lp_player);
+    if (auto000E9E93_val == libStEx_gv_sEC_HotkeyProfile_LeftClick) {
+        libStEx_gv_sE_MoveMouseButton = libStEx_ge_MouseButton_LeftButton;
+    }
+    else if (auto000E9E93_val == libStEx_gv_sEC_HotkeyProfile_RightClick) {
+        libStEx_gv_sE_MoveMouseButton = libStEx_ge_MouseButton_RightButton;
+    }
+    else {
+        libStEx_gv_sE_MoveMouseButton = libStEx_ge_MouseButton_RightButton;
+    }
+}
+
+void libStEx_gf_FreezeUnfreezeAllUnits (int lp_freezeOptions) {
+    unitgroup auto272E39FD_g;
+    int auto272E39FD_u;
+    int autoA8B89EDC_ae;
+    int autoA8B89EDC_ai;
+    unitgroup autoB6CD080F_g;
+    int autoB6CD080F_u;
+    int auto834CCB86_ae;
+    int auto834CCB86_ai;
+
+    // Variable Declarations
+    unit lv_indexUnit;
+    int lv_indexPlayer;
+
+    // Variable Initialization
+
+    // Implementation
+    if ((lp_freezeOptions == libStEx_ge_FreezeOptions_Freeze)) {
+        libStEx_gv_sE_FreezeUnitsGameTimerUnpaused = !(TimerIsPaused(libGame_gv_gameTimer));
+        TimerPause(libGame_gv_gameTimer, true);
+        UnitPauseAll(true);
+        libStEx_gv_sE_FrozenUnits = UnitGroup(null, c_playerAny, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+        autoB6CD080F_g = libStEx_gv_sE_FrozenUnits;
+        autoB6CD080F_u = 1;
+        for ( ; autoB6CD080F_u <= UnitGroupCount(autoB6CD080F_g, c_unitCountAll) ; autoB6CD080F_u += BoolToInt(lv_indexUnit == UnitGroupUnit(autoB6CD080F_g, autoB6CD080F_u)) ) {
+            lv_indexUnit = UnitGroupUnit(autoB6CD080F_g, autoB6CD080F_u);
+            libNtve_gf_SendActorMessageToUnit(lv_indexUnit, "AnimSetPausedAll");
+        }
+        auto834CCB86_ae = libCore_gv_bALMaxPlayers;
+        auto834CCB86_ai = 1;
+        lv_indexPlayer = 1;
+        for ( ; ( (auto834CCB86_ai >= 0 && lv_indexPlayer <= auto834CCB86_ae) || (auto834CCB86_ai <= 0 && lv_indexPlayer >= auto834CCB86_ae) ) ; lv_indexPlayer += auto834CCB86_ai ) {
+            if ((libGame_gv_players[lv_indexPlayer].lv_heroUnit != null)) {
+                libNtve_gf_SendActorMessageToUnit(libGame_gv_players[lv_indexPlayer].lv_heroUnit, "AnimSetPausedAll 0");
+            }
+            else {
+            }
+        }
+        libGame_gf_MinionPauseUnpauseMinionSystem(true);
+    }
+    else {
+        if ((libStEx_gv_sE_FreezeUnitsGameTimerUnpaused == true)) {
+            TimerPause(libGame_gv_gameTimer, false);
+        }
+        else {
+        }
+        UnitPauseAll(false);
+        auto272E39FD_g = libStEx_gv_sE_FrozenUnits;
+        auto272E39FD_u = 1;
+        for ( ; auto272E39FD_u <= UnitGroupCount(auto272E39FD_g, c_unitCountAll) ; auto272E39FD_u += BoolToInt(lv_indexUnit == UnitGroupUnit(auto272E39FD_g, auto272E39FD_u)) ) {
+            lv_indexUnit = UnitGroupUnit(auto272E39FD_g, auto272E39FD_u);
+            libNtve_gf_SendActorMessageToUnit(lv_indexUnit, "AnimSetPausedAll 0");
+        }
+        autoA8B89EDC_ae = libCore_gv_bALMaxPlayers;
+        autoA8B89EDC_ai = 1;
+        lv_indexPlayer = 1;
+        for ( ; ( (autoA8B89EDC_ai >= 0 && lv_indexPlayer <= autoA8B89EDC_ae) || (autoA8B89EDC_ai <= 0 && lv_indexPlayer >= autoA8B89EDC_ae) ) ; lv_indexPlayer += autoA8B89EDC_ai ) {
+            if ((libGame_gv_players[lv_indexPlayer].lv_heroUnit != null)) {
+                UnitXPGainEnable(libGame_gv_players[lv_indexPlayer].lv_heroUnit, null, true);
+            }
+            else {
+            }
+        }
+        libGame_gf_MinionPauseUnpauseMinionSystem(false);
+    }
+}
+
+void libStEx_gf_FreezeUnfreezeUnit (int lp_freezeOptions, unit lp_target) {
+    // Implementation
+    if ((lp_freezeOptions == libStEx_ge_FreezeOptions_Freeze)) {
+        UnitGroupAdd(libStEx_gv_sE_FrozenUnits, lp_target);
+        libNtve_gf_PauseUnit(lp_target, true);
+        libNtve_gf_SendActorMessageToUnit(lp_target, "AnimSetPausedAll");
+    }
+    else {
+        UnitGroupRemove(libStEx_gv_sE_FrozenUnits, lp_target);
+        libNtve_gf_PauseUnit(lp_target, false);
+        libNtve_gf_SendActorMessageToUnit(lp_target, "AnimSetPausedAll 0");
+    }
+}
+
+bool libStEx_gf_InTutorial03 () {
+    // Implementation
+    return (libCore_gv_sYSGameMode == libCore_ge_GameModes_Tutorial3);
+}
+
+void libStEx_gf_SetPracticeMode (bool lp_practice) {
+    // Implementation
+    libStEx_gv_sE_PracticeMode = lp_practice;
+}
+
+bool libStEx_gf_InPracticeMode () {
+    // Implementation
+    if ((libStEx_gv_sE_PracticeMode == true)) {
+        return true;
+    }
+    else {
+    }
+    return GameIsPractice();
+}
+
+void libStEx_gf_SE_ShowHideTalentPortraitFlashingImage (bool lp_showHide) {
+    // Implementation
+    if ((libStEx_gv_sE_TrainingModeTalentPanelFlashingImage == c_invalidDialogControlId)) {
+        DialogControlHookupStandard(c_triggerControlTypePanel, "UIContainer\\ConsolePanel\\TutorialPortraitHighlight");
+        libStEx_gv_sE_TrainingModeTalentPanelFlashingImage = DialogControlLastCreated();
+    }
+    else {
+    }
+    DialogControlSetVisible(libStEx_gv_sE_TrainingModeTalentPanelFlashingImage, PlayerGroupAll(), lp_showHide);
+}
+
+int libStEx_gf_SE_TrainingModeTipCount () {
+    // Implementation
+    return ((libStEx_ge_SE_TrainingModeTips_NewUserTip_Last) - 1);
+}
+
+void libStEx_gf_SE_TrainingModeTipSetDisplayed (int lp_tip) {
+    // Variable Declarations
+    string lv_bankKey;
+
+    // Variable Initialization
+    lv_bankKey = "";
+
+    // Implementation
+    libStEx_gv_sE_TrainingModeTips[(lp_tip)].lv_doneTimes += 1;
+    lv_bankKey = (libStEx_gv_sE_TrainingModeBankkey_Tip_C + IntToString((lp_tip)));
+    BankValueSetFromInt(libGame_gv_players[1].lv_bankData.lv_bank, libStEx_gv_sE_TrainingModeBankSection_C, lv_bankKey, libStEx_gv_sE_TrainingModeTips[(lp_tip)].lv_doneTimes);
+    BankSave(libGame_gv_players[1].lv_bankData.lv_bank);
+}
+
+bool libStEx_gf_SE_TrainingModeTipIsOld (int lp_tip) {
+    int autoAE3162CA_val;
+
+    // Implementation
+    autoAE3162CA_val = lp_tip;
+    if (autoAE3162CA_val == libStEx_ge_SE_TrainingModeTips_Talents) {
+        return (libStEx_gv_sE_TrainingModeTips[(lp_tip)].lv_doneTimes > 20);
+    }
+    else if (autoAE3162CA_val == libStEx_ge_SE_TrainingModeTips_Mana) {
+        return (libStEx_gv_sE_TrainingModeTips[(lp_tip)].lv_doneTimes > 3);
+    }
+    else if (autoAE3162CA_val == libStEx_ge_SE_TrainingModeTips_Mount) {
+        return (libStEx_gv_sE_TrainingModeTips[(lp_tip)].lv_doneTimes > 40);
+    }
+    else if (autoAE3162CA_val == libStEx_ge_SE_TrainingModeTips_Hearthstone) {
+        return (libStEx_gv_sE_TrainingModeTips[(lp_tip)].lv_doneTimes > 40);
+    }
+    else {
+    }
+    return (libStEx_gv_sE_TrainingModeTips[(lp_tip)].lv_doneTimes > 0);
+}
+
+trigger auto_libStEx_gf_SE_TrainingModeTipDisplay_Trigger = null;
+int auto_libStEx_gf_SE_TrainingModeTipDisplay_lp_tip;
+
+void libStEx_gf_SE_TrainingModeTipDisplay (int lp_tip) {
+    auto_libStEx_gf_SE_TrainingModeTipDisplay_lp_tip = lp_tip;
+
+    if (auto_libStEx_gf_SE_TrainingModeTipDisplay_Trigger == null) {
+        auto_libStEx_gf_SE_TrainingModeTipDisplay_Trigger = TriggerCreate("auto_libStEx_gf_SE_TrainingModeTipDisplay_TriggerFunc");
+    }
+
+    TriggerExecute(auto_libStEx_gf_SE_TrainingModeTipDisplay_Trigger, false, false);
+}
+
+bool auto_libStEx_gf_SE_TrainingModeTipDisplay_TriggerFunc (bool testConds, bool runActions) {
+    int lp_tip = auto_libStEx_gf_SE_TrainingModeTipDisplay_lp_tip;
+
+    // Implementation
+    if ((libStEx_gv_sE_TrainingModeTipDialog != c_invalidDialogId)) {
+        DialogDestroy(libStEx_gv_sE_TrainingModeTipDialog);
+        libStEx_gv_sE_TrainingModeTipDialog = c_invalidDialogId;
+    }
+    else {
+    }
+    libStEx_gv_sE_TrainingModeTipDisplaying = true;
+    SoundPlayForPlayer(SoundLink("UI_CampaignHintNotify", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
+    DialogCreate(1000, 100, c_anchorBottom, 0, 160, true);
+    libStEx_gv_sE_TrainingModeTipDialog = DialogLastCreated();
+    DialogSetImageVisible(DialogLastCreated(), false);
+    TextExpressionSetToken("Param/Expression/lib_StEx_9B5ACB60", "A", libStEx_gv_sE_TrainingModeTips[(lp_tip)].lv_description);
+    libNtve_gf_CreateDialogItemLabel(DialogLastCreated(), 200, 50, c_anchorCenter, 50, 50, TextExpressionAssemble("Param/Expression/lib_StEx_9B5ACB60"), ColorWithAlpha(0,0,0,0), false, 2.0);
+    DialogControlSetFullDialog(DialogControlLastCreated(), libCore_gv_playerGroupFromPlayer[1], true);
+    DialogSetVisible(DialogLastCreated(), libCore_gv_playerGroupFromPlayer[1], true);
+    libStEx_gf_SE_TrainingModeTipPlayTransmission(lp_tip);
+    Wait(libStEx_gv_sE_TrainingModeTipDuration_C, c_timeGame);
+    DialogControlFadeTransparency(DialogControlLastCreated(), libCore_gv_playerGroupFromPlayer[1], 2.0, 100.0);
+    Wait(2.0, c_timeGame);
+    DialogDestroy(DialogLastCreated());
+    libStEx_gv_sE_TrainingModeTipDialog = c_invalidDialogId;
+    Wait(5.0, c_timeGame);
+    libStEx_gv_sE_TrainingModeTipDisplaying = false;
+    return true;
+}
+
+trigger auto_libStEx_gf_SE_TrainingModeTipPlayTransmission_Trigger = null;
+int auto_libStEx_gf_SE_TrainingModeTipPlayTransmission_lp_tip;
+
+void libStEx_gf_SE_TrainingModeTipPlayTransmission (int lp_tip) {
+    auto_libStEx_gf_SE_TrainingModeTipPlayTransmission_lp_tip = lp_tip;
+
+    if (auto_libStEx_gf_SE_TrainingModeTipPlayTransmission_Trigger == null) {
+        auto_libStEx_gf_SE_TrainingModeTipPlayTransmission_Trigger = TriggerCreate("auto_libStEx_gf_SE_TrainingModeTipPlayTransmission_TriggerFunc");
+    }
+
+    TriggerExecute(auto_libStEx_gf_SE_TrainingModeTipPlayTransmission_Trigger, false, false);
+}
+
+bool auto_libStEx_gf_SE_TrainingModeTipPlayTransmission_TriggerFunc (bool testConds, bool runActions) {
+    int lp_tip = auto_libStEx_gf_SE_TrainingModeTipPlayTransmission_lp_tip;
+
+    // Implementation
+    Wait(1.0, c_timeGame);
+    TriggerQueueEnter();
+    libCore_gf_SetAllSoundChannelVolumesStandardTiming(libNtve_ge_VolumeChannelMode_Speech, PlayerGroupAll());
+    libCore_gf_SendTransmissionCampaign(null, libStEx_gv_sE_TrainingModeTips[(lp_tip)].lv_vO, c_transmissionDurationAdd, 0.0, true, libCore_ge_TransmissionPortraitOptioins_HidePortraitAfter, libCore_ge_TransmissionCueSoundOptions_DefaultCueSoundBehavior);
+    libCore_gf_SetAllSoundChannelVolumesStandardTiming(libNtve_ge_VolumeChannelMode_Game, PlayerGroupAll());
+    TriggerQueueExit();
+    return true;
+}
+
+void libStEx_gf_SE_TrainingModeTipBushesSendActorMessageToBushes (string lp_message, region lp_area) {
+    // Implementation
+    libCore_gf_SendActorMessageToDoodadsInRegion(lp_message, lp_area, "Storm_Doodad_KingsCrest_Docks_Curtain");
+    libCore_gf_SendActorMessageToDoodadsInRegion(lp_message, lp_area, "Storm_Doodad_KingsCrest_Curtain");
+    libCore_gf_SendActorMessageToDoodadsInRegion(lp_message, lp_area, "Storm_Doodad_KingsCrest_Docks_Curtain_Grass");
+    libCore_gf_SendActorMessageToDoodadsInRegion(lp_message, lp_area, "Storm_Doodad_CyberWorld_Curtain");
+    libCore_gf_SendActorMessageToDoodadsInRegion(lp_message, lp_area, "Storm_Doodad_KingsCrest_Docks_CurtainLarge");
+    libCore_gf_SendActorMessageToDoodadsInRegion(lp_message, lp_area, "Storm_Doodad_KingsCrest_CurtainLarge");
+    libCore_gf_SendActorMessageToDoodadsInRegion(lp_message, lp_area, "Storm_Doodad_KingsCrest_Docks_CurtainLarge_Grass");
+    libCore_gf_SendActorMessageToDoodadsInRegion(lp_message, lp_area, "Storm_Doodad_CyberWorld_CurtainLarge");
+    libCore_gf_SendActorMessageToDoodadsInRegion(lp_message, lp_area, "Storm_Doodad_KingsCrest_RavenCourt_CurtainLarge");
+    libCore_gf_SendActorMessageToDoodadsInRegion(lp_message, lp_area, "Storm_Doodad_KingsCrest_RavenCourt_Curtain");
+}
+
+bool libStEx_gf_TargetLocationIsGood (point lp_locationTarget, point lp_locationFrom) {
+    // Implementation
+    if (((PathingType(lp_locationTarget) == c_pathingUnpathable) || (PathingType(lp_locationTarget) != c_pathingGround))) {
+        return false;
+    }
+    else {
+    }
+    if ((lp_locationFrom != null) && ((PointPathingCliffLevel(lp_locationTarget) != PointPathingCliffLevel(lp_locationFrom)) || (CrossCliff(lp_locationFrom, lp_locationTarget) == true))) {
+        return false;
+    }
+    else {
+    }
+    return true;
+}
+
+void libStEx_gf_RestoreUnit (unit lp_unit) {
+    // Implementation
+    UnitClearCooldowns(lp_unit, false);
+    UnitSetPropertyFixed(lp_unit, c_unitPropLifePercent, 100.0);
+    UnitSetPropertyFixed(lp_unit, c_unitPropEnergyPercent, 100.0);
+    UnitSetPropertyFixed(lp_unit, c_unitPropShieldsPercent, 100.0);
+}
+
+void libStEx_gf_MoveUnit (unit lp_unit, point lp_targetLocation, bool lp_blend) {
+    // Implementation
+    UnitSetPosition(lp_unit, lp_targetLocation, lp_blend);
+    UnitSetFacing(lp_unit, PointGetFacing(lp_targetLocation), 0.0);
+    UnitIssueOrder(lp_unit, Order(AbilityCommand("stop", 0)), c_orderQueueReplace);
+}
+
+bool libStEx_gf_GameIsSinglePlayer () {
+    int autoC8AF2A66_ae;
+    int autoC8AF2A66_ai;
+
+    // Variable Declarations
+    int lv_itPlayer;
+    int lv_count;
+
+    // Variable Initialization
+
+    // Implementation
+    autoC8AF2A66_ae = libCore_gv_bALMaxPlayers;
+    autoC8AF2A66_ai = 1;
+    lv_itPlayer = 1;
+    for ( ; ( (autoC8AF2A66_ai >= 0 && lv_itPlayer <= autoC8AF2A66_ae) || (autoC8AF2A66_ai <= 0 && lv_itPlayer >= autoC8AF2A66_ae) ) ; lv_itPlayer += autoC8AF2A66_ai ) {
+        if ((PlayerStatus(lv_itPlayer) == c_playerStatusActive) && (PlayerType(lv_itPlayer) == c_playerTypeUser)) {
+            lv_count += 1;
+        }
+        else {
+        }
+    }
+    return (lv_count == 1);
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: #Include Starting Experience
+//--------------------------------------------------------------------------------------------------
+bool libStEx_gt_IncludeStartingExperience_Func (bool testConds, bool runActions) {
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libStEx_gt_IncludeStartingExperience_Init () {
+    libStEx_gt_IncludeStartingExperience = TriggerCreate("libStEx_gt_IncludeStartingExperience_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Training Mode Init
+//--------------------------------------------------------------------------------------------------
+bool libStEx_gt_TrainingModeInit_Func (bool testConds, bool runActions) {
+    unitgroup auto2AF5D1CA_g;
+    int auto2AF5D1CA_u;
+
+    // Variable Declarations
+    string lv_bankKey;
+    unit lv_itUnitToHideMinimap;
+
+    // Variable Initialization
+    lv_bankKey = "";
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    if ((libStEx_gf_InTutorial03() == false) && (libStEx_gf_InPracticeMode() == false)) {
+        return true;
+    }
+    else {
+    }
+    TriggerExecute(libStEx_gt_SE_TrainingModeReferenceCardDisplay, true, false);
+    if ((libStEx_gf_GameIsSinglePlayer() == false)) {
+        return true;
+    }
+    else {
+    }
+    if ((libMapM_gf_PrimaryMapMechanic() == libMapM_ge_MapMechanicType_None)) {
+        auto2AF5D1CA_g = UnitGroup("VehicleDragon", c_playerAny, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+        auto2AF5D1CA_u = 1;
+        for ( ; auto2AF5D1CA_u <= UnitGroupCount(auto2AF5D1CA_g, c_unitCountAll) ; auto2AF5D1CA_u += BoolToInt(lv_itUnitToHideMinimap == UnitGroupUnit(auto2AF5D1CA_g, auto2AF5D1CA_u)) ) {
+            lv_itUnitToHideMinimap = UnitGroupUnit(auto2AF5D1CA_g, auto2AF5D1CA_u);
+            libNtve_gf_SendActorMessageToUnit(lv_itUnitToHideMinimap, "SetMinimapVisibility");
+            libNtve_gf_SendActorMessageToUnit(lv_itUnitToHideMinimap, "SetMinimapVisibilityAlways");
+            UnitSetState(lv_itUnitToHideMinimap, c_unitStateHighlightable, false);
+        }
+    }
+    else {
+    }
+    TriggerExecute(libStEx_gt_SE_TrainingModeTipInitData, true, false);
+    TriggerEnable(libStEx_gt_SE_TrainingModeTipDebug, true);
+    if ((libStEx_gf_InTutorial03() == true)) {
+        SetTalentTreePauseGameWhenSelectionPanelShown(false);
+        SetTalentTreeSelectionPanelDismissAllowed(false);
+        SetTalentTreeSelectionPanelAutoShow(false);
+        TriggerEnable(libStEx_gt_SE_TrainingModeTalentsReady, true);
+        TriggerEnable(libStEx_gt_SE_TrainingModeTalentsPanelOpened, true);
+    }
+    else {
+        SetTalentTreePauseGameWhenSelectionPanelShown(true);
+    }
+    TriggerEnable(libStEx_gt_SE_TrainingModeTalentStart, true);
+    if ((libStEx_gf_SE_TrainingModeTipIsOld(libStEx_ge_SE_TrainingModeTips_WatchTower) == false)) {
+        TriggerEnable(libStEx_gt_SE_TrainingModeTipWatchTower, true);
+    }
+    else {
+    }
+    if ((libStEx_gf_SE_TrainingModeTipIsOld(libStEx_ge_SE_TrainingModeTips_HealingFountain) == false)) {
+        TriggerEnable(libStEx_gt_SE_TrainingModeTipHearthstoneHealingFountainMana, true);
+        TriggerEnable(libStEx_gt_SE_TrainingModeTipHealingFountainDrinking, true);
+    }
+    else {
+    }
+    if ((libStEx_gf_SE_TrainingModeTipIsOld(libStEx_ge_SE_TrainingModeTips_Experience) == false)) {
+        TriggerEnable(libStEx_gt_SE_TrainingModeTipExperience, true);
+    }
+    else {
+    }
+    if ((libStEx_gf_SE_TrainingModeTipIsOld(libStEx_ge_SE_TrainingModeTips_Forts) == false)) {
+        TriggerEnable(libStEx_gt_SE_TrainingModeTipForts, true);
+    }
+    else {
+    }
+    if ((libStEx_gf_SE_TrainingModeTipIsOld(libStEx_ge_SE_TrainingModeTips_Gates) == false)) {
+        TriggerEnable(libStEx_gt_SE_TrainingModeTipGates, true);
+    }
+    else {
+    }
+    if ((libStEx_gf_SE_TrainingModeTipIsOld(libStEx_ge_SE_TrainingModeTips_Mana) == false)) {
+        TriggerEnable(libStEx_gt_SE_TrainingModeTipHearthstoneHealingFountainMana, true);
+    }
+    else {
+    }
+    if ((libStEx_gf_SE_TrainingModeTipIsOld(libStEx_ge_SE_TrainingModeTips_Ammo1) == false)) {
+        TriggerEnable(libStEx_gt_SE_TrainingModeTipAmmunition1, true);
+    }
+    else {
+    }
+    if ((libStEx_gf_SE_TrainingModeTipIsOld(libStEx_ge_SE_TrainingModeTips_Bushes) == false)) {
+        TriggerEnable(libStEx_gt_SE_TrainingModeTipBushes, true);
+    }
+    else {
+    }
+    if ((libStEx_gf_SE_TrainingModeTipIsOld(libStEx_ge_SE_TrainingModeTips_MercCamps) == false)) {
+        TriggerEnable(libStEx_gt_SE_TrainingModeTipMercCamps, true);
+    }
+    else {
+    }
+    if ((libStEx_gf_SE_TrainingModeTipIsOld(libStEx_ge_SE_TrainingModeTips_Hearthstone) == false)) {
+        TriggerEnable(libStEx_gt_SE_TrainingModeTipHearthstoneHealingFountainMana, true);
+    }
+    else {
+    }
+    if ((libStEx_gf_SE_TrainingModeTipIsOld(libStEx_ge_SE_TrainingModeTips_Mount) == false)) {
+        TriggerEnable(libStEx_gt_SE_TrainingModeTipMount, true);
+    }
+    else {
+    }
+    if ((libStEx_gf_SE_TrainingModeTipIsOld(libStEx_ge_SE_TrainingModeTips_Abilities) == false)) {
+        TriggerEnable(libStEx_gt_SE_TrainingModeTipAbilities, true);
+    }
+    else {
+    }
+    if ((libStEx_gf_SE_TrainingModeTipIsOld(libStEx_ge_SE_TrainingModeTips_Death1) == false)) {
+        TriggerEnable(libStEx_gt_SE_TrainingModeTipDeath1, true);
+    }
+    else {
+    }
+    if ((libStEx_gf_SE_TrainingModeTipIsOld(libStEx_ge_SE_TrainingModeTips_Spacebar) == false)) {
+        TriggerEnable(libStEx_gt_SE_TrainingModeTipSpacebar, true);
+    }
+    else {
+    }
+    if ((libStEx_gf_SE_TrainingModeTipIsOld(libStEx_ge_SE_TrainingModeTips_Talents) == false)) {
+        TriggerEnable(libStEx_gt_SE_TrainingModeTipTalents, true);
+    }
+    else {
+    }
+    if ((libStEx_gf_SE_TrainingModeTipIsOld(libStEx_ge_SE_TrainingModeTips_CoreShield) == false)) {
+        TriggerEnable(libStEx_gt_SE_TrainingModeTipCore, true);
+    }
+    else {
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libStEx_gt_TrainingModeInit_Init () {
+    libStEx_gt_TrainingModeInit = TriggerCreate("libStEx_gt_TrainingModeInit_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Training Mode Bank Init
+//--------------------------------------------------------------------------------------------------
+bool libStEx_gt_TrainingModeBankInit_Func (bool testConds, bool runActions) {
+    int auto6F0AEFF1_ae;
+    int auto6F0AEFF1_ai;
+
+    // Variable Declarations
+    string lv_bankKey;
+    int lv_itNewUserTip;
+
+    // Variable Initialization
+    lv_bankKey = "";
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    auto6F0AEFF1_ae = libStEx_gf_SE_TrainingModeTipCount();
+    auto6F0AEFF1_ai = 1;
+    lv_itNewUserTip = 1;
+    for ( ; ( (auto6F0AEFF1_ai >= 0 && lv_itNewUserTip <= auto6F0AEFF1_ae) || (auto6F0AEFF1_ai <= 0 && lv_itNewUserTip >= auto6F0AEFF1_ae) ) ; lv_itNewUserTip += auto6F0AEFF1_ai ) {
+        lv_bankKey = (libStEx_gv_sE_TrainingModeBankkey_Tip_C + IntToString((libStEx_gv_sE_TrainingModeTips[lv_itNewUserTip].lv_iD)));
+        if ((BankKeyExists(libGame_gv_players[1].lv_bankData.lv_bank, libStEx_gv_sE_TrainingModeBankSection_C, lv_bankKey) == true)) {
+            libStEx_gv_sE_TrainingModeTips[lv_itNewUserTip].lv_doneTimes = BankValueGetAsInt(libGame_gv_players[1].lv_bankData.lv_bank, libStEx_gv_sE_TrainingModeBankSection_C, lv_bankKey);
+        }
+        else {
+            libStEx_gv_sE_TrainingModeTips[lv_itNewUserTip].lv_doneTimes = 0;
+            BankValueSetFromInt(libGame_gv_players[1].lv_bankData.lv_bank, libStEx_gv_sE_TrainingModeBankSection_C, lv_bankKey, libStEx_gv_sE_TrainingModeTips[lv_itNewUserTip].lv_doneTimes);
+        }
+    }
+    lv_bankKey = libStEx_gv_sE_TrainingModeBankkey_ReferenceCard_C;
+    if ((BankKeyExists(libGame_gv_players[1].lv_bankData.lv_bank, libStEx_gv_sE_TrainingModeBankSection_C, lv_bankKey) == true)) {
+        libStEx_gv_sE_TrainingModeReferenceCardGamesCount = BankValueGetAsInt(libGame_gv_players[1].lv_bankData.lv_bank, libStEx_gv_sE_TrainingModeBankSection_C, lv_bankKey);
+    }
+    else {
+        libStEx_gv_sE_TrainingModeReferenceCardGamesCount = 0;
+        BankValueSetFromInt(libGame_gv_players[1].lv_bankData.lv_bank, libStEx_gv_sE_TrainingModeBankSection_C, lv_bankKey, libStEx_gv_sE_TrainingModeReferenceCardGamesCount);
+    }
+    lv_bankKey = libStEx_gv_sE_TrainingModeBankkey_Talent_C;
+    if ((BankKeyExists(libGame_gv_players[1].lv_bankData.lv_bank, libStEx_gv_sE_TrainingModeBankSection_C, lv_bankKey) == true)) {
+        libStEx_gv_sE_TrainingModeTalentTaught = BankValueGetAsFlag(libGame_gv_players[1].lv_bankData.lv_bank, libStEx_gv_sE_TrainingModeBankSection_C, lv_bankKey);
+    }
+    else {
+        libStEx_gv_sE_TrainingModeTalentTaught = false;
+        BankValueSetFromFlag(libGame_gv_players[1].lv_bankData.lv_bank, libStEx_gv_sE_TrainingModeBankSection_C, lv_bankKey, libStEx_gv_sE_TrainingModeTalentTaught);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libStEx_gt_TrainingModeBankInit_Init () {
+    libStEx_gt_TrainingModeBankInit = TriggerCreate("libStEx_gt_TrainingModeBankInit_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SE_TrainingMode Talents Ready
+//--------------------------------------------------------------------------------------------------
+bool libStEx_gt_SE_TrainingModeTalentsReady_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    string lv_bankKey;
+
+    // Variable Initialization
+    lv_bankKey = "";
+
+    // Conditions
+    if (testConds) {
+        if (!((libGame_gf_HeroLevelUpPlayer() == 1))) {
+            return false;
+        }
+
+        if (!((libGame_gv_teams[1].lv_teamLevel == 1))) {
+            return false;
+        }
+
+        if (!((libUIUI_gv_talents_ActiveABChoiceForPlayer[1] > 0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    libStEx_gv_sE_TrainingModeTalentTaught = true;
+    lv_bankKey = libStEx_gv_sE_TrainingModeBankkey_Talent_C;
+    BankValueSetFromFlag(libGame_gv_players[1].lv_bankData.lv_bank, libStEx_gv_sE_TrainingModeBankSection_C, lv_bankKey, libStEx_gv_sE_TrainingModeTalentTaught);
+    BankSave(libGame_gv_players[1].lv_bankData.lv_bank);
+    libGame_gv_xPTrickleEnabled = false;
+    TriggerExecute(libStEx_gt_SE_TrainingModeTalentsSuggestToOpenPanelQ, true, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libStEx_gt_SE_TrainingModeTalentsReady_Init () {
+    libStEx_gt_SE_TrainingModeTalentsReady = TriggerCreate("libStEx_gt_SE_TrainingModeTalentsReady_Func");
+    TriggerEnable(libStEx_gt_SE_TrainingModeTalentsReady, false);
+    libGame_gf_HeroLevelUp(libStEx_gt_SE_TrainingModeTalentsReady);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SE_TrainingMode Talents Suggest To Open Panel Q
+//--------------------------------------------------------------------------------------------------
+bool libStEx_gt_SE_TrainingModeTalentsSuggestToOpenPanelQ_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(libStEx_gt_SE_TrainingModeTalentsPanelOpened, true);
+    if ((TimerGetElapsed(libGame_gv_gameTimer) == 0.0)) {
+        libGame_gv_gateTimerReady = false;
+        if ((TimerIsPaused(libGame_gv_openTheGatesTimer) == false)) {
+            TimerPause(libGame_gv_openTheGatesTimer, true);
+            libStEx_gv_sE_TrainingModeTalentTeachingOpenTheGateTimerPaused = true;
+        }
+        else {
+        }
+        TriggerQueueEnter();
+        if ((libStEx_gv_sE_TrainingModeTalentPanelOpened == false)) {
+            Wait(1.0, c_timeGame);
+            libCore_gf_SetAllSoundChannelVolumesStandardTiming(libNtve_ge_VolumeChannelMode_Speech, PlayerGroupAll());
+            libCore_gf_SendTransmissionCampaign(null, "TutorialVO|Line00561", c_transmissionDurationAdd, 0.0, false, libCore_ge_TransmissionPortraitOptioins_DontShowPortrait, libCore_ge_TransmissionCueSoundOptions_DefaultCueSoundBehavior);
+            Wait(6.5, c_timeGame);
+            if ((libStEx_gv_sE_TrainingModeTalentPanelOpened == false)) {
+                libStEx_gf_SE_ShowHideTalentPortraitFlashingImage(true);
+                libCore_gf_SendTransmissionCampaign(null, "TutorialVO|Line00562", c_transmissionDurationAdd, 0.0, false, libCore_ge_TransmissionPortraitOptioins_DontShowPortrait, libCore_ge_TransmissionCueSoundOptions_DefaultCueSoundBehavior);
+                Wait(2.5, c_timeGame);
+                if ((libStEx_gv_sE_TrainingModeTalentPanelOpened == false)) {
+                    libStEx_gf_DisplayHintMessage(StringExternal("Param/Value/lib_StEx_26D54DC7"), true, 1.0);
+                }
+                else {
+                }
+                TransmissionWait(TransmissionLastSent(), 0.0);
+            }
+            else {
+            }
+            libCore_gf_SetAllSoundChannelVolumesStandardTiming(libNtve_ge_VolumeChannelMode_Game, PlayerGroupAll());
+        }
+        else {
+        }
+        TriggerQueueExit();
+    }
+    else {
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libStEx_gt_SE_TrainingModeTalentsSuggestToOpenPanelQ_Init () {
+    libStEx_gt_SE_TrainingModeTalentsSuggestToOpenPanelQ = TriggerCreate("libStEx_gt_SE_TrainingModeTalentsSuggestToOpenPanelQ_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SE_TrainingMode Talents Panel Opened
+//--------------------------------------------------------------------------------------------------
+bool libStEx_gt_SE_TrainingModeTalentsPanelOpened_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    libStEx_gf_SE_ShowHideTalentPortraitFlashingImage(false);
+    libStEx_gv_sE_TrainingModeTalentPanelOpened = true;
+    CameraLockInput(1, true);
+    CameraPan(1, UnitGetPosition(libGame_gv_players[1].lv_heroUnit), 1.0, -1, 10.0, false);
+    libStEx_gf_FreezeUnfreezeAllUnits(libStEx_ge_FreezeOptions_Freeze);
+    libNtve_gf_MakeUnitUncommandable(libGame_gv_players[1].lv_heroUnit, true);
+    TriggerEnable(libStEx_gt_SE_TrainingModeTalentsPicked, true);
+    TransmissionClearAll();
+    libStEx_gf_ClearHintMessage();
+    TriggerExecute(libStEx_gt_SE_TrainingModeTalentsPanelFlashTalents, true, false);
+    TriggerQueueEnter();
+    if ((libStEx_gv_sE_TrainingModeTalentPicked == false)) {
+        libCore_gf_SetAllSoundChannelVolumesStandardTiming(libNtve_ge_VolumeChannelMode_Speech, PlayerGroupAll());
+        libCore_gf_SendTransmissionCampaign(null, "TutorialVO|Line00563", c_transmissionDurationAdd, 0.0, true, libCore_ge_TransmissionPortraitOptioins_DontShowPortrait, libCore_ge_TransmissionCueSoundOptions_DefaultCueSoundBehavior);
+        libCore_gf_SetAllSoundChannelVolumesStandardTiming(libNtve_ge_VolumeChannelMode_Game, PlayerGroupAll());
+    }
+    else {
+    }
+    TriggerQueueExit();
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libStEx_gt_SE_TrainingModeTalentsPanelOpened_Init () {
+    libStEx_gt_SE_TrainingModeTalentsPanelOpened = TriggerCreate("libStEx_gt_SE_TrainingModeTalentsPanelOpened_Func");
+    TriggerEnable(libStEx_gt_SE_TrainingModeTalentsPanelOpened, false);
+    TriggerAddEventHeroTalentTreeSelectionPanelShown(libStEx_gt_SE_TrainingModeTalentsPanelOpened, 1);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SE_TrainingMode Talents Panel - Flash Talents
+//--------------------------------------------------------------------------------------------------
+bool libStEx_gt_SE_TrainingModeTalentsPanelFlashTalents_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    DialogControlHookupStandard(c_triggerControlTypePanel, "UIContainer\\ConsoleUIContainer\\HeroTalentTreeSelectionPanel\\TalentTreePanel\\TutorialTalentHighlight");
+    DialogControlSetVisible(DialogControlLastCreated(), PlayerGroupAll(), true);
+    while (!((libStEx_gv_sE_TrainingModeTalentPicked == true))) {
+        Wait(0.5, c_timeGame);
+    }
+    DialogControlSetVisible(DialogControlLastCreated(), PlayerGroupAll(), false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libStEx_gt_SE_TrainingModeTalentsPanelFlashTalents_Init () {
+    libStEx_gt_SE_TrainingModeTalentsPanelFlashTalents = TriggerCreate("libStEx_gt_SE_TrainingModeTalentsPanelFlashTalents_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SE_TrainingMode Talents Picked
+//--------------------------------------------------------------------------------------------------
+bool libStEx_gt_SE_TrainingModeTalentsPicked_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    string lv_bankKey;
+
+    // Variable Initialization
+    lv_bankKey = "";
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    libStEx_gv_sE_TrainingModeTalentPicked = true;
+    CameraLockInput(1, false);
+    TransmissionClearAll();
+    SetTalentTreePauseGameWhenSelectionPanelShown(true);
+    CinematicMode(PlayerGroupAll(), false, 0.0);
+    libStEx_gf_FreezeUnfreezeAllUnits(libStEx_ge_FreezeOptions_Unfrezze);
+    libGame_gv_xPTrickleEnabled = true;
+    libNtve_gf_MakeUnitUncommandable(libGame_gv_players[1].lv_heroUnit, false);
+    SoundPlayForPlayer(SoundLink("UI_Game_Training_PickTalentSound", -1), c_maxPlayers, PlayerGroupAll(), 100.0, 0.0);
+    Wait(1.0, c_timeGame);
+    TriggerExecute(libStEx_gt_SE_TrainingModeTalentsPickedTransmissionQ, true, false);
+    Wait(1.0, c_timeGame);
+    if ((libStEx_gv_sE_TrainingModeTalentTeachingOpenTheGateTimerPaused == true)) {
+        TimerPause(libGame_gv_openTheGatesTimer, false);
+    }
+    else {
+    }
+    libGame_gv_gateTimerReady = true;
+    SetTalentTreeSelectionPanelDismissAllowed(true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libStEx_gt_SE_TrainingModeTalentsPicked_Init () {
+    libStEx_gt_SE_TrainingModeTalentsPicked = TriggerCreate("libStEx_gt_SE_TrainingModeTalentsPicked_Func");
+    TriggerEnable(libStEx_gt_SE_TrainingModeTalentsPicked, false);
+    TriggerAddEventHeroTalentTreeSelected(libStEx_gt_SE_TrainingModeTalentsPicked, 1);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SE_TrainingMode Talents Picked Transmission Q
+//--------------------------------------------------------------------------------------------------
+bool libStEx_gt_SE_TrainingModeTalentsPickedTransmissionQ_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TriggerQueueEnter();
+    libCore_gf_SetAllSoundChannelVolumesStandardTiming(libNtve_ge_VolumeChannelMode_Speech, PlayerGroupAll());
+    libCore_gf_SendTransmissionCampaign(null, "TutorialVO|Line00593", c_transmissionDurationAdd, 0.0, true, libCore_ge_TransmissionPortraitOptioins_DontShowPortrait, libCore_ge_TransmissionCueSoundOptions_DefaultCueSoundBehavior);
+    libCore_gf_SendTransmissionCampaign(null, "TutorialVO|Line00564", c_transmissionDurationAdd, 0.0, true, libCore_ge_TransmissionPortraitOptioins_DontShowPortrait, libCore_ge_TransmissionCueSoundOptions_DefaultCueSoundBehavior);
+    libCore_gf_SetAllSoundChannelVolumesStandardTiming(libNtve_ge_VolumeChannelMode_Game, PlayerGroupAll());
+    TriggerQueueExit();
+    libStEx_gv_sE_TrainingModeTalentPanelOpened = false;
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libStEx_gt_SE_TrainingModeTalentsPickedTransmissionQ_Init () {
+    libStEx_gt_SE_TrainingModeTalentsPickedTransmissionQ = TriggerCreate("libStEx_gt_SE_TrainingModeTalentsPickedTransmissionQ_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SE_TrainingMode Talent Start
+//--------------------------------------------------------------------------------------------------
+bool libStEx_gt_SE_TrainingModeTalentStart_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TriggerEnable(libStEx_gt_SE_TrainingModeTalentPause, true);
+    TriggerEnable(libStEx_gt_SE_TrainingModeTalentUnPause, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libStEx_gt_SE_TrainingModeTalentStart_Init () {
+    libStEx_gt_SE_TrainingModeTalentStart = TriggerCreate("libStEx_gt_SE_TrainingModeTalentStart_Func");
+    TriggerEnable(libStEx_gt_SE_TrainingModeTalentStart, false);
+    TriggerAddEventTimer(libStEx_gt_SE_TrainingModeTalentStart, libGame_gv_openTheGatesTimer);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SE_TrainingMode Talent Pause
+//--------------------------------------------------------------------------------------------------
+bool libStEx_gt_SE_TrainingModeTalentPause_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libStEx_gv_sE_TrainingModeTalentPanelOpened = true;
+    libStEx_gf_FreezeUnfreezeAllUnits(libStEx_ge_FreezeOptions_Freeze);
+    libGame_gv_xPTrickleEnabled = false;
+    libNtve_gf_MakeUnitUncommandable(libGame_gv_players[1].lv_heroUnit, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libStEx_gt_SE_TrainingModeTalentPause_Init () {
+    libStEx_gt_SE_TrainingModeTalentPause = TriggerCreate("libStEx_gt_SE_TrainingModeTalentPause_Func");
+    TriggerEnable(libStEx_gt_SE_TrainingModeTalentPause, false);
+    TriggerAddEventHeroTalentTreeSelectionPanelShown(libStEx_gt_SE_TrainingModeTalentPause, 1);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SE_TrainingMode Talent Un-Pause
+//--------------------------------------------------------------------------------------------------
+bool libStEx_gt_SE_TrainingModeTalentUnPause_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libStEx_gv_sE_TrainingModeTalentPanelOpened = false;
+    libStEx_gf_FreezeUnfreezeAllUnits(libStEx_ge_FreezeOptions_Unfrezze);
+    libGame_gv_xPTrickleEnabled = true;
+    libNtve_gf_MakeUnitUncommandable(libGame_gv_players[1].lv_heroUnit, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libStEx_gt_SE_TrainingModeTalentUnPause_Init () {
+    libStEx_gt_SE_TrainingModeTalentUnPause = TriggerCreate("libStEx_gt_SE_TrainingModeTalentUnPause_Func");
+    TriggerEnable(libStEx_gt_SE_TrainingModeTalentUnPause, false);
+    TriggerAddEventHeroTalentTreeSelectionPanelHidden(libStEx_gt_SE_TrainingModeTalentUnPause, 1);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SE_TrainingMode Reference Card Display
+//--------------------------------------------------------------------------------------------------
+bool libStEx_gt_SE_TrainingModeReferenceCardDisplay_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    string lv_bankKey;
+
+    // Variable Initialization
+    lv_bankKey = "";
+
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    while (!((TimerGetDuration(libGame_gv_openTheGatesTimer) > 0.0) && (TimerGetRemaining(libGame_gv_openTheGatesTimer) <= 22.0))) {
+        Wait(0.5, c_timeGame);
+    }
+    libStEx_gv_sE_TrainingModeReferenceCardGamesCount += 1;
+    lv_bankKey = libStEx_gv_sE_TrainingModeBankkey_ReferenceCard_C;
+    BankValueSetFromInt(libGame_gv_players[1].lv_bankData.lv_bank, libStEx_gv_sE_TrainingModeBankSection_C, lv_bankKey, libStEx_gv_sE_TrainingModeReferenceCardGamesCount);
+    BankSave(libGame_gv_players[1].lv_bankData.lv_bank);
+    while (!((UnitIsAlive(libGame_gv_players[1].lv_heroUnit) == true))) {
+        Wait(1.0, c_timeGame);
+    }
+    Wait(2.0, c_timeGame);
+    libUIUI_gf_AddTutorialReferenceItemPreset(libUIUI_ge_TutorialReferenceItem_Move);
+    libUIUI_gf_AddTutorialReferenceItemPreset(libUIUI_ge_TutorialReferenceItem_Attack);
+    libUIUI_gf_AddTutorialReferenceItemPreset(libUIUI_ge_TutorialReferenceItem_Mount);
+    libUIUI_gf_AddTutorialReferenceItemPreset(libUIUI_ge_TutorialReferenceItem_Abilities);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libStEx_gt_SE_TrainingModeReferenceCardDisplay_Init () {
+    libStEx_gt_SE_TrainingModeReferenceCardDisplay = TriggerCreate("libStEx_gt_SE_TrainingModeReferenceCardDisplay_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SE_TrainingMode Tip Init Data
+//--------------------------------------------------------------------------------------------------
+bool libStEx_gt_SE_TrainingModeTipInitData_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((TriggerIsEnabled(TriggerGetCurrent()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Abilities)].lv_iD = libStEx_ge_SE_TrainingModeTips_Abilities;
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Abilities)].lv_name = StringExternal("Param/Value/lib_StEx_44414396");
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Abilities)].lv_description = StringExternal("Param/Value/lib_StEx_D36B2FCF");
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Abilities)].lv_vO = "TutorialVO|Line00568";
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Ammo1)].lv_iD = libStEx_ge_SE_TrainingModeTips_Ammo1;
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Ammo1)].lv_name = StringToText("");
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Ammo1)].lv_description = StringExternal("Param/Value/lib_StEx_37E7365C");
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Ammo1)].lv_vO = "TutorialVO|Line00569";
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Ammo2)].lv_iD = libStEx_ge_SE_TrainingModeTips_Ammo2;
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Ammo2)].lv_name = StringToText("");
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Ammo2)].lv_description = StringExternal("Param/Value/lib_StEx_FD5E621E");
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Bushes)].lv_iD = libStEx_ge_SE_TrainingModeTips_Bushes;
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Bushes)].lv_name = StringToText("");
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Bushes)].lv_description = StringExternal("Param/Value/lib_StEx_D9433DF9");
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Bushes)].lv_vO = "TutorialVO|Line00570";
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_CoreShield)].lv_iD = libStEx_ge_SE_TrainingModeTips_CoreShield;
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_CoreShield)].lv_name = StringToText("");
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_CoreShield)].lv_description = StringExternal("Param/Value/lib_StEx_93C5656C");
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_CoreShield)].lv_vO = "TutorialVO|Line00571";
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Death1)].lv_iD = libStEx_ge_SE_TrainingModeTips_Death1;
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Death1)].lv_name = StringToText("");
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Death1)].lv_description = StringExternal("Param/Value/lib_StEx_E3B176AC");
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Death1)].lv_vO = "TutorialVO|Line00572";
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Death2)].lv_iD = libStEx_ge_SE_TrainingModeTips_Death2;
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Death2)].lv_name = StringToText("");
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Death2)].lv_description = StringExternal("Param/Value/lib_StEx_9BBA30FD");
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Death2)].lv_vO = "TutorialVO|Line00573";
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Experience)].lv_iD = libStEx_ge_SE_TrainingModeTips_Experience;
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Experience)].lv_name = StringToText("");
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Experience)].lv_description = StringExternal("Param/Value/lib_StEx_C4306643");
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Experience)].lv_vO = "TutorialVO|Line00580";
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Forts)].lv_iD = libStEx_ge_SE_TrainingModeTips_Forts;
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Forts)].lv_name = StringToText("");
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Forts)].lv_description = StringExternal("Param/Value/lib_StEx_53947FF6");
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Forts)].lv_vO = "TutorialVO|Line00581";
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Gates)].lv_iD = libStEx_ge_SE_TrainingModeTips_Gates;
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Gates)].lv_name = StringToText("");
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Gates)].lv_description = StringExternal("Param/Value/lib_StEx_42ED54A0");
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Gates)].lv_vO = "TutorialVO|Line00574";
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_HealingFountain)].lv_iD = libStEx_ge_SE_TrainingModeTips_HealingFountain;
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_HealingFountain)].lv_name = StringToText("");
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_HealingFountain)].lv_description = StringExternal("Param/Value/lib_StEx_5FB0A15F");
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_HealingFountain)].lv_vO = "TutorialVO|Line00582";
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Hearthstone)].lv_iD = libStEx_ge_SE_TrainingModeTips_Hearthstone;
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Hearthstone)].lv_name = StringToText("");
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Hearthstone)].lv_description = StringExternal("Param/Value/lib_StEx_7FA8863D");
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Hearthstone)].lv_vO = "TutorialVO|Line00583";
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_HearthstoneUsed)].lv_iD = libStEx_ge_SE_TrainingModeTips_HearthstoneUsed;
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_HearthstoneUsed)].lv_name = StringToText("");
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_HearthstoneUsed)].lv_description = StringExternal("Param/Value/lib_StEx_8CBED564");
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_HearthstoneUsed)].lv_vO = "TutorialVO|Line00584";
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Mana)].lv_iD = libStEx_ge_SE_TrainingModeTips_Mana;
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Mana)].lv_name = StringToText("");
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Mana)].lv_description = StringExternal("Param/Value/lib_StEx_500B9D83");
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Mana)].lv_vO = "TutorialVO|Line00588";
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_MercCamps)].lv_iD = libStEx_ge_SE_TrainingModeTips_MercCamps;
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_MercCamps)].lv_name = StringToText("");
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_MercCamps)].lv_description = StringExternal("Param/Value/lib_StEx_15B05B80");
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_MercCamps)].lv_vO = "TutorialVO|Line00575";
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Mount)].lv_iD = libStEx_ge_SE_TrainingModeTips_Mount;
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Mount)].lv_name = StringToText("");
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Mount)].lv_description = StringExternal("Param/Value/lib_StEx_DEBAB952");
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Mount)].lv_vO = "TutorialVO|Line00576";
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Spacebar)].lv_iD = libStEx_ge_SE_TrainingModeTips_Spacebar;
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Spacebar)].lv_name = StringToText("");
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Spacebar)].lv_description = StringExternal("Param/Value/lib_StEx_F98F289B");
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Spacebar)].lv_vO = "TutorialVO|Line00577";
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Talents)].lv_iD = libStEx_ge_SE_TrainingModeTips_Talents;
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Talents)].lv_name = StringToText("");
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Talents)].lv_description = StringExternal("Param/Value/lib_StEx_38391ADB");
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_Talents)].lv_vO = "TutorialVO|Line00578";
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_WatchTower)].lv_iD = libStEx_ge_SE_TrainingModeTips_WatchTower;
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_WatchTower)].lv_name = StringToText("");
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_WatchTower)].lv_description = StringExternal("Param/Value/lib_StEx_90394BFA");
+    libStEx_gv_sE_TrainingModeTips[(libStEx_ge_SE_TrainingModeTips_WatchTower)].lv_vO = "TutorialVO|Line00579";
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libStEx_gt_SE_TrainingModeTipInitData_Init () {
+    libStEx_gt_SE_TrainingModeTipInitData = TriggerCreate("libStEx_gt_SE_TrainingModeTipInitData_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SE_TrainingModeTipAbilities
+//--------------------------------------------------------------------------------------------------
+bool libStEx_gt_SE_TrainingModeTipAbilities_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TriggerEnable(libStEx_gt_SE_TrainingModeTipAbilitiesQWERUsed, true);
+    Wait(120.0, c_timeGame);
+    while (true) {
+        if ((UnitIsAlive(libGame_gv_players[1].lv_heroUnit) == true) && (libStEx_gf_PlayerIsBeingAttack() == false) && (libStEx_gv_sE_TrainingModeTipDisplaying == false)) {
+            TriggerEnable(libStEx_gt_SE_TrainingModeTipAbilitiesQWERUsed, false);
+            libStEx_gf_SE_TrainingModeTipDisplay(libStEx_ge_SE_TrainingModeTips_Abilities);
+            libStEx_gf_SE_TrainingModeTipSetDisplayed(libStEx_ge_SE_TrainingModeTips_Abilities);
+            Wait(180.0, c_timeGame);
+        }
+        else {
+        }
+        Wait(0.5, c_timeGame);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libStEx_gt_SE_TrainingModeTipAbilities_Init () {
+    libStEx_gt_SE_TrainingModeTipAbilities = TriggerCreate("libStEx_gt_SE_TrainingModeTipAbilities_Func");
+    TriggerEnable(libStEx_gt_SE_TrainingModeTipAbilities, false);
+    TriggerAddEventTimer(libStEx_gt_SE_TrainingModeTipAbilities, libGame_gv_openTheGatesTimer);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SE_TrainingModeTipAbilitiesQWERUsed
+//--------------------------------------------------------------------------------------------------
+bool libStEx_gt_SE_TrainingModeTipAbilitiesQWERUsed_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TriggerStop(libStEx_gt_SE_TrainingModeTipAbilities);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libStEx_gt_SE_TrainingModeTipAbilitiesQWERUsed_Init () {
+    libStEx_gt_SE_TrainingModeTipAbilitiesQWERUsed = TriggerCreate("libStEx_gt_SE_TrainingModeTipAbilitiesQWERUsed_Func");
+    TriggerEnable(libStEx_gt_SE_TrainingModeTipAbilitiesQWERUsed, false);
+    TriggerAddEventKeyPressed(libStEx_gt_SE_TrainingModeTipAbilitiesQWERUsed, 1, c_keyQ, true, c_keyModifierStateExclude, c_keyModifierStateExclude, c_keyModifierStateIgnore);
+    TriggerAddEventKeyPressed(libStEx_gt_SE_TrainingModeTipAbilitiesQWERUsed, 1, c_keyW, true, c_keyModifierStateExclude, c_keyModifierStateExclude, c_keyModifierStateIgnore);
+    TriggerAddEventKeyPressed(libStEx_gt_SE_TrainingModeTipAbilitiesQWERUsed, 1, c_keyE, true, c_keyModifierStateExclude, c_keyModifierStateExclude, c_keyModifierStateIgnore);
+    TriggerAddEventKeyPressed(libStEx_gt_SE_TrainingModeTipAbilitiesQWERUsed, 1, c_keyR, true, c_keyModifierStateExclude, c_keyModifierStateExclude, c_keyModifierStateIgnore);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SE_TrainingModeTipAmmunition 1
+//--------------------------------------------------------------------------------------------------
+bool libStEx_gt_SE_TrainingModeTipAmmunition1_Func (bool testConds, bool runActions) {
+    unitgroup auto1125102F_g;
+    int auto1125102F_u;
+
+    // Variable Declarations
+    unitgroup lv_towers;
+    unit lv_itTower;
+
+    // Variable Initialization
+    lv_towers = UnitGroupEmpty();
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    Wait(2.0, c_timeGame);
+    lv_towers = UnitGroupAlliance(1, c_unitAllianceEnemy, RegionEntireMap(), UnitFilter((1 << c_targetFilterArmored) | (1 << c_targetFilterStructure), 0, (1 << c_targetFilterLight) | (1 << c_targetFilterMassive) | (1 << c_targetFilterMissile) | (1 << c_targetFilterItem), (1 << (c_targetFilterStasis - 32)) | (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32)) | (1 << (c_targetFilterInvulnerable - 32)) | (1 << (c_targetFilterStunned - 32))), 0);
+    if ((libNtve_gf_UnitGroupIsDead(lv_towers) == true)) {
+        return true;
+    }
+    else {
+    }
+    while (true) {
+        if ((UnitIsAlive(libGame_gv_players[1].lv_heroUnit) == true) && (libStEx_gf_PlayerIsBeingAttack() == false) && (libStEx_gv_sE_TrainingModeTipDisplaying == false)) {
+            auto1125102F_g = lv_towers;
+            auto1125102F_u = 1;
+            for ( ; auto1125102F_u <= UnitGroupCount(auto1125102F_g, c_unitCountAll) ; auto1125102F_u += BoolToInt(lv_itTower == UnitGroupUnit(auto1125102F_g, auto1125102F_u)) ) {
+                lv_itTower = UnitGroupUnit(auto1125102F_g, auto1125102F_u);
+                if ((UnitGetPropertyFixed(lv_itTower, c_unitPropEnergy, c_unitPropCurrent) == 0.0) && (DistanceBetweenPoints(UnitGetPosition(libGame_gv_players[1].lv_heroUnit), UnitGetPosition(lv_itTower)) < 12.0)) {
+                    libCore_gf_AttachReticleEffectAndTextTagOnUnit(libCore_ge_ReticleType_Enemy, libCore_ge_ReticleSize_Medium, StringToText(""), lv_itTower, "Ref_Center");
+                    libStEx_gf_SE_TrainingModeTipDisplay(libStEx_ge_SE_TrainingModeTips_Ammo1);
+                    libStEx_gf_SE_TrainingModeTipSetDisplayed(libStEx_ge_SE_TrainingModeTips_Ammo1);
+                    Wait(libStEx_gv_sE_TrainingModeTipDuration_C, c_timeGame);
+                    libNtve_gf_KillModel(libNtve_gf_ActorLastCreated());
+                    return true;
+                }
+                else {
+                }
+            }
+        }
+        else {
+        }
+        Wait(0.5, c_timeGame);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libStEx_gt_SE_TrainingModeTipAmmunition1_Init () {
+    libStEx_gt_SE_TrainingModeTipAmmunition1 = TriggerCreate("libStEx_gt_SE_TrainingModeTipAmmunition1_Func");
+    TriggerEnable(libStEx_gt_SE_TrainingModeTipAmmunition1, false);
+    TriggerAddEventTimer(libStEx_gt_SE_TrainingModeTipAmmunition1, libGame_gv_openTheGatesTimer);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SE_TrainingModeTipBushes
+//--------------------------------------------------------------------------------------------------
+bool libStEx_gt_SE_TrainingModeTipBushes_Func (bool testConds, bool runActions) {
+    int auto69DED0F3_n;
+    int auto69DED0F3_i;
+
+    // Variable Declarations
+    region lv_area;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    Wait(2.0, c_timeGame);
+    while (true) {
+        if ((UnitIsAlive(libGame_gv_players[1].lv_heroUnit) == true) && (libStEx_gf_PlayerIsInCombat() == false) && (libStEx_gv_sE_TrainingModeTipDisplaying == false)) {
+            if ((UnitHasBehavior2(libGame_gv_players[1].lv_heroUnit, "ShrubStatusController") == true) && (UnitBehaviorEnabled(libGame_gv_players[1].lv_heroUnit, "ShrubStatusController") == true) && (UnitBehaviorCount(libGame_gv_players[1].lv_heroUnit, "ShrubStatusController") > 0)) {
+                libStEx_gf_SE_TrainingModeTipDisplay(libStEx_ge_SE_TrainingModeTips_Bushes);
+                libStEx_gf_SE_TrainingModeTipSetDisplayed(libStEx_ge_SE_TrainingModeTips_Bushes);
+                lv_area = RegionCircle(UnitGetPosition(libGame_gv_players[1].lv_heroUnit), 12.0);
+                libStEx_gf_SE_TrainingModeTipBushesSendActorMessageToBushes("HaloSetColor 255,255,0", lv_area);
+                auto69DED0F3_n = 5;
+                for (auto69DED0F3_i = 1; auto69DED0F3_i <= auto69DED0F3_n; auto69DED0F3_i += 1) {
+                    libStEx_gf_SE_TrainingModeTipBushesSendActorMessageToBushes("HaloStart", lv_area);
+                    Wait(0.4, c_timeGame);
+                    libStEx_gf_SE_TrainingModeTipBushesSendActorMessageToBushes("HaloStop", lv_area);
+                    Wait(0.7, c_timeGame);
+                }
+                libStEx_gf_SE_TrainingModeTipBushesSendActorMessageToBushes("HaloClearColor", lv_area);
+                return true;
+            }
+            else {
+            }
+        }
+        else {
+        }
+        Wait(0.25, c_timeGame);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libStEx_gt_SE_TrainingModeTipBushes_Init () {
+    libStEx_gt_SE_TrainingModeTipBushes = TriggerCreate("libStEx_gt_SE_TrainingModeTipBushes_Func");
+    TriggerEnable(libStEx_gt_SE_TrainingModeTipBushes, false);
+    TriggerAddEventTimer(libStEx_gt_SE_TrainingModeTipBushes, libGame_gv_openTheGatesTimer);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SE_TrainingModeTipCore
+//--------------------------------------------------------------------------------------------------
+bool libStEx_gt_SE_TrainingModeTipCore_Func (bool testConds, bool runActions) {
+    int auto92CE80BB_n;
+    int auto92CE80BB_i;
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    auto92CE80BB_n = 8;
+    for (auto92CE80BB_i = 1; auto92CE80BB_i <= auto92CE80BB_n; auto92CE80BB_i += 1) {
+        if ((UnitIsAlive(libGame_gv_players[1].lv_heroUnit) == true) && (DistanceBetweenPoints(UnitGetPosition(libGame_gv_players[1].lv_heroUnit), UnitGetPosition(libGame_gv_teams[libGame_gv_teamChaosIndex_C].lv_core)) < 12.0) && (libStEx_gv_sE_TrainingModeTipDisplaying == false)) {
+            libCore_gf_AttachReticleEffectAndTextTagOnUnit(libCore_ge_ReticleType_Enemy, libCore_ge_ReticleSize_Medium, StringToText(""), libGame_gv_teams[libGame_gv_teamChaosIndex_C].lv_core, "Ref_Center");
+            libStEx_gf_SE_TrainingModeTipDisplay(libStEx_ge_SE_TrainingModeTips_Forts);
+            libStEx_gf_SE_TrainingModeTipSetDisplayed(libStEx_ge_SE_TrainingModeTips_Forts);
+            Wait(libStEx_gv_sE_TrainingModeTipDuration_C, c_timeGame);
+            libNtve_gf_KillModel(libNtve_gf_ActorLastCreated());
+            return true;
+        }
+        else {
+        }
+        Wait(0.5, c_timeGame);
+    }
+    TriggerEnable(TriggerGetCurrent(), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libStEx_gt_SE_TrainingModeTipCore_Init () {
+    libStEx_gt_SE_TrainingModeTipCore = TriggerCreate("libStEx_gt_SE_TrainingModeTipCore_Func");
+    TriggerEnable(libStEx_gt_SE_TrainingModeTipCore, false);
+    TriggerAddEventTimer(libStEx_gt_SE_TrainingModeTipCore, libGame_gv_openTheGatesTimer);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SE_TrainingModeTipDeath1
+//--------------------------------------------------------------------------------------------------
+bool libStEx_gt_SE_TrainingModeTipDeath1_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((libGame_gf_HeroKilledPlayer() == 1))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    Wait(2.0, c_timeGame);
+    libStEx_gf_SE_TrainingModeTipDisplay(libStEx_ge_SE_TrainingModeTips_Death1);
+    libStEx_gf_SE_TrainingModeTipSetDisplayed(libStEx_ge_SE_TrainingModeTips_Death1);
+    Wait(libStEx_gv_sE_TrainingModeTipDuration_C, c_timeGame);
+    TriggerEnable(libStEx_gt_SE_TrainingModeTipDeath2, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libStEx_gt_SE_TrainingModeTipDeath1_Init () {
+    libStEx_gt_SE_TrainingModeTipDeath1 = TriggerCreate("libStEx_gt_SE_TrainingModeTipDeath1_Func");
+    TriggerEnable(libStEx_gt_SE_TrainingModeTipDeath1, false);
+    libGame_gf_HeroKilled(libStEx_gt_SE_TrainingModeTipDeath1);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SE_TrainingModeTipDeath2
+//--------------------------------------------------------------------------------------------------
+bool libStEx_gt_SE_TrainingModeTipDeath2_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((libGame_gf_HeroKilledPlayer() == 1))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    Wait(2.0, c_timeGame);
+    libStEx_gf_SE_TrainingModeTipDisplay(libStEx_ge_SE_TrainingModeTips_Death2);
+    libStEx_gf_SE_TrainingModeTipSetDisplayed(libStEx_ge_SE_TrainingModeTips_Death2);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libStEx_gt_SE_TrainingModeTipDeath2_Init () {
+    libStEx_gt_SE_TrainingModeTipDeath2 = TriggerCreate("libStEx_gt_SE_TrainingModeTipDeath2_Func");
+    TriggerEnable(libStEx_gt_SE_TrainingModeTipDeath2, false);
+    libGame_gf_HeroKilled(libStEx_gt_SE_TrainingModeTipDeath2);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SE_TrainingModeTipExperience
+//--------------------------------------------------------------------------------------------------
+bool libStEx_gt_SE_TrainingModeTipExperience_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((libGame_gf_HeroLevelUpPlayer() == 1))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    while (true) {
+        if ((UnitIsAlive(libGame_gv_players[1].lv_heroUnit) == true) && (libStEx_gf_PlayerIsBeingAttack() == false) && (libStEx_gv_sE_TrainingModeTipDisplaying == false) && ((libNtve_gf_UnitGroupIsDead(UnitGroup(libCore_gf_DataMinionUnitTypeFromPreset(libCore_ge_MinionTypes_Footmen), libCore_gv_cOMPUTER_TeamChaos, RegionCircle(UnitGetPosition(libGame_gv_players[1].lv_heroUnit), 8.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 1)) == false) || (libNtve_gf_UnitGroupIsDead(UnitGroup(libCore_gf_DataMinionUnitTypeFromPreset(libCore_ge_MinionTypes_Wizard), libCore_gv_cOMPUTER_TeamChaos, RegionCircle(UnitGetPosition(libGame_gv_players[1].lv_heroUnit), 8.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 1)) == false) || (libNtve_gf_UnitGroupIsDead(UnitGroup(libCore_gf_DataMinionUnitTypeFromPreset(libCore_ge_MinionTypes_Ranged), libCore_gv_cOMPUTER_TeamChaos, RegionCircle(UnitGetPosition(libGame_gv_players[1].lv_heroUnit), 8.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 1)) == false))) {
+            libStEx_gf_SE_TrainingModeTipDisplay(libStEx_ge_SE_TrainingModeTips_Experience);
+            libStEx_gf_SE_TrainingModeTipSetDisplayed(libStEx_ge_SE_TrainingModeTips_Experience);
+            return true;
+        }
+        else {
+        }
+        Wait(0.5, c_timeGame);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libStEx_gt_SE_TrainingModeTipExperience_Init () {
+    libStEx_gt_SE_TrainingModeTipExperience = TriggerCreate("libStEx_gt_SE_TrainingModeTipExperience_Func");
+    TriggerEnable(libStEx_gt_SE_TrainingModeTipExperience, false);
+    libGame_gf_HeroLevelUp(libStEx_gt_SE_TrainingModeTipExperience);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SE_TrainingModeTipForts
+//--------------------------------------------------------------------------------------------------
+bool libStEx_gt_SE_TrainingModeTipForts_Func (bool testConds, bool runActions) {
+    int autoE83221F0_n;
+    int autoE83221F0_i;
+
+    // Variable Declarations
+    unitgroup lv_forts;
+
+    // Variable Initialization
+    lv_forts = UnitGroupEmpty();
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    autoE83221F0_n = 8;
+    for (autoE83221F0_i = 1; autoE83221F0_i <= autoE83221F0_n; autoE83221F0_i += 1) {
+        if ((UnitIsAlive(libGame_gv_players[1].lv_heroUnit) == true) && (libStEx_gv_sE_TrainingModeTipDisplaying == false)) {
+            lv_forts = UnitGroup("TownTownHallL2", libCore_gv_cOMPUTER_TeamChaos, RegionCircle(UnitGetPosition(libGame_gv_players[1].lv_heroUnit), 10.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+            if ((libNtve_gf_UnitGroupIsDead(lv_forts) == true)) {
+                lv_forts = UnitGroup("TownTownHallL3", libCore_gv_cOMPUTER_TeamChaos, RegionCircle(UnitGetPosition(libGame_gv_players[1].lv_heroUnit), 10.0), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+            }
+            else {
+            }
+            if ((libNtve_gf_UnitGroupIsDead(lv_forts) == false)) {
+                libCore_gf_AttachReticleEffectAndTextTagOnUnit(libCore_ge_ReticleType_Enemy, libCore_ge_ReticleSize_Medium, StringToText(""), UnitGroupUnit(lv_forts, 1), "Ref_Center");
+                libStEx_gf_SE_TrainingModeTipDisplay(libStEx_ge_SE_TrainingModeTips_Forts);
+                libStEx_gf_SE_TrainingModeTipSetDisplayed(libStEx_ge_SE_TrainingModeTips_Forts);
+                Wait(libStEx_gv_sE_TrainingModeTipDuration_C, c_timeGame);
+                libNtve_gf_KillModel(libNtve_gf_ActorLastCreated());
+                return true;
+            }
+            else {
+            }
+        }
+        else {
+        }
+        Wait(0.5, c_timeGame);
+    }
+    TriggerEnable(TriggerGetCurrent(), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libStEx_gt_SE_TrainingModeTipForts_Init () {
+    libStEx_gt_SE_TrainingModeTipForts = TriggerCreate("libStEx_gt_SE_TrainingModeTipForts_Func");
+    TriggerEnable(libStEx_gt_SE_TrainingModeTipForts, false);
+    TriggerAddEventTimer(libStEx_gt_SE_TrainingModeTipForts, libGame_gv_openTheGatesTimer);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SE_TrainingModeTipGates
+//--------------------------------------------------------------------------------------------------
+bool libStEx_gt_SE_TrainingModeTipGates_Func (bool testConds, bool runActions) {
+    int auto05588EDB_ae;
+    int auto05588EDB_ai;
+    int autoCA607DED_ae;
+    int autoCA607DED_ai;
+    unitgroup autoBDCF1F76_g;
+    int autoBDCF1F76_u;
+
+    // Variable Declarations
+    unitgroup lv_gates;
+    int lv_itTown;
+    int lv_itTownStructures;
+    unit lv_itGate;
+
+    // Variable Initialization
+    lv_gates = UnitGroupEmpty();
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    Wait(2.0, c_timeGame);
+    auto05588EDB_ae = libGame_gv_townTownCount;
+    auto05588EDB_ai = 1;
+    lv_itTown = 1;
+    for ( ; ( (auto05588EDB_ai >= 0 && lv_itTown <= auto05588EDB_ae) || (auto05588EDB_ai <= 0 && lv_itTown >= auto05588EDB_ae) ) ; lv_itTown += auto05588EDB_ai ) {
+        if ((libGame_gv_townTownData[lv_itTown].lv_owner != libCore_gv_cOMPUTER_TeamChaos)) {
+            continue;
+        }
+        else {
+        }
+        autoCA607DED_ae = libGame_gv_townTownData[lv_itTown].lv_structureCount;
+        autoCA607DED_ai = 1;
+        lv_itTownStructures = 1;
+        for ( ; ( (autoCA607DED_ai >= 0 && lv_itTownStructures <= autoCA607DED_ae) || (autoCA607DED_ai <= 0 && lv_itTownStructures >= autoCA607DED_ae) ) ; lv_itTownStructures += autoCA607DED_ai ) {
+            if ((libGame_gf_UnitTypeIsTownGate(UnitGetType(libGame_gv_townTownData[lv_itTown].lv_structureUnits[lv_itTownStructures])) == true)) {
+                UnitGroupAdd(lv_gates, libGame_gv_townTownData[lv_itTown].lv_structureUnits[lv_itTownStructures]);
+            }
+            else {
+            }
+        }
+    }
+    if ((libNtve_gf_UnitGroupIsDead(lv_gates) == true)) {
+        return true;
+    }
+    else {
+    }
+    while (true) {
+        if ((UnitIsAlive(libGame_gv_players[1].lv_heroUnit) == true) && (libStEx_gf_PlayerIsBeingAttack() == false) && (libStEx_gv_sE_TrainingModeTipDisplaying == false)) {
+            autoBDCF1F76_g = lv_gates;
+            autoBDCF1F76_u = 1;
+            for ( ; autoBDCF1F76_u <= UnitGroupCount(autoBDCF1F76_g, c_unitCountAll) ; autoBDCF1F76_u += BoolToInt(lv_itGate == UnitGroupUnit(autoBDCF1F76_g, autoBDCF1F76_u)) ) {
+                lv_itGate = UnitGroupUnit(autoBDCF1F76_g, autoBDCF1F76_u);
+                if ((DistanceBetweenPoints(UnitGetPosition(libGame_gv_players[1].lv_heroUnit), UnitGetPosition(lv_itGate)) < 3.0)) {
+                    libCore_gf_AttachReticleEffectAndTextTagOnUnit(libCore_ge_ReticleType_Enemy, libCore_ge_ReticleSize_Medium, StringToText(""), lv_itGate, "Ref_Center");
+                    libStEx_gf_SE_TrainingModeTipDisplay(libStEx_ge_SE_TrainingModeTips_Gates);
+                    libStEx_gf_SE_TrainingModeTipSetDisplayed(libStEx_ge_SE_TrainingModeTips_Gates);
+                    Wait(libStEx_gv_sE_TrainingModeTipDuration_C, c_timeGame);
+                    libNtve_gf_KillModel(libNtve_gf_ActorLastCreated());
+                    return true;
+                }
+                else {
+                }
+            }
+        }
+        else {
+        }
+        Wait(0.5, c_timeGame);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libStEx_gt_SE_TrainingModeTipGates_Init () {
+    libStEx_gt_SE_TrainingModeTipGates = TriggerCreate("libStEx_gt_SE_TrainingModeTipGates_Func");
+    TriggerEnable(libStEx_gt_SE_TrainingModeTipGates, false);
+    TriggerAddEventTimer(libStEx_gt_SE_TrainingModeTipGates, libGame_gv_openTheGatesTimer);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SE_TrainingModeTipHearthstone/Healing Fountain/Mana
+//--------------------------------------------------------------------------------------------------
+bool libStEx_gt_SE_TrainingModeTipHearthstoneHealingFountainMana_Func (bool testConds, bool runActions) {
+    unitgroup auto00B49A0C_g;
+    int auto00B49A0C_u;
+
+    // Variable Declarations
+    unitgroup lv_healingFountains;
+    unit lv_itHealingFountain;
+
+    // Variable Initialization
+    lv_healingFountains = UnitGroupEmpty();
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    Wait(2.0, c_timeGame);
+    if ((libStEx_gf_SE_TrainingModeTipIsOld(libStEx_ge_SE_TrainingModeTips_HealingFountain) == false)) {
+        TriggerEnable(libStEx_gt_SE_TrainingModeTipHealingFountainDrinking, false);
+        lv_healingFountains = UnitGroup("TownMoonwellL2", libCore_gv_cOMPUTER_TeamOrder, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+        UnitGroupAddUnitGroup(lv_healingFountains, UnitGroup("TownMoonwellL3", libCore_gv_cOMPUTER_TeamOrder, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0));
+    }
+    else {
+    }
+    while (true) {
+        if ((libStEx_gf_SE_TrainingModeTipIsOld(libStEx_ge_SE_TrainingModeTips_HealingFountain) == false) && (libStEx_gv_sE_TrainingModeTipHealingFountainDid == false)) {
+            if ((UnitIsAlive(libGame_gv_players[1].lv_heroUnit) == true) && (UnitGetPropertyFixed(libGame_gv_players[1].lv_heroUnit, c_unitPropLifePercent, c_unitPropCurrent) < 75.0) && (UnitHasBehavior2(libGame_gv_players[1].lv_heroUnit, "HealingFountainCooldown") == false) && (libStEx_gf_PlayerIsBeingAttack() == false) && (libStEx_gv_sE_TrainingModeTipDisplaying == false)) {
+                auto00B49A0C_g = lv_healingFountains;
+                auto00B49A0C_u = 1;
+                for ( ; auto00B49A0C_u <= UnitGroupCount(auto00B49A0C_g, c_unitCountAll) ; auto00B49A0C_u += BoolToInt(lv_itHealingFountain == UnitGroupUnit(auto00B49A0C_g, auto00B49A0C_u)) ) {
+                    lv_itHealingFountain = UnitGroupUnit(auto00B49A0C_g, auto00B49A0C_u);
+                    if ((DistanceBetweenPoints(UnitGetPosition(libGame_gv_players[1].lv_heroUnit), UnitGetPosition(lv_itHealingFountain)) < 14.0)) {
+                        libCore_gf_AttachReticleEffectAndTextTagOnUnit(libCore_ge_ReticleType_MainObjective, libCore_ge_ReticleSize_Medium, StringToText(""), lv_itHealingFountain, "Ref_Center");
+                        libStEx_gv_sE_TrainingModeTipHealingFountainReticle = libNtve_gf_ActorLastCreated();
+                        TriggerEnable(libStEx_gt_SE_TrainingModeTipHealingFountainUsed, true);
+                        libStEx_gf_SE_TrainingModeTipDisplay(libStEx_ge_SE_TrainingModeTips_HealingFountain);
+                        libStEx_gf_SE_TrainingModeTipSetDisplayed(libStEx_ge_SE_TrainingModeTips_HealingFountain);
+                        Wait(libStEx_gv_sE_TrainingModeTipDuration_C, c_timeGame);
+                        libNtve_gf_KillModel(libNtve_gf_ActorLastCreated());
+                        libStEx_gv_sE_TrainingModeTipHealingFountainReticle = null;
+                        libStEx_gv_sE_TrainingModeTipHealingFountainDid = true;
+                        Wait(20.0, c_timeGame);
+                    }
+                    else {
+                    }
+                }
+            }
+            else {
+            }
+        }
+        else {
+        }
+        if ((libStEx_gf_SE_TrainingModeTipIsOld(libStEx_ge_SE_TrainingModeTips_Hearthstone) == false) && (libStEx_gv_sE_TrainingModeTipHearthstoneDid == false)) {
+            if ((UnitIsAlive(libGame_gv_players[1].lv_heroUnit) == true) && (libStEx_gf_PlayerIsBeingAttack() == false) && (libStEx_gv_sE_TrainingModeTipDisplaying == false) && (UnitGetPropertyFixed(libGame_gv_players[1].lv_heroUnit, c_unitPropLifePercent, c_unitPropCurrent) < 50.0)) {
+                libStEx_gf_SE_TrainingModeTipDisplay(libStEx_ge_SE_TrainingModeTips_Hearthstone);
+                libStEx_gf_SE_TrainingModeTipSetDisplayed(libStEx_ge_SE_TrainingModeTips_Hearthstone);
+                libStEx_gf_SE_TrainingModeTipSetDisplayed(libStEx_ge_SE_TrainingModeTips_HearthstoneUsed);
+                libStEx_gf_HighlightCommandButton(true, libStEx_ge_TutorialCommandButton_Hearth);
+                TriggerEnable(libStEx_gt_SE_TrainingModeTipHearthstoneUnhighlightButton, true);
+                Wait(libStEx_gv_sE_TrainingModeTipDuration_C, c_timeGame);
+                libStEx_gf_HighlightCommandButton(false, libStEx_ge_TutorialCommandButton_Hearth);
+                libStEx_gv_sE_TrainingModeTipHearthstoneDid = true;
+                TriggerExecute(libStEx_gt_SE_TrainingModeTipHearthstoneTeachingExpires, true, false);
+                Wait(20.0, c_timeGame);
+            }
+            else {
+            }
+        }
+        else {
+        }
+        if ((libStEx_gf_SE_TrainingModeTipIsOld(libStEx_ge_SE_TrainingModeTips_Mana) == false) && (libStEx_gv_sE_TrainingModeTipManaDid == false)) {
+            if ((UnitIsAlive(libGame_gv_players[1].lv_heroUnit) == true) && (libStEx_gv_sE_TrainingModeTipDisplaying == false) && (UnitGetPropertyFixed(libGame_gv_players[1].lv_heroUnit, c_unitPropEnergyPercent, c_unitPropCurrent) < 10.0)) {
+                libStEx_gf_SE_TrainingModeTipDisplay(libStEx_ge_SE_TrainingModeTips_Mana);
+                libStEx_gf_SE_TrainingModeTipSetDisplayed(libStEx_ge_SE_TrainingModeTips_Mana);
+                Wait(libStEx_gv_sE_TrainingModeTipDuration_C, c_timeGame);
+                libStEx_gv_sE_TrainingModeTipManaDid = true;
+                TriggerExecute(libStEx_gt_SE_TrainingModeTipManaTeachingExpires, true, false);
+                Wait(20.0, c_timeGame);
+            }
+            else {
+            }
+        }
+        else {
+        }
+        Wait(0.5, c_timeGame);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libStEx_gt_SE_TrainingModeTipHearthstoneHealingFountainMana_Init () {
+    libStEx_gt_SE_TrainingModeTipHearthstoneHealingFountainMana = TriggerCreate("libStEx_gt_SE_TrainingModeTipHearthstoneHealingFountainMana_Func");
+    TriggerEnable(libStEx_gt_SE_TrainingModeTipHearthstoneHealingFountainMana, false);
+    TriggerAddEventTimer(libStEx_gt_SE_TrainingModeTipHearthstoneHealingFountainMana, libGame_gv_openTheGatesTimer);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SE_TrainingModeTipHearthstoneTeachingExpires
+//--------------------------------------------------------------------------------------------------
+bool libStEx_gt_SE_TrainingModeTipHearthstoneTeachingExpires_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    Wait(60.0, c_timeGame);
+    libStEx_gv_sE_TrainingModeTipHearthstoneDid = false;
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libStEx_gt_SE_TrainingModeTipHearthstoneTeachingExpires_Init () {
+    libStEx_gt_SE_TrainingModeTipHearthstoneTeachingExpires = TriggerCreate("libStEx_gt_SE_TrainingModeTipHearthstoneTeachingExpires_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SE_TrainingModeTipManaTeachingExpires
+//--------------------------------------------------------------------------------------------------
+bool libStEx_gt_SE_TrainingModeTipManaTeachingExpires_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    Wait(60.0, c_timeGame);
+    libStEx_gv_sE_TrainingModeTipManaDid = false;
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libStEx_gt_SE_TrainingModeTipManaTeachingExpires_Init () {
+    libStEx_gt_SE_TrainingModeTipManaTeachingExpires = TriggerCreate("libStEx_gt_SE_TrainingModeTipManaTeachingExpires_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SE_TrainingModeTipHearthstoneUnhighlightButton
+//--------------------------------------------------------------------------------------------------
+bool libStEx_gt_SE_TrainingModeTipHearthstoneUnhighlightButton_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    libStEx_gf_HighlightCommandButton(false, libStEx_ge_TutorialCommandButton_Hearth);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libStEx_gt_SE_TrainingModeTipHearthstoneUnhighlightButton_Init () {
+    libStEx_gt_SE_TrainingModeTipHearthstoneUnhighlightButton = TriggerCreate("libStEx_gt_SE_TrainingModeTipHearthstoneUnhighlightButton_Func");
+    TriggerEnable(libStEx_gt_SE_TrainingModeTipHearthstoneUnhighlightButton, false);
+    TriggerAddEventUnitAbility(libStEx_gt_SE_TrainingModeTipHearthstoneUnhighlightButton, UnitRefFromVariable("libGame_gv_players[1].lv_heroUnit"), AbilityCommand("PortBackToBase", 0), c_abilEffectStageCast, false);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SE_TrainingModeTipHealingFountainUsed
+//--------------------------------------------------------------------------------------------------
+bool libStEx_gt_SE_TrainingModeTipHealingFountainUsed_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    if ((libStEx_gv_sE_TrainingModeTipHealingFountainReticle != null)) {
+        libNtve_gf_KillModel(libStEx_gv_sE_TrainingModeTipHealingFountainReticle);
+        libStEx_gv_sE_TrainingModeTipHealingFountainReticle = null;
+    }
+    else {
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libStEx_gt_SE_TrainingModeTipHealingFountainUsed_Init () {
+    libStEx_gt_SE_TrainingModeTipHealingFountainUsed = TriggerCreate("libStEx_gt_SE_TrainingModeTipHealingFountainUsed_Func");
+    TriggerEnable(libStEx_gt_SE_TrainingModeTipHealingFountainUsed, false);
+    TriggerAddEventUnitAbility(libStEx_gt_SE_TrainingModeTipHealingFountainUsed, UnitRefFromVariable("libGame_gv_players[1].lv_heroUnit"), AbilityCommand("FountainDrink", 0), c_unitAbilStageExecute, false);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SE_TrainingModeTipHealingFountainDrinking
+//--------------------------------------------------------------------------------------------------
+bool libStEx_gt_SE_TrainingModeTipHealingFountainDrinking_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    while (true) {
+        if ((UnitIsAlive(libGame_gv_players[1].lv_heroUnit) == true) && (libStEx_gv_sE_TrainingModeTipDisplaying == false)) {
+            libStEx_gf_SE_TrainingModeTipDisplay(libStEx_ge_SE_TrainingModeTips_HealingFountain);
+            libStEx_gf_SE_TrainingModeTipSetDisplayed(libStEx_ge_SE_TrainingModeTips_HealingFountain);
+            return true;
+        }
+        else {
+        }
+        Wait(0.5, c_timeGame);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libStEx_gt_SE_TrainingModeTipHealingFountainDrinking_Init () {
+    libStEx_gt_SE_TrainingModeTipHealingFountainDrinking = TriggerCreate("libStEx_gt_SE_TrainingModeTipHealingFountainDrinking_Func");
+    TriggerEnable(libStEx_gt_SE_TrainingModeTipHealingFountainDrinking, false);
+    TriggerAddEventUnitAbility(libStEx_gt_SE_TrainingModeTipHealingFountainDrinking, UnitRefFromVariable("libGame_gv_players[1].lv_heroUnit"), AbilityCommand("FountainDrink", 0), c_unitAbilStageExecute, false);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SE_TrainingModeTipMercCamps
+//--------------------------------------------------------------------------------------------------
+bool libStEx_gt_SE_TrainingModeTipMercCamps_Func (bool testConds, bool runActions) {
+    int auto5C5FA041_ae;
+    int auto5C5FA041_ai;
+
+    // Variable Declarations
+    unitgroup lv_towers;
+    int lv_itCamp;
+
+    // Variable Initialization
+    lv_towers = UnitGroupEmpty();
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    Wait(2.0, c_timeGame);
+    while (true) {
+        if ((UnitIsAlive(libGame_gv_players[1].lv_heroUnit) == true) && (libStEx_gf_PlayerIsInCombat() == false) && (libStEx_gv_sE_TrainingModeTipDisplaying == false)) {
+            auto5C5FA041_ae = libMapM_gv_jungleNumberOfCreepCamps;
+            auto5C5FA041_ai = 1;
+            lv_itCamp = 1;
+            for ( ; ( (auto5C5FA041_ai >= 0 && lv_itCamp <= auto5C5FA041_ae) || (auto5C5FA041_ai <= 0 && lv_itCamp >= auto5C5FA041_ae) ) ; lv_itCamp += auto5C5FA041_ai ) {
+                if ((libMapM_gv_jungleCreepCamps[lv_itCamp].lv_aIState == libMapM_ge_JungleCampStates_Idle) && (DistanceBetweenPoints(libMapM_gv_jungleCreepCamps[lv_itCamp].lv_mapDataCampCaptainSpawnPoint, UnitGetPosition(libGame_gv_players[1].lv_heroUnit)) < 12.0)) {
+                    libCore_gf_CreateReticleEffectAndTextTagAtPoint(libCore_ge_ReticleType_BonusObjective, libCore_ge_ReticleSize_Large, null, libMapM_gv_jungleCreepCamps[lv_itCamp].lv_mapDataCampCaptainSpawnPoint);
+                    libStEx_gf_SE_TrainingModeTipDisplay(libStEx_ge_SE_TrainingModeTips_MercCamps);
+                    libStEx_gf_SE_TrainingModeTipSetDisplayed(libStEx_ge_SE_TrainingModeTips_MercCamps);
+                    VisRevealArea(1, RegionCircle(libMapM_gv_jungleCreepCamps[lv_itCamp].lv_mapDataCampCaptainSpawnPoint, 8.0), libStEx_gv_sE_TrainingModeTipDuration_C, false);
+                    Wait(libStEx_gv_sE_TrainingModeTipDuration_C, c_timeGame);
+                    libNtve_gf_KillModel(libNtve_gf_ActorLastCreated());
+                    return true;
+                }
+                else {
+                }
+            }
+        }
+        else {
+        }
+        Wait(0.25, c_timeGame);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libStEx_gt_SE_TrainingModeTipMercCamps_Init () {
+    libStEx_gt_SE_TrainingModeTipMercCamps = TriggerCreate("libStEx_gt_SE_TrainingModeTipMercCamps_Func");
+    TriggerEnable(libStEx_gt_SE_TrainingModeTipMercCamps, false);
+    TriggerAddEventTimer(libStEx_gt_SE_TrainingModeTipMercCamps, libGame_gv_jungleCampStartTimer);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SE_TrainingModeTipMount
+//--------------------------------------------------------------------------------------------------
+bool libStEx_gt_SE_TrainingModeTipMount_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    point lv_originalLoc;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    while (true) {
+        if ((UnitIsAlive(libGame_gv_players[1].lv_heroUnit) == true) && (libStEx_gf_PlayerIsInCombat() == false) && ((UnitHasBehavior2(libGame_gv_players[1].lv_heroUnit, "Mounted") == false) || (UnitBehaviorEnabled(libGame_gv_players[1].lv_heroUnit, "Mounted") == false) || (UnitBehaviorCount(libGame_gv_players[1].lv_heroUnit, "Mounted") == 0))) {
+            if ((lv_originalLoc == null)) {
+                lv_originalLoc = UnitGetPosition(libGame_gv_players[1].lv_heroUnit);
+            }
+            else {
+                if ((libStEx_gv_sE_TrainingModeTipDisplaying == false) && (DistanceBetweenPoints(UnitGetPosition(libGame_gv_players[1].lv_heroUnit), lv_originalLoc) > 25.0)) {
+                    libStEx_gf_SE_TrainingModeTipDisplay(libStEx_ge_SE_TrainingModeTips_Mount);
+                    libStEx_gf_SE_TrainingModeTipSetDisplayed(libStEx_ge_SE_TrainingModeTips_Mount);
+                    libStEx_gf_HighlightCommandButton(true, libStEx_ge_TutorialCommandButton_Mount);
+                    Wait(libStEx_gv_sE_TrainingModeTipDuration_C, c_timeGame);
+                    libStEx_gf_HighlightCommandButton(false, libStEx_ge_TutorialCommandButton_Mount);
+                    Wait(30.0, c_timeGame);
+                    lv_originalLoc = null;
+                    if ((libStEx_gf_SE_TrainingModeTipIsOld(libStEx_ge_SE_TrainingModeTips_Mount) == true)) {
+                        return true;
+                    }
+                    else {
+                    }
+                }
+                else {
+                }
+            }
+        }
+        else {
+            lv_originalLoc = null;
+        }
+        Wait(0.5, c_timeGame);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libStEx_gt_SE_TrainingModeTipMount_Init () {
+    libStEx_gt_SE_TrainingModeTipMount = TriggerCreate("libStEx_gt_SE_TrainingModeTipMount_Func");
+    TriggerEnable(libStEx_gt_SE_TrainingModeTipMount, false);
+    TriggerAddEventTimer(libStEx_gt_SE_TrainingModeTipMount, libGame_gv_openTheGatesTimer);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SE_TrainingModeTipMountUnhighlightButton
+//--------------------------------------------------------------------------------------------------
+bool libStEx_gt_SE_TrainingModeTipMountUnhighlightButton_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    libStEx_gf_HighlightCommandButton(false, libStEx_ge_TutorialCommandButton_Mount);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libStEx_gt_SE_TrainingModeTipMountUnhighlightButton_Init () {
+    libStEx_gt_SE_TrainingModeTipMountUnhighlightButton = TriggerCreate("libStEx_gt_SE_TrainingModeTipMountUnhighlightButton_Func");
+    TriggerEnable(libStEx_gt_SE_TrainingModeTipMountUnhighlightButton, false);
+    TriggerAddEventUnitAbility(libStEx_gt_SE_TrainingModeTipMountUnhighlightButton, UnitRefFromVariable("libGame_gv_players[1].lv_heroUnit"), AbilityCommand("Mount", 0), c_abilEffectStageCast, false);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SE_TrainingModeTipSpacebar
+//--------------------------------------------------------------------------------------------------
+bool libStEx_gt_SE_TrainingModeTipSpacebar_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    unitgroup lv_watchTowers;
+    unit lv_itWatchTower;
+    bool lv_cameraOff;
+    timer lv_cameraOffTimer;
+
+    // Variable Initialization
+    lv_watchTowers = UnitGroupEmpty();
+    lv_cameraOffTimer = TimerCreate();
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    Wait(30.0, c_timeGame);
+    while (true) {
+        if ((lv_cameraOff == false)) {
+            if ((DistanceBetweenPoints(UnitGetPosition(libGame_gv_players[1].lv_heroUnit), CameraGetTarget(1)) > 12.0)) {
+                lv_cameraOff = true;
+                TimerStart(lv_cameraOffTimer, 6.0, false, c_timeGame);
+            }
+            else {
+            }
+        }
+        else {
+            if ((DistanceBetweenPoints(UnitGetPosition(libGame_gv_players[1].lv_heroUnit), CameraGetTarget(1)) < 6.0)) {
+                lv_cameraOff = false;
+                TimerPause(lv_cameraOffTimer, true);
+            }
+            else {
+            }
+        }
+        if ((UnitIsAlive(libGame_gv_players[1].lv_heroUnit) == true) && (libStEx_gf_PlayerIsBeingAttack() == false) && (libStEx_gv_sE_TrainingModeTipDisplaying == false) && (lv_cameraOff == true) && (TimerGetRemaining(lv_cameraOffTimer) == 0.0)) {
+            libStEx_gf_SE_TrainingModeTipDisplay(libStEx_ge_SE_TrainingModeTips_Spacebar);
+            libStEx_gf_SE_TrainingModeTipSetDisplayed(libStEx_ge_SE_TrainingModeTips_Spacebar);
+            lv_cameraOff = false;
+            Wait(120.0, c_timeGame);
+        }
+        else {
+        }
+        Wait(0.5, c_timeGame);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libStEx_gt_SE_TrainingModeTipSpacebar_Init () {
+    libStEx_gt_SE_TrainingModeTipSpacebar = TriggerCreate("libStEx_gt_SE_TrainingModeTipSpacebar_Func");
+    TriggerEnable(libStEx_gt_SE_TrainingModeTipSpacebar, false);
+    TriggerAddEventTimer(libStEx_gt_SE_TrainingModeTipSpacebar, libGame_gv_openTheGatesTimer);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SE_TrainingModeTipTalents
+//--------------------------------------------------------------------------------------------------
+bool libStEx_gt_SE_TrainingModeTipTalents_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    fixed lv_availableTime;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    TriggerEnable(libStEx_gt_SE_TrainingModeTipTalentsPanelOpened, true);
+    TriggerEnable(libStEx_gt_SE_TrainingModeTipTalentsPanelClosed, true);
+    libStEx_gv_sE_TrainingModeTalentPanelOpened = false;
+    while (true) {
+        if ((libUIUI_gv_talents_ActiveABChoiceForPlayer[1] > 0)) {
+            if ((lv_availableTime > 0.0)) {
+                if ((UnitIsAlive(libGame_gv_players[1].lv_heroUnit) == true) && (libStEx_gf_PlayerIsBeingAttack() == false) && (libStEx_gv_sE_TrainingModeTipDisplaying == false) && ((GameGetMissionTime() - lv_availableTime) > 15.0) && (libStEx_gv_sE_TrainingModeTalentPanelOpened == false)) {
+                    libStEx_gf_SE_TrainingModeTipDisplay(libStEx_ge_SE_TrainingModeTips_Talents);
+                    libStEx_gf_SE_TrainingModeTipSetDisplayed(libStEx_ge_SE_TrainingModeTips_Talents);
+                    libStEx_gf_SE_ShowHideTalentPortraitFlashingImage(true);
+                    Wait(libStEx_gv_sE_TrainingModeTipDuration_C, c_timeGame);
+                    Wait(30.0, c_timeGame);
+                    lv_availableTime = 0.0;
+                    if ((libStEx_gf_SE_TrainingModeTipIsOld(libStEx_ge_SE_TrainingModeTips_Talents) == true)) {
+                        return true;
+                    }
+                    else {
+                    }
+                }
+                else {
+                }
+            }
+            else {
+                lv_availableTime = GameGetMissionTime();
+            }
+        }
+        else {
+            lv_availableTime = 0.0;
+        }
+        Wait(0.5, c_timeGame);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libStEx_gt_SE_TrainingModeTipTalents_Init () {
+    libStEx_gt_SE_TrainingModeTipTalents = TriggerCreate("libStEx_gt_SE_TrainingModeTipTalents_Func");
+    TriggerEnable(libStEx_gt_SE_TrainingModeTipTalents, false);
+    TriggerAddEventTimer(libStEx_gt_SE_TrainingModeTipTalents, libGame_gv_openTheGatesTimer);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SE_TrainingModeTipTalentsPanelOpened
+//--------------------------------------------------------------------------------------------------
+bool libStEx_gt_SE_TrainingModeTipTalentsPanelOpened_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libStEx_gf_SE_ShowHideTalentPortraitFlashingImage(false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libStEx_gt_SE_TrainingModeTipTalentsPanelOpened_Init () {
+    libStEx_gt_SE_TrainingModeTipTalentsPanelOpened = TriggerCreate("libStEx_gt_SE_TrainingModeTipTalentsPanelOpened_Func");
+    TriggerEnable(libStEx_gt_SE_TrainingModeTipTalentsPanelOpened, false);
+    TriggerAddEventHeroTalentTreeSelectionPanelShown(libStEx_gt_SE_TrainingModeTipTalentsPanelOpened, 1);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SE_TrainingModeTipTalentsPanelClosed
+//--------------------------------------------------------------------------------------------------
+bool libStEx_gt_SE_TrainingModeTipTalentsPanelClosed_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libStEx_gf_SE_ShowHideTalentPortraitFlashingImage(false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libStEx_gt_SE_TrainingModeTipTalentsPanelClosed_Init () {
+    libStEx_gt_SE_TrainingModeTipTalentsPanelClosed = TriggerCreate("libStEx_gt_SE_TrainingModeTipTalentsPanelClosed_Func");
+    TriggerEnable(libStEx_gt_SE_TrainingModeTipTalentsPanelClosed, false);
+    TriggerAddEventHeroTalentTreeSelectionPanelHidden(libStEx_gt_SE_TrainingModeTipTalentsPanelClosed, 1);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SE_TrainingModeTipWatchTower
+//--------------------------------------------------------------------------------------------------
+bool libStEx_gt_SE_TrainingModeTipWatchTower_Func (bool testConds, bool runActions) {
+    unitgroup autoB26AF25F_g;
+    int autoB26AF25F_u;
+
+    // Variable Declarations
+    unitgroup lv_watchTowers;
+    unit lv_itWatchTower;
+
+    // Variable Initialization
+    lv_watchTowers = UnitGroupEmpty();
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    Wait(2.0, c_timeGame);
+    lv_watchTowers = UnitGroup("XelNagaWatchTower", c_playerAny, RegionEntireMap(), UnitFilter(0, 0, (1 << c_targetFilterMissile), (1 << (c_targetFilterDead - 32)) | (1 << (c_targetFilterHidden - 32))), 0);
+    if ((libNtve_gf_UnitGroupIsDead(lv_watchTowers) == true)) {
+        return true;
+    }
+    else {
+    }
+    while (true) {
+        if ((UnitIsAlive(libGame_gv_players[1].lv_heroUnit) == true) && (libStEx_gf_PlayerIsInCombat() == false) && (libStEx_gv_sE_TrainingModeTipDisplaying == false)) {
+            autoB26AF25F_g = lv_watchTowers;
+            autoB26AF25F_u = 1;
+            for ( ; autoB26AF25F_u <= UnitGroupCount(autoB26AF25F_g, c_unitCountAll) ; autoB26AF25F_u += BoolToInt(lv_itWatchTower == UnitGroupUnit(autoB26AF25F_g, autoB26AF25F_u)) ) {
+                lv_itWatchTower = UnitGroupUnit(autoB26AF25F_g, autoB26AF25F_u);
+                if ((DistanceBetweenPoints(UnitGetPosition(libGame_gv_players[1].lv_heroUnit), UnitGetPosition(lv_itWatchTower)) < 12.0)) {
+                    libCore_gf_AttachReticleEffectAndTextTagOnUnit(libCore_ge_ReticleType_BonusObjective, libCore_ge_ReticleSize_Large, StringToText(""), lv_itWatchTower, "Ref_Center");
+                    TextTagSetFogVisibility(TextTagLastCreated(), c_visTypeMask);
+                    libStEx_gf_SE_TrainingModeTipDisplay(libStEx_ge_SE_TrainingModeTips_WatchTower);
+                    libStEx_gf_SE_TrainingModeTipSetDisplayed(libStEx_ge_SE_TrainingModeTips_WatchTower);
+                    Wait(libStEx_gv_sE_TrainingModeTipDuration_C, c_timeGame);
+                    libNtve_gf_KillModel(libNtve_gf_ActorLastCreated());
+                    TextTagDestroy(TextTagLastCreated());
+                    return true;
+                }
+                else {
+                }
+            }
+        }
+        else {
+        }
+        Wait(0.5, c_timeGame);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libStEx_gt_SE_TrainingModeTipWatchTower_Init () {
+    libStEx_gt_SE_TrainingModeTipWatchTower = TriggerCreate("libStEx_gt_SE_TrainingModeTipWatchTower_Func");
+    TriggerEnable(libStEx_gt_SE_TrainingModeTipWatchTower, false);
+    TriggerAddEventTimer(libStEx_gt_SE_TrainingModeTipWatchTower, libGame_gv_jungleWatchTowerStartTimer);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SE_TrainingModeTipDebug
+//--------------------------------------------------------------------------------------------------
+bool libStEx_gt_SE_TrainingModeTipDebug_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libStEx_gf_SE_TrainingModeTipDisplay(libStEx_ge_SE_TrainingModeTips_HealingFountain);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libStEx_gt_SE_TrainingModeTipDebug_Init () {
+    libStEx_gt_SE_TrainingModeTipDebug = TriggerCreate("libStEx_gt_SE_TrainingModeTipDebug_Func");
+    TriggerEnable(libStEx_gt_SE_TrainingModeTipDebug, false);
+    TriggerAddEventChatMessage(libStEx_gt_SE_TrainingModeTipDebug, c_playerAny, "-set", true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: SE_TrainingModeTipEnable
+//--------------------------------------------------------------------------------------------------
+bool libStEx_gt_SE_TrainingModeTipEnable_Func (bool testConds, bool runActions) {
+    int autoB8CCE432_ae;
+    int autoB8CCE432_ai;
+
+    // Variable Declarations
+    int lv_itTip;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libStEx_gf_SetPracticeMode(true);
+    autoB8CCE432_ae = libStEx_gf_SE_TrainingModeTipCount();
+    autoB8CCE432_ai = 1;
+    lv_itTip = 1;
+    for ( ; ( (autoB8CCE432_ai >= 0 && lv_itTip <= autoB8CCE432_ae) || (autoB8CCE432_ai <= 0 && lv_itTip >= autoB8CCE432_ae) ) ; lv_itTip += autoB8CCE432_ai ) {
+        libStEx_gv_sE_TrainingModeTips[lv_itTip].lv_doneTimes = 0;
+    }
+    libStEx_gv_sE_TrainingModeReferenceCardGamesCount = 0;
+    TriggerExecute(libStEx_gt_TrainingModeInit, true, false);
+    TriggerExecute(libStEx_gt_SE_TrainingModeReferenceCardDisplay, false, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libStEx_gt_SE_TrainingModeTipEnable_Init () {
+    libStEx_gt_SE_TrainingModeTipEnable = TriggerCreate("libStEx_gt_SE_TrainingModeTipEnable_Func");
+    TriggerAddEventChatMessage(libStEx_gt_SE_TrainingModeTipEnable, c_playerAny, "-SETE", true);
+}
+
+void libStEx_InitTriggers () {
+    libStEx_gt_IncludeStartingExperience_Init();
+    libStEx_gt_TrainingModeInit_Init();
+    libStEx_gt_TrainingModeBankInit_Init();
+    libStEx_gt_SE_TrainingModeTalentsReady_Init();
+    libStEx_gt_SE_TrainingModeTalentsSuggestToOpenPanelQ_Init();
+    libStEx_gt_SE_TrainingModeTalentsPanelOpened_Init();
+    libStEx_gt_SE_TrainingModeTalentsPanelFlashTalents_Init();
+    libStEx_gt_SE_TrainingModeTalentsPicked_Init();
+    libStEx_gt_SE_TrainingModeTalentsPickedTransmissionQ_Init();
+    libStEx_gt_SE_TrainingModeTalentStart_Init();
+    libStEx_gt_SE_TrainingModeTalentPause_Init();
+    libStEx_gt_SE_TrainingModeTalentUnPause_Init();
+    libStEx_gt_SE_TrainingModeReferenceCardDisplay_Init();
+    libStEx_gt_SE_TrainingModeTipInitData_Init();
+    libStEx_gt_SE_TrainingModeTipAbilities_Init();
+    libStEx_gt_SE_TrainingModeTipAbilitiesQWERUsed_Init();
+    libStEx_gt_SE_TrainingModeTipAmmunition1_Init();
+    libStEx_gt_SE_TrainingModeTipBushes_Init();
+    libStEx_gt_SE_TrainingModeTipCore_Init();
+    libStEx_gt_SE_TrainingModeTipDeath1_Init();
+    libStEx_gt_SE_TrainingModeTipDeath2_Init();
+    libStEx_gt_SE_TrainingModeTipExperience_Init();
+    libStEx_gt_SE_TrainingModeTipForts_Init();
+    libStEx_gt_SE_TrainingModeTipGates_Init();
+    libStEx_gt_SE_TrainingModeTipHearthstoneHealingFountainMana_Init();
+    libStEx_gt_SE_TrainingModeTipHearthstoneTeachingExpires_Init();
+    libStEx_gt_SE_TrainingModeTipManaTeachingExpires_Init();
+    libStEx_gt_SE_TrainingModeTipHearthstoneUnhighlightButton_Init();
+    libStEx_gt_SE_TrainingModeTipHealingFountainUsed_Init();
+    libStEx_gt_SE_TrainingModeTipHealingFountainDrinking_Init();
+    libStEx_gt_SE_TrainingModeTipMercCamps_Init();
+    libStEx_gt_SE_TrainingModeTipMount_Init();
+    libStEx_gt_SE_TrainingModeTipMountUnhighlightButton_Init();
+    libStEx_gt_SE_TrainingModeTipSpacebar_Init();
+    libStEx_gt_SE_TrainingModeTipTalents_Init();
+    libStEx_gt_SE_TrainingModeTipTalentsPanelOpened_Init();
+    libStEx_gt_SE_TrainingModeTipTalentsPanelClosed_Init();
+    libStEx_gt_SE_TrainingModeTipWatchTower_Init();
+    libStEx_gt_SE_TrainingModeTipDebug_Init();
+    libStEx_gt_SE_TrainingModeTipEnable_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libStEx_InitLib_completed = false;
+
+void libStEx_InitLib () {
+    if (libStEx_InitLib_completed) {
+        return;
+    }
+
+    libStEx_InitLib_completed = true;
+
+    libStEx_InitLibraries();
+    libStEx_InitVariables();
+    libStEx_InitTriggers();
+}
+
+include "TriggerLibs/HeroesLib"
+include "TriggerLibs/GameLib"
+include "TriggerLibs/MapMechanicsLib"
+include "TriggerLibs/UILib"
+

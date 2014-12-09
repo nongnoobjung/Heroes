@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<TriggerData>
+    <library id="1" external="TriggerLibs/HeroesLib"/>
+    <library id="2" external="TriggerLibs/GameLib"/>
+    <library id="3" external="TriggerLibs/MapMechanicsLib"/>
+    <library id="4" external="TriggerLibs/AILib"/>
+    <library id="5" external="TriggerLibs/UILib"/>
+    <library id="6" external="TriggerLibs/StartingExperienceLib"/>
+    <library id="7" external="TriggerLibs/SoundLib"/>
+    <library id="8" external="TriggerLibs/GameDataHelperLib"/>
+    <library id="9" external="TriggerLibs/SupportLib"/>
+</TriggerData>

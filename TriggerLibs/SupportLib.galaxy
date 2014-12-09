@@ -1,0 +1,3031 @@
+include "TriggerLibs/NativeLib"
+include "TriggerLibs/HeroesLib_h"
+include "TriggerLibs/GameLib_h"
+include "TriggerLibs/MapMechanicsLib_h"
+include "TriggerLibs/AILib_h"
+include "TriggerLibs/UILib_h"
+include "TriggerLibs/StartingExperienceLib_h"
+
+include "TriggerLibs/SupportLib_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Support
+//--------------------------------------------------------------------------------------------------
+// External Library Initialization
+void libSprt_InitLibraries () {
+    libNtve_InitVariables();
+    libCore_InitVariables();
+    libGame_InitVariables();
+    libMapM_InitVariables();
+    libAIAI_InitVariables();
+    libUIUI_InitVariables();
+    libStEx_InitVariables();
+}
+
+// Variable Initialization
+bool libSprt_InitVariables_completed = false;
+
+void libSprt_InitVariables () {
+    int init_i;
+
+    if (libSprt_InitVariables_completed) {
+        return;
+    }
+
+    libSprt_InitVariables_completed = true;
+
+    for (init_i = 0; init_i <= libSprt_gv_dataMiningMaxNumberOfDifferentManaRegenSources; init_i += 1) {
+        libSprt_gv_dataMiningManaRegenSourceNames[init_i] = "";
+    }
+    libSprt_gv_dEBUGCombatTextEnabled = true;
+}
+
+// Functions
+void libSprt_gf_PerformanceTestStartPerformanceTest (string lp_name) {
+    // Implementation
+    UnitStatsStart(StringToText(lp_name), StringExternal("Param/Value/lib_Sprt_4E3C325E"), StringExternal("Param/Value/lib_Sprt_22E09DDC"));
+    PerfTestStart(StringToText(lp_name));
+}
+
+void libSprt_gf_PerformanceTestStopPerformanceTest () {
+    // Implementation
+    UnitStatsStop();
+    PerfTestStop();
+    TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_EBB0E5D4"), true);
+}
+
+void libSprt_gf_PerformanceTestHeroSelectScreen () {
+    // Implementation
+    libGame_gv_players[1].lv_heroIndex = 1;
+    Wait(2.0, c_timeGame);
+    TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_B353FF5C"), true);
+    libSprt_gf_PerformanceTestStartPerformanceTest("Hero Select Screen");
+    Wait(10.0, c_timeGame);
+    libSprt_gf_PerformanceTestStopPerformanceTest();
+}
+
+void libSprt_gf_PerformanceTestHeroesIdleBeforeGame () {
+    // Variable Declarations
+    int lv_loop;
+
+    // Variable Initialization
+
+    // Implementation
+    Wait(8.0, c_timeGame);
+    CameraPan(1, UnitGroupCenterOfGroup(UnitGroupSelected(1)), 0.0, -1, 0.0, false);
+    CameraFollowUnitGroup(1, UnitGroupSelected(1), true, false);
+    CameraLockInput(1, true);
+    TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_3E5AD420"), true);
+    libSprt_gf_PerformanceTestStartPerformanceTest("Idle Before Game");
+    Wait(10.0, c_timeGame);
+    libSprt_gf_PerformanceTestStopPerformanceTest();
+}
+
+void libSprt_gf_PerformanceTestHeroesIdleGameStart () {
+    // Implementation
+    Wait(8.0, c_timeGame);
+    TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_DEACEE4E"), true);
+    libSprt_gf_PerformanceTestStartPerformanceTest("Heroes Idle Game Start");
+    Wait(10.0, c_timeGame);
+    libSprt_gf_PerformanceTestStopPerformanceTest();
+}
+
+void libSprt_gf_PerformanceTestHeroesIdleMinionsFighting () {
+    // Implementation
+    TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_6EA60DAC"), true);
+    libSprt_gf_PerformanceTestStartPerformanceTest("Heroes Idle Minions Fighting");
+    Wait(10.0, c_timeGame);
+    libSprt_gf_PerformanceTestStopPerformanceTest();
+}
+
+void libSprt_gf_PerformanceTestTwoHeroesActiveStart () {
+    // Variable Declarations
+    unit lv_hero;
+    int lv_ownerPlayer;
+    int lv_waveIndex;
+    point lv_positionOfHero;
+
+    // Variable Initialization
+
+    // Implementation
+    CameraPan(1, UnitGroupCenterOfGroup(UnitGroupSelected(1)), 0.0, -1, 0.0, false);
+    CameraFollowUnitGroup(1, UnitGroupSelected(1), true, false);
+    CameraLockInput(1, true);
+    libAIAI_gf_HeroAITakeOverHeroForPlayer(1);
+    libAIAI_gf_HeroAIEnableAIForPlayer(PlayerGroupPlayer(libGame_gv_teams[libGame_gv_teamChaosIndex_C].lv_teamPlayerGroup, 1));
+    Wait(2.0, c_timeGame);
+    TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_DFF38BE8"), true);
+    libSprt_gf_PerformanceTestStartPerformanceTest("Two Heroes Activated");
+    Wait(10.0, c_timeGame);
+    libSprt_gf_PerformanceTestStopPerformanceTest();
+}
+
+void libSprt_gf_PerformanceTestTwoHeroesActiveInLane () {
+    // Variable Declarations
+    unit lv_hero;
+    int lv_ownerPlayer;
+    int lv_waveIndex;
+    point lv_positionOfHero;
+
+    // Variable Initialization
+
+    // Implementation
+    TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_E2FFA4A2"), true);
+    libSprt_gf_PerformanceTestStartPerformanceTest("Two Heroes In Lane");
+    Wait(10.0, c_timeGame);
+    libSprt_gf_PerformanceTestStopPerformanceTest();
+}
+
+void libSprt_gf_PerformanceTestSixHeroesActiveStart () {
+    // Variable Declarations
+    unit lv_hero;
+    int lv_ownerPlayer;
+    int lv_waveIndex;
+    point lv_positionOfHero;
+
+    // Variable Initialization
+
+    // Implementation
+    libAIAI_gf_HeroAIEnableAIForPlayer(PlayerGroupPlayer(libGame_gv_teams[libGame_gv_teamOrderIndex_C].lv_teamPlayerGroup, 2));
+    libAIAI_gf_HeroAIEnableAIForPlayer(PlayerGroupPlayer(libGame_gv_teams[libGame_gv_teamChaosIndex_C].lv_teamPlayerGroup, 2));
+    libAIAI_gf_HeroAIEnableAIForPlayer(PlayerGroupPlayer(libGame_gv_teams[libGame_gv_teamOrderIndex_C].lv_teamPlayerGroup, 3));
+    libAIAI_gf_HeroAIEnableAIForPlayer(PlayerGroupPlayer(libGame_gv_teams[libGame_gv_teamChaosIndex_C].lv_teamPlayerGroup, 3));
+    Wait(2.0, c_timeGame);
+    TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_DE92DCE3"), true);
+    libSprt_gf_PerformanceTestStartPerformanceTest("Six Heroes Activated");
+    Wait(10.0, c_timeGame);
+    libSprt_gf_PerformanceTestStopPerformanceTest();
+}
+
+void libSprt_gf_PerformanceTestSixHeroesActiveInLane () {
+    // Variable Declarations
+    unit lv_hero;
+    int lv_ownerPlayer;
+    int lv_waveIndex;
+    point lv_positionOfHero;
+
+    // Variable Initialization
+
+    // Implementation
+    TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_28410EBD"), true);
+    libSprt_gf_PerformanceTestStartPerformanceTest("Six Heroes In Lane");
+    Wait(10.0, c_timeGame);
+    libSprt_gf_PerformanceTestStopPerformanceTest();
+}
+
+void libSprt_gf_PerformanceTestTenHeroesActiveStart () {
+    // Variable Declarations
+    unit lv_hero;
+    int lv_ownerPlayer;
+    int lv_waveIndex;
+    point lv_positionOfHero;
+
+    // Variable Initialization
+
+    // Implementation
+    libAIAI_gf_HeroAIEnableAIForPlayer(PlayerGroupPlayer(libGame_gv_teams[libGame_gv_teamOrderIndex_C].lv_teamPlayerGroup, 4));
+    libAIAI_gf_HeroAIEnableAIForPlayer(PlayerGroupPlayer(libGame_gv_teams[libGame_gv_teamChaosIndex_C].lv_teamPlayerGroup, 4));
+    libAIAI_gf_HeroAIEnableAIForPlayer(PlayerGroupPlayer(libGame_gv_teams[libGame_gv_teamOrderIndex_C].lv_teamPlayerGroup, 5));
+    libAIAI_gf_HeroAIEnableAIForPlayer(PlayerGroupPlayer(libGame_gv_teams[libGame_gv_teamChaosIndex_C].lv_teamPlayerGroup, 5));
+    Wait(2.0, c_timeGame);
+    TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_AF3E0FFC"), true);
+    libSprt_gf_PerformanceTestStartPerformanceTest("Ten Heroes Activated");
+    Wait(10.0, c_timeGame);
+    libSprt_gf_PerformanceTestStopPerformanceTest();
+}
+
+void libSprt_gf_PerformanceTestTenHeroesActiveInLane () {
+    // Variable Declarations
+    unit lv_hero;
+    int lv_ownerPlayer;
+    int lv_waveIndex;
+    point lv_positionOfHero;
+
+    // Variable Initialization
+
+    // Implementation
+    TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_DEBDCE94"), true);
+    libSprt_gf_PerformanceTestStartPerformanceTest("Ten Heroes In Lane");
+    Wait(10.0, c_timeGame);
+    libSprt_gf_PerformanceTestStopPerformanceTest();
+}
+
+void libSprt_gf_PerformanceTestChaosTeamDisabled () {
+    playergroup auto413D494B_g;
+    int auto413D494B_p;
+
+    // Variable Declarations
+    int lv_player;
+
+    // Variable Initialization
+
+    // Implementation
+    auto413D494B_g = libGame_gv_teams[libGame_gv_teamChaosIndex_C].lv_teamPlayerGroup; 
+    auto413D494B_p = 1;
+    for ( ; auto413D494B_p <= PlayerGroupCount(auto413D494B_g) ; auto413D494B_p += BoolToInt(lv_player == PlayerGroupPlayer(auto413D494B_g, auto413D494B_p)) ) {
+        lv_player = PlayerGroupPlayer(auto413D494B_g, auto413D494B_p);
+        if ((lv_player <= libCore_gv_bALMaxPlayers)) {
+            libAIAI_gf_HeroAIDisableAIForPlayer(lv_player);
+            UnitKill(libGame_gv_players[lv_player].lv_heroUnit);
+        }
+        else {
+        }
+    }
+    Wait(2.0, c_timeGame);
+    TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_E52CD5EA"), true);
+    libSprt_gf_PerformanceTestStartPerformanceTest("Chaos Team Disabled");
+    Wait(10.0, c_timeGame);
+    libSprt_gf_PerformanceTestStopPerformanceTest();
+}
+
+void libSprt_gf_PerformanceTestOrderTeamPushingUnopposed () {
+    // Variable Declarations
+    unit lv_hero;
+    int lv_ownerPlayer;
+    int lv_waveIndex;
+    point lv_positionOfHero;
+
+    // Variable Initialization
+
+    // Implementation
+    TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_0104DDDC"), true);
+    libSprt_gf_PerformanceTestStartPerformanceTest("Order Team Pushing");
+    Wait(10.0, c_timeGame);
+    libSprt_gf_PerformanceTestStopPerformanceTest();
+}
+
+int libSprt_gf_DataMiningGetManaRegenSourceIndex (string lp_name) {
+    int auto85B681AE_ae;
+    int auto85B681AE_ai;
+
+    // Variable Declarations
+    int lv_i;
+
+    // Variable Initialization
+
+    // Implementation
+    auto85B681AE_ae = libSprt_gv_dataMiningMaxNumberOfDifferentManaRegenSources;
+    auto85B681AE_ai = 1;
+    lv_i = 1;
+    for ( ; ( (auto85B681AE_ai >= 0 && lv_i <= auto85B681AE_ae) || (auto85B681AE_ai <= 0 && lv_i >= auto85B681AE_ae) ) ; lv_i += auto85B681AE_ai ) {
+        if ((libSprt_gv_dataMiningManaRegenSourceNames[lv_i] == lp_name)) {
+            return lv_i;
+        }
+        else {
+        }
+        if ((libSprt_gv_dataMiningManaRegenSourceNames[lv_i] == "")) {
+            libSprt_gv_dataMiningManaRegenSourceNames[lv_i] = lp_name;
+            return lv_i;
+        }
+        else {
+        }
+    }
+    return 0;
+}
+
+void libSprt_gf_DataMiningPeriodicDataSend () {
+    int auto9AD7948B_ae;
+    int auto9AD7948B_ai;
+
+    // Variable Declarations
+    int lv_itTeam;
+    int lv_itPlayer;
+    int lv_itTown;
+    int lv_itStructure;
+    int lv_player;
+    unit lv_heroUnit;
+    unit lv_structureUnit;
+    fixed lv_structureHPPercent;
+
+    // Variable Initialization
+
+    // Implementation
+    auto9AD7948B_ae = libCore_gv_bALMaxTeams;
+    auto9AD7948B_ai = 1;
+    lv_itTeam = 1;
+    for ( ; ( (auto9AD7948B_ai >= 0 && lv_itTeam <= auto9AD7948B_ae) || (auto9AD7948B_ai <= 0 && lv_itTeam >= auto9AD7948B_ae) ) ; lv_itTeam += auto9AD7948B_ai ) {
+        lv_player = PlayerGroupPlayer(libGame_gv_teams[lv_itTeam].lv_teamPlayerGroupNoNPCPlayers, 1);
+        if ((lv_player > 0) && (lv_player <= libCore_gv_bALMaxPlayers)) {
+            StatEventCreate("PeriodicXPBreakdown");
+            StatEventAddDataInt(StatEventLastCreated(), "Team", lv_itTeam);
+            StatEventAddDataFixed(StatEventLastCreated(), "MinionXP", libGame_gv_players[lv_player].lv_xPRecievedFromMinions);
+            StatEventAddDataFixed(StatEventLastCreated(), "CreepXP", libGame_gv_players[lv_player].lv_xPRecievedFromCreeps);
+            StatEventAddDataFixed(StatEventLastCreated(), "StructureXP", libGame_gv_players[lv_player].lv_xPRecievedFromStructures);
+            StatEventAddDataFixed(StatEventLastCreated(), "HeroXP", libGame_gv_players[lv_player].lv_xPRecievedFromHeroes);
+            StatEventAddDataFixed(StatEventLastCreated(), "TrickleXP", libGame_gv_players[lv_player].lv_xPRecievedFromTrickle);
+            StatEventSend(StatEventLastCreated());
+        }
+        else {
+        }
+    }
+}
+
+void libSprt_gf_DataMiningLogManaRegenForPlayer (int lp_player, string lp_regenSourceName, fixed lp_amount) {
+    // Implementation
+    libSprt_gv_dataMining_PlayerData[lp_player].lv_manaRegenAmounts[libSprt_gf_DataMiningGetManaRegenSourceIndex(lp_regenSourceName)] += lp_amount;
+}
+
+void libSprt_gf_DataMiningTurnDataMiningTriggersOnOff (bool lp_onOff) {
+    // Implementation
+    TriggerEnable(libSprt_gt_DataMiningListenForRegenGlobes, lp_onOff);
+    TriggerEnable(libSprt_gt_DataMiningPeriodicDataSendPeriodicEventTrigger, lp_onOff);
+}
+
+void libSprt_gf_DataMiningSendStartGameEvents () {
+    int autoBAAD8CF8_ae;
+    int autoBAAD8CF8_ai;
+    int auto3E9EF2A0_val;
+    int autoB5E0751A_ae;
+    int autoB5E0751A_ai;
+    int auto60B8D5BE_ae;
+    int auto60B8D5BE_ai;
+    int autoF8A3E2EA_ae;
+    int autoF8A3E2EA_ai;
+
+    // Variable Declarations
+    int lv_i;
+    int lv_k;
+    string lv_controller;
+    string lv_handle;
+
+    // Variable Initialization
+    lv_controller = "";
+    lv_handle = "";
+
+    // Implementation
+    StatEventCreate("GameStart");
+    StatEventAddDataFixed(StatEventLastCreated(), "MapSizeX", PointGetX(RegionGetBoundsMax(RegionEntireMap())));
+    StatEventAddDataFixed(StatEventLastCreated(), "MapSizeY", PointGetY(RegionGetBoundsMax(RegionEntireMap())));
+    StatEventSend(StatEventLastCreated());
+    autoBAAD8CF8_ae = libCore_gv_bALMaxPlayers;
+    autoBAAD8CF8_ai = 1;
+    lv_i = 1;
+    for ( ; ( (autoBAAD8CF8_ai >= 0 && lv_i <= autoBAAD8CF8_ae) || (autoBAAD8CF8_ai <= 0 && lv_i >= autoBAAD8CF8_ae) ) ; lv_i += autoBAAD8CF8_ai ) {
+        auto3E9EF2A0_val = PlayerType(lv_i);
+        if (auto3E9EF2A0_val == c_playerTypeNone) {
+            lv_controller = "None";
+        }
+        else if (auto3E9EF2A0_val == c_playerTypeUser) {
+            lv_controller = "User";
+        }
+        else if (auto3E9EF2A0_val == c_playerTypeComputer) {
+            lv_controller = "Computer";
+        }
+        else {
+        }
+        StatEventCreate("PlayerInit");
+        StatEventAddDataInt(StatEventLastCreated(), "PlayerID", lv_i);
+        StatEventAddDataInt(StatEventLastCreated(), "Team", libGame_gf_TeamNumberOfPlayer(lv_i));
+        StatEventAddDataString(StatEventLastCreated(), "Controller", lv_controller);
+        lv_handle = PlayerHandle(lv_i);
+        if ((lv_handle != "")) {
+            StatEventAddDataString(StatEventLastCreated(), "ToonHandle", lv_handle);
+        }
+        else {
+        }
+        StatEventSend(StatEventLastCreated());
+    }
+    autoB5E0751A_ae = libGame_gv_townTownCount;
+    autoB5E0751A_ai = 1;
+    lv_i = 1;
+    for ( ; ( (autoB5E0751A_ai >= 0 && lv_i <= autoB5E0751A_ae) || (autoB5E0751A_ai <= 0 && lv_i >= autoB5E0751A_ae) ) ; lv_i += autoB5E0751A_ai ) {
+        auto60B8D5BE_ae = libGame_gv_townTownData[lv_i].lv_structureCount;
+        auto60B8D5BE_ai = 1;
+        lv_k = 1;
+        for ( ; ( (auto60B8D5BE_ai >= 0 && lv_k <= auto60B8D5BE_ae) || (auto60B8D5BE_ai <= 0 && lv_k >= auto60B8D5BE_ae) ) ; lv_k += auto60B8D5BE_ai ) {
+            if ((libGame_gv_townTownData[lv_i].lv_structureTypes[lv_k] == libGame_ge_TownStructureTypes_TownHall)) {
+                StatEventCreate("TownStructureInit");
+                StatEventAddDataInt(StatEventLastCreated(), "TownID", lv_i);
+                StatEventAddDataInt(StatEventLastCreated(), "Team", libGame_gf_TeamNumberOfPlayer(libGame_gv_townTownData[lv_i].lv_owner));
+                StatEventAddDataInt(StatEventLastCreated(), "Lane", libGame_gv_townTownData[lv_i].lv_lane);
+                StatEventAddDataFixed(StatEventLastCreated(), "PositionX", PointGetX(libGame_gv_townTownData[lv_i].lv_structureSpawnPoints[lv_k]));
+                StatEventAddDataFixed(StatEventLastCreated(), "PositionY", PointGetY(libGame_gv_townTownData[lv_i].lv_structureSpawnPoints[lv_k]));
+                StatEventSend(StatEventLastCreated());
+            }
+            else {
+            }
+        }
+    }
+    autoF8A3E2EA_ae = libMapM_gv_jungleNumberOfCreepCamps;
+    autoF8A3E2EA_ai = 1;
+    lv_i = 1;
+    for ( ; ( (autoF8A3E2EA_ai >= 0 && lv_i <= autoF8A3E2EA_ae) || (autoF8A3E2EA_ai <= 0 && lv_i >= autoF8A3E2EA_ae) ) ; lv_i += autoF8A3E2EA_ai ) {
+        StatEventCreate("JungleCampInit");
+        StatEventAddDataInt(StatEventLastCreated(), "CampID", lv_i);
+        StatEventAddDataFixed(StatEventLastCreated(), "PositionX", PointGetX(libMapM_gv_jungleCreepCamps[lv_i].lv_mapDataCampCaptainSpawnPoint));
+        StatEventAddDataFixed(StatEventLastCreated(), "PositionY", PointGetY(libMapM_gv_jungleCreepCamps[lv_i].lv_mapDataCampCaptainSpawnPoint));
+        StatEventSend(StatEventLastCreated());
+    }
+}
+
+void libSprt_gf_DataMiningSendEndOfGameDigests () {
+    int auto01159F25_ae;
+    int auto01159F25_ai;
+
+    // Variable Declarations
+    int lv_player;
+    int lv_source;
+    string lv_sourceName;
+
+    // Variable Initialization
+    lv_sourceName = "";
+
+    // Implementation
+    auto01159F25_ae = libCore_gv_bALMaxPlayers;
+    auto01159F25_ai = 1;
+    lv_player = 1;
+    for ( ; ( (auto01159F25_ai >= 0 && lv_player <= auto01159F25_ae) || (auto01159F25_ai <= 0 && lv_player >= auto01159F25_ae) ) ; lv_player += auto01159F25_ai ) {
+        StatEventCreate("EndOfGameXPBreakdown");
+        StatEventAddDataInt(StatEventLastCreated(), "PlayerID", lv_player);
+        StatEventAddDataFixed(StatEventLastCreated(), "MinionXP", libGame_gv_players[lv_player].lv_xPRecievedFromMinions);
+        StatEventAddDataFixed(StatEventLastCreated(), "CreepXP", libGame_gv_players[lv_player].lv_xPRecievedFromCreeps);
+        StatEventAddDataFixed(StatEventLastCreated(), "StructureXP", libGame_gv_players[lv_player].lv_xPRecievedFromStructures);
+        StatEventAddDataFixed(StatEventLastCreated(), "HeroXP", libGame_gv_players[lv_player].lv_xPRecievedFromHeroes);
+        StatEventAddDataFixed(StatEventLastCreated(), "TrickleXP", libGame_gv_players[lv_player].lv_xPRecievedFromTrickle);
+        StatEventSend(StatEventLastCreated());
+        StatEventCreate("EndOfGameTimeSpentDead");
+        StatEventAddDataInt(StatEventLastCreated(), "PlayerID", lv_player);
+        StatEventAddDataFixed(StatEventLastCreated(), "Time", libGame_gv_players[lv_player].lv_timeSpentDead);
+        StatEventSend(StatEventLastCreated());
+    }
+    libSprt_gf_DataMiningTurnDataMiningTriggersOnOff(false);
+}
+
+void libSprt_gf_DEBUGStartGame () {
+    // Implementation
+    if ((libCore_gv_dEBUGDebuggingEnabled == false)) {
+        return ;
+    }
+    else {
+    }
+    TimerStart(libGame_gv_openTheGatesTimer, 1.0, false, c_timeGame);
+    TriggerStop(libGame_gt_AnnounceCountdown);
+}
+
+void libSprt_gf_DEBUGSpawnCreepCamps () {
+    // Implementation
+    if ((libCore_gv_dEBUGDebuggingEnabled == false)) {
+        return ;
+    }
+    else {
+    }
+    TimerStart(libGame_gv_jungleCampStartTimer, 0.0625, false, c_timeGame);
+    TimerStart(libGame_gv_graveGolemCampStartTimer, 0.0625, false, c_timeGame);
+}
+
+void libSprt_gf_DEBUGToggleSelection () {
+    // Implementation
+    if ((libCore_gv_dEBUGDebuggingEnabled == false)) {
+        return ;
+    }
+    else {
+    }
+    TriggerEnable(libUIUI_gt_UIDebugPanelSelectionEnabledCheckboxClicked, false);
+    DialogControlSetEnabled(libUIUI_gv_uIDebugPanel.lv_selectionEnabledCheckbox, PlayerGroupAll(), false);
+    if ((libSprt_gv_dEBUGSelectionEnabled == false)) {
+        libSprt_gv_dEBUGSelectionEnabled = true;
+        UISetDragSelectEnabled(PlayerGroupAll(), true);
+        UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, true);
+        libNtve_gf_SetDialogItemChecked(libUIUI_gv_uIDebugPanel.lv_selectionEnabledCheckbox, true, PlayerGroupAll());
+        TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_76A66534"), true);
+    }
+    else {
+        libSprt_gv_dEBUGSelectionEnabled = false;
+        UISetDragSelectEnabled(PlayerGroupAll(), false);
+        UISetSelectionTypeEnabled(PlayerGroupAll(), c_localSelectionTypeUnknown, false);
+        libNtve_gf_SetDialogItemChecked(libUIUI_gv_uIDebugPanel.lv_selectionEnabledCheckbox, false, PlayerGroupAll());
+        TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_991AD450"), true);
+    }
+    Wait(0.25, c_timeGame);
+    TriggerEnable(libUIUI_gt_UIDebugPanelSelectionEnabledCheckboxClicked, true);
+    DialogControlSetEnabled(libUIUI_gv_uIDebugPanel.lv_selectionEnabledCheckbox, PlayerGroupAll(), true);
+}
+
+void libSprt_gf_DEBUGToggleAllTalentSelection (int lp_player) {
+    // Implementation
+    if ((libCore_gv_dEBUGDebuggingEnabled == false)) {
+        return ;
+    }
+    else {
+    }
+    TriggerEnable(libUIUI_gt_UIDebugPanelAllTalentsCheckboxClicked, false);
+    DialogControlSetEnabled(libUIUI_gv_uIDebugPanel.lv_allTalentsCheckbox, PlayerGroupAll(), false);
+    if ((libSprt_gv_dEBUGTalentDebugEnabled == false)) {
+        libSprt_gv_dEBUGTalentDebugEnabled = true;
+        SetTalentUpgradeRequired(false);
+        libNtve_gf_SetDialogItemChecked(libUIUI_gv_uIDebugPanel.lv_allTalentsCheckbox, true, PlayerGroupAll());
+        TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_64629C3D"), true);
+    }
+    else {
+        libSprt_gv_dEBUGTalentDebugEnabled = false;
+        SetTalentUpgradeRequired(true);
+        libNtve_gf_SetDialogItemChecked(libUIUI_gv_uIDebugPanel.lv_allTalentsCheckbox, false, PlayerGroupAll());
+        TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_1C162EE9"), true);
+    }
+    libUIUI_gf_UIDebugPanelSpawnOrSwapHeroForPlayer(libGame_gv_players[lp_player].lv_heroIndex, libGame_gv_players[lp_player].lv_selectedSkin, libGame_gv_players[lp_player].lv_selectedMount, 1.0, lp_player);
+    Wait(0.75, c_timeGame);
+    TriggerEnable(libUIUI_gt_UIDebugPanelAllTalentsCheckboxClicked, true);
+    DialogControlSetEnabled(libUIUI_gv_uIDebugPanel.lv_allTalentsCheckbox, PlayerGroupAll(), true);
+}
+
+fixed libSprt_gf_DebugGameTimeDelta () {
+    // Implementation
+    return libSprt_gv_debug_GameTimeDelta;
+}
+
+// Triggers
+//--------------------------------------------------------------------------------------------------
+// Trigger: #Include Support
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_IncludeSupport_Func (bool testConds, bool runActions) {
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_IncludeSupport_Init () {
+    libSprt_gt_IncludeSupport = TriggerCreate("libSprt_gt_IncludeSupport_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Automated Build Test
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_AutomatedBuildTest_Func (bool testConds, bool runActions) {
+    playergroup autoE076AD7D_g;
+    int autoE076AD7D_p;
+
+    // Variable Declarations
+    int lv_player;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerDebugOutput(5, TextExpressionAssemble("Param/Expression/lib_Sprt_8F8ADE66"), true);
+    libGame_gv_players[1].lv_heroIndex = 1;
+    Wait(2.0, c_timeGame);
+    ConsoleCommand("speed 8", true, true);
+    libSprt_gf_DEBUGStartGame();
+    Wait(2.0, c_timeGame);
+    CameraPan(1, UnitGroupCenterOfGroup(UnitGroupSelected(1)), 0.0, -1, 0.0, false);
+    CameraFollowUnitGroup(1, UnitGroupSelected(1), true, false);
+    CameraLockInput(1, true);
+    Wait(8.0, c_timeGame);
+    libAIAI_gf_HeroAITakeOverHeroForPlayer(1);
+    libAIAI_gf_HeroAIEnableAIForPlayer(PlayerGroupPlayer(libGame_gv_teams[libGame_gv_teamChaosIndex_C].lv_teamPlayerGroup, 1));
+    libAIAI_gf_HeroAIEnableAIForPlayer(PlayerGroupPlayer(libGame_gv_teams[libGame_gv_teamOrderIndex_C].lv_teamPlayerGroup, 2));
+    libAIAI_gf_HeroAIEnableAIForPlayer(PlayerGroupPlayer(libGame_gv_teams[libGame_gv_teamChaosIndex_C].lv_teamPlayerGroup, 2));
+    libAIAI_gf_HeroAIEnableAIForPlayer(PlayerGroupPlayer(libGame_gv_teams[libGame_gv_teamOrderIndex_C].lv_teamPlayerGroup, 3));
+    libAIAI_gf_HeroAIEnableAIForPlayer(PlayerGroupPlayer(libGame_gv_teams[libGame_gv_teamChaosIndex_C].lv_teamPlayerGroup, 3));
+    libAIAI_gf_HeroAIEnableAIForPlayer(PlayerGroupPlayer(libGame_gv_teams[libGame_gv_teamOrderIndex_C].lv_teamPlayerGroup, 4));
+    libAIAI_gf_HeroAIEnableAIForPlayer(PlayerGroupPlayer(libGame_gv_teams[libGame_gv_teamChaosIndex_C].lv_teamPlayerGroup, 4));
+    libAIAI_gf_HeroAIEnableAIForPlayer(PlayerGroupPlayer(libGame_gv_teams[libGame_gv_teamOrderIndex_C].lv_teamPlayerGroup, 5));
+    libAIAI_gf_HeroAIEnableAIForPlayer(PlayerGroupPlayer(libGame_gv_teams[libGame_gv_teamChaosIndex_C].lv_teamPlayerGroup, 5));
+    Wait(240.0, c_timeGame);
+    TriggerDebugOutput(5, TextExpressionAssemble("Param/Expression/lib_Sprt_DCA8C979"), true);
+    autoE076AD7D_g = libGame_gv_teams[libGame_gv_teamChaosIndex_C].lv_teamPlayerGroup; 
+    autoE076AD7D_p = 1;
+    for ( ; autoE076AD7D_p <= PlayerGroupCount(autoE076AD7D_g) ; autoE076AD7D_p += BoolToInt(lv_player == PlayerGroupPlayer(autoE076AD7D_g, autoE076AD7D_p)) ) {
+        lv_player = PlayerGroupPlayer(autoE076AD7D_g, autoE076AD7D_p);
+        if ((lv_player <= libCore_gv_bALMaxPlayers)) {
+            libAIAI_gf_HeroAIDisableAIForPlayer(lv_player);
+            UnitKill(libGame_gv_players[lv_player].lv_heroUnit);
+        }
+        else {
+        }
+    }
+    Wait(90.0, c_timeGame);
+    ConsoleCommand("exit", true, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_AutomatedBuildTest_Init () {
+    libSprt_gt_AutomatedBuildTest = TriggerCreate("libSprt_gt_AutomatedBuildTest_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Performance Test - Spawn Heroes For Heroes Performance Test Map
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_PerformanceTestSpawnHeroesForHeroesPerformanceTestMap_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    PlayerGroupAdd(libGame_gv_teams[libGame_gv_teamOrderIndex_C].lv_teamPlayerGroup, 1);
+    PlayerGroupAdd(libGame_gv_teams[libGame_gv_teamOrderIndex_C].lv_teamPlayerGroupNoNPCPlayers, 1);
+    PlayerGroupAdd(libGame_gv_teams[libGame_gv_teamOrderIndex_C].lv_teamPlayerGroup, 2);
+    PlayerGroupAdd(libGame_gv_teams[libGame_gv_teamOrderIndex_C].lv_teamPlayerGroupNoNPCPlayers, 2);
+    PlayerGroupAdd(libGame_gv_teams[libGame_gv_teamOrderIndex_C].lv_teamPlayerGroup, 3);
+    PlayerGroupAdd(libGame_gv_teams[libGame_gv_teamOrderIndex_C].lv_teamPlayerGroupNoNPCPlayers, 3);
+    PlayerGroupAdd(libGame_gv_teams[libGame_gv_teamOrderIndex_C].lv_teamPlayerGroup, 4);
+    PlayerGroupAdd(libGame_gv_teams[libGame_gv_teamOrderIndex_C].lv_teamPlayerGroupNoNPCPlayers, 4);
+    PlayerGroupAdd(libGame_gv_teams[libGame_gv_teamOrderIndex_C].lv_teamPlayerGroup, 5);
+    PlayerGroupAdd(libGame_gv_teams[libGame_gv_teamOrderIndex_C].lv_teamPlayerGroupNoNPCPlayers, 5);
+    PlayerGroupAdd(libGame_gv_teams[libGame_gv_teamChaosIndex_C].lv_teamPlayerGroup, 6);
+    PlayerGroupAdd(libGame_gv_teams[libGame_gv_teamChaosIndex_C].lv_teamPlayerGroupNoNPCPlayers, 6);
+    PlayerGroupAdd(libGame_gv_teams[libGame_gv_teamChaosIndex_C].lv_teamPlayerGroup, 7);
+    PlayerGroupAdd(libGame_gv_teams[libGame_gv_teamChaosIndex_C].lv_teamPlayerGroupNoNPCPlayers, 7);
+    PlayerGroupAdd(libGame_gv_teams[libGame_gv_teamChaosIndex_C].lv_teamPlayerGroup, 8);
+    PlayerGroupAdd(libGame_gv_teams[libGame_gv_teamChaosIndex_C].lv_teamPlayerGroupNoNPCPlayers, 8);
+    PlayerGroupAdd(libGame_gv_teams[libGame_gv_teamChaosIndex_C].lv_teamPlayerGroup, 9);
+    PlayerGroupAdd(libGame_gv_teams[libGame_gv_teamChaosIndex_C].lv_teamPlayerGroupNoNPCPlayers, 9);
+    PlayerGroupAdd(libGame_gv_teams[libGame_gv_teamChaosIndex_C].lv_teamPlayerGroup, 10);
+    PlayerGroupAdd(libGame_gv_teams[libGame_gv_teamChaosIndex_C].lv_teamPlayerGroupNoNPCPlayers, 10);
+    libGame_gf_SpawnHero(1, libCore_gf_GetHeroIndexForUnitType("HeroStitches"), libGame_gv_players[1].lv_spawnPoint);
+    libGame_gf_SpawnHero(2, libCore_gf_GetHeroIndexForUnitType("HeroArthas"), libGame_gv_players[2].lv_spawnPoint);
+    libGame_gf_SpawnHero(3, libCore_gf_GetHeroIndexForUnitType("HeroDiablo"), libGame_gv_players[3].lv_spawnPoint);
+    libGame_gf_SpawnHero(4, libCore_gf_GetHeroIndexForUnitType("HeroTyrael"), libGame_gv_players[4].lv_spawnPoint);
+    libGame_gf_SpawnHero(5, libCore_gf_GetHeroIndexForUnitType("HeroNova"), libGame_gv_players[5].lv_spawnPoint);
+    libGame_gf_SpawnHero(6, libCore_gf_GetHeroIndexForUnitType("HeroBarbarian"), libGame_gv_players[6].lv_spawnPoint);
+    libGame_gf_SpawnHero(7, libCore_gf_GetHeroIndexForUnitType("HeroKerrigan"), libGame_gv_players[7].lv_spawnPoint);
+    libGame_gf_SpawnHero(8, libCore_gf_GetHeroIndexForUnitType("HeroUther"), libGame_gv_players[8].lv_spawnPoint);
+    libGame_gf_SpawnHero(9, libCore_gf_GetHeroIndexForUnitType("HeroWitchDoctor"), libGame_gv_players[9].lv_spawnPoint);
+    libGame_gf_SpawnHero(10, libCore_gf_GetHeroIndexForUnitType("HeroL90ETC"), libGame_gv_players[10].lv_spawnPoint);
+    UnitBehaviorAdd(libGame_gv_players[6].lv_heroUnit, "Ultimate1Unlocked", libGame_gv_players[6].lv_heroUnit, 1);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_PerformanceTestSpawnHeroesForHeroesPerformanceTestMap_Init () {
+    libSprt_gt_PerformanceTestSpawnHeroesForHeroesPerformanceTestMap = TriggerCreate("libSprt_gt_PerformanceTestSpawnHeroesForHeroesPerformanceTestMap_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Performance Test - Run Performance Test
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_PerformanceTestRunPerformanceTest_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_i;
+    int lv_targetPlayer;
+
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!((libSprt_gv_performanceTestPerformanceTestRunning == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TextExpressionSetToken("Param/Expression/lib_Sprt_DC9BF57F", "A", IntToText(GameTestConfigType()));
+    TriggerDebugOutput(5, TextExpressionAssemble("Param/Expression/lib_Sprt_DC9BF57F"), true);
+    TriggerEnable(libSprt_gt_PerformanceTestGetFPS, true);
+    TriggerEnable(libSprt_gt_PerformanceTestOutputFPSToFile, true);
+    TriggerEnable(libSprt_gt_PerformanceTestMaintainHeroHealth, true);
+    libSprt_gf_PerformanceTestHeroSelectScreen();
+    libSprt_gf_PerformanceTestHeroesIdleBeforeGame();
+    libSprt_gf_PerformanceTestHeroesIdleGameStart();
+    Wait(15.0, c_timeGame);
+    libSprt_gf_PerformanceTestHeroesIdleMinionsFighting();
+    libSprt_gf_PerformanceTestTwoHeroesActiveStart();
+    Wait(20.0, c_timeGame);
+    libSprt_gf_PerformanceTestTwoHeroesActiveInLane();
+    libSprt_gf_PerformanceTestSixHeroesActiveStart();
+    Wait(20.0, c_timeGame);
+    libSprt_gf_PerformanceTestSixHeroesActiveInLane();
+    libSprt_gf_PerformanceTestTenHeroesActiveStart();
+    Wait(20.0, c_timeGame);
+    libSprt_gf_PerformanceTestTenHeroesActiveInLane();
+    libSprt_gf_PerformanceTestChaosTeamDisabled();
+    Wait(30.0, c_timeGame);
+    libSprt_gf_PerformanceTestOrderTeamPushingUnopposed();
+    ConsoleCommand("exit", true, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_PerformanceTestRunPerformanceTest_Init () {
+    libSprt_gt_PerformanceTestRunPerformanceTest = TriggerCreate("libSprt_gt_PerformanceTestRunPerformanceTest_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Performance Test - Set Hero Choices
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_PerformanceTestSetHeroChoices_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libGame_gv_players[1].lv_heroIndex = libCore_gf_GetHeroIndexForUnitType("HeroMuradin");
+    libGame_gv_players[2].lv_heroIndex = libCore_gf_GetHeroIndexForUnitType("HeroStitches");
+    libGame_gv_players[3].lv_heroIndex = libCore_gf_GetHeroIndexForUnitType("HeroNova");
+    libGame_gv_players[4].lv_heroIndex = libCore_gf_GetHeroIndexForUnitType("HeroUther");
+    libGame_gv_players[5].lv_heroIndex = libCore_gf_GetHeroIndexForUnitType("HeroFalstad");
+    libGame_gv_players[6].lv_heroIndex = libCore_gf_GetHeroIndexForUnitType("HeroArthas");
+    libGame_gv_players[7].lv_heroIndex = libCore_gf_GetHeroIndexForUnitType("HeroKerrigan");
+    libGame_gv_players[8].lv_heroIndex = libCore_gf_GetHeroIndexForUnitType("HeroDemonHunter");
+    libGame_gv_players[9].lv_heroIndex = libCore_gf_GetHeroIndexForUnitType("HeroTassadar");
+    libGame_gv_players[10].lv_heroIndex = libCore_gf_GetHeroIndexForUnitType("HeroWitchDoctor");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_PerformanceTestSetHeroChoices_Init () {
+    libSprt_gt_PerformanceTestSetHeroChoices = TriggerCreate("libSprt_gt_PerformanceTestSetHeroChoices_Func");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Performance Test - Get FPS
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_PerformanceTestGetFPS_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    PerfTestGetFPS();
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_PerformanceTestGetFPS_Init () {
+    libSprt_gt_PerformanceTestGetFPS = TriggerCreate("libSprt_gt_PerformanceTestGetFPS_Func");
+    TriggerEnable(libSprt_gt_PerformanceTestGetFPS, false);
+    TriggerAddEventTimePeriodic(libSprt_gt_PerformanceTestGetFPS, 0.0625, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Performance Test - Output FPS To File
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_PerformanceTestOutputFPSToFile_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerDebugOutput(5, StringExternal("Param/Value/lib_Sprt_8CB44873"), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_PerformanceTestOutputFPSToFile_Init () {
+    libSprt_gt_PerformanceTestOutputFPSToFile = TriggerCreate("libSprt_gt_PerformanceTestOutputFPSToFile_Func");
+    TriggerEnable(libSprt_gt_PerformanceTestOutputFPSToFile, false);
+    TriggerAddEventTimePeriodic(libSprt_gt_PerformanceTestOutputFPSToFile, 1.0, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Performance Test - Maintain Hero Health
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_PerformanceTestMaintainHeroHealth_Func (bool testConds, bool runActions) {
+    int auto2B7B4FF6_ae;
+
+    // Variable Declarations
+    int lv_loop;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    auto2B7B4FF6_ae = 10;
+    lv_loop = 1;
+    for ( ; lv_loop <= auto2B7B4FF6_ae ; lv_loop += 1 ) {
+        UnitSetPropertyFixed(libGame_gv_players[lv_loop].lv_heroUnit, c_unitPropLifePercent, 100.0);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_PerformanceTestMaintainHeroHealth_Init () {
+    libSprt_gt_PerformanceTestMaintainHeroHealth = TriggerCreate("libSprt_gt_PerformanceTestMaintainHeroHealth_Func");
+    TriggerEnable(libSprt_gt_PerformanceTestMaintainHeroHealth, false);
+    TriggerAddEventTimePeriodic(libSprt_gt_PerformanceTestMaintainHeroHealth, 0.5, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Data Mining - Listen For Regen Globes
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DataMiningListenForRegenGlobes_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_triggeringPlayer;
+
+    // Variable Initialization
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_triggeringPlayer = EventPlayerEffectUsedUnitOwner(c_effectPlayerTarget);
+    if (((lv_triggeringPlayer <= 0) || (lv_triggeringPlayer > libCore_gv_bALMaxPlayers))) {
+        return true;
+    }
+    else {
+    }
+    libGame_gv_players[lv_triggeringPlayer].lv_regenGlobes += 1;
+    StatEventCreate("RegenGlobePickedUp");
+    StatEventAddDataInt(StatEventLastCreated(), "PlayerID", lv_triggeringPlayer);
+    StatEventSend(StatEventLastCreated());
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DataMiningListenForRegenGlobes_Init () {
+    libSprt_gt_DataMiningListenForRegenGlobes = TriggerCreate("libSprt_gt_DataMiningListenForRegenGlobes_Func");
+    TriggerEnable(libSprt_gt_DataMiningListenForRegenGlobes, false);
+    TriggerAddEventPlayerEffectUsed(libSprt_gt_DataMiningListenForRegenGlobes, c_playerAny, "RegenGlobeImpactSet");
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Data Mining - Periodic Data Send Periodic Event Trigger
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DataMiningPeriodicDataSendPeriodicEventTrigger_Func (bool testConds, bool runActions) {
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libSprt_gf_DataMiningPeriodicDataSend();
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DataMiningPeriodicDataSendPeriodicEventTrigger_Init () {
+    libSprt_gt_DataMiningPeriodicDataSendPeriodicEventTrigger = TriggerCreate("libSprt_gt_DataMiningPeriodicDataSendPeriodicEventTrigger_Func");
+    TriggerEnable(libSprt_gt_DataMiningPeriodicDataSendPeriodicEventTrigger, false);
+    TriggerAddEventTimePeriodic(libSprt_gt_DataMiningPeriodicDataSendPeriodicEventTrigger, libSprt_gv_dataMiningPeriodicSendPeriod, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - Help (-help)
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGHelphelp_Func (bool testConds, bool runActions) {
+    int auto64275CE2_val;
+
+    // Variable Declarations
+    text lv_helpText;
+    text lv_mapMechanic;
+
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    auto64275CE2_val = libMapM_gf_PrimaryMapMechanic();
+    if (auto64275CE2_val == libMapM_ge_MapMechanicType_Cannonballs) {
+        lv_mapMechanic = StringExternal("Param/Value/lib_Sprt_8F3AF4AA");
+    }
+    else if (auto64275CE2_val == libMapM_ge_MapMechanicType_CurseofRavenLord) {
+        lv_mapMechanic = StringExternal("Param/Value/lib_Sprt_17DF8762");
+    }
+    else if (auto64275CE2_val == libMapM_ge_MapMechanicType_GardensDragon) {
+        lv_mapMechanic = StringExternal("Param/Value/lib_Sprt_86B09E93");
+    }
+    else if (auto64275CE2_val == libMapM_ge_MapMechanicType_Underworld) {
+        lv_mapMechanic = StringExternal("Param/Value/lib_Sprt_D211020C");
+    }
+    else {
+    }
+    TextExpressionSetToken("Param/Expression/lib_Sprt_A00DACC2", "A", StringExternal("Param/Value/lib_Sprt_03DF74C6"));
+    TextExpressionSetToken("Param/Expression/lib_Sprt_A00DACC2", "B", lv_mapMechanic);
+    TextExpressionSetToken("Param/Expression/lib_Sprt_A00DACC2", "C", StringExternal("Param/Value/lib_Sprt_0EF0ECBB"));
+    lv_helpText = TextExpressionAssemble("Param/Expression/lib_Sprt_A00DACC2");
+    TriggerDebugOutput(1, lv_helpText, true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGHelphelp_Init () {
+    libSprt_gt_DEBUGHelphelp = TriggerCreate("libSprt_gt_DEBUGHelphelp_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGHelphelp, c_playerAny, "-help", true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - Player Number (-playernum)
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGPlayerNumberplayernum_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TextExpressionSetToken("Param/Expression/lib_Sprt_25AF409F", "A", IntToText(EventPlayer()));
+    UIDisplayMessage(libCore_gv_playerGroupFromPlayer[EventPlayer()], c_messageAreaChat, TextExpressionAssemble("Param/Expression/lib_Sprt_25AF409F"));
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGPlayerNumberplayernum_Init () {
+    libSprt_gt_DEBUGPlayerNumberplayernum = TriggerCreate("libSprt_gt_DEBUGPlayerNumberplayernum_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGPlayerNumberplayernum, c_playerAny, "-playernumber", true);
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGPlayerNumberplayernum, c_playerAny, "playernumber", true);
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGPlayerNumberplayernum, c_playerAny, "-playernum", true);
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGPlayerNumberplayernum, c_playerAny, "playernum", true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - Toggle Selection (togselection)
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGToggleSelectiontogselection_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libSprt_gf_DEBUGToggleSelection();
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGToggleSelectiontogselection_Init () {
+    libSprt_gt_DEBUGToggleSelectiontogselection = TriggerCreate("libSprt_gt_DEBUGToggleSelectiontogselection_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGToggleSelectiontogselection, c_playerAny, "togselection", true);
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGToggleSelectiontogselection, c_playerAny, "ts", true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - Toggle Minion Debug (togminiondebug)
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGToggleMinionDebugtogminiondebug_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    if ((TriggerIsEnabled(libSprt_gt_DEBUGMinionAI) == false)) {
+        TriggerEnable(libSprt_gt_DEBUGMinionAI, true);
+        TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_26B7B7BC"), true);
+    }
+    else {
+        TriggerEnable(libSprt_gt_DEBUGMinionAI, false);
+        TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_D8F534EE"), true);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGToggleMinionDebugtogminiondebug_Init () {
+    libSprt_gt_DEBUGToggleMinionDebugtogminiondebug = TriggerCreate("libSprt_gt_DEBUGToggleMinionDebugtogminiondebug_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGToggleMinionDebugtogminiondebug, c_playerAny, "togminiondebug", true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: Debug - Toggle Show XP Values (togshowxpvalues)
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DebugToggleShowXPValuestogshowxpvalues_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    if ((libSprt_gv_dEBUGXPTextEnabled == false)) {
+        libSprt_gv_dEBUGXPTextEnabled = true;
+        TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_3BFE4072"), true);
+    }
+    else {
+        libSprt_gv_dEBUGXPTextEnabled = false;
+        TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_0BD84C43"), true);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DebugToggleShowXPValuestogshowxpvalues_Init () {
+    libSprt_gt_DebugToggleShowXPValuestogshowxpvalues = TriggerCreate("libSprt_gt_DebugToggleShowXPValuestogshowxpvalues_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DebugToggleShowXPValuestogshowxpvalues, c_playerAny, "togshowxpvalues", true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - Start Game (startgame)
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGStartGamestartgame_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+
+        if (!((DialogControlIsEnabled(libUIUI_gv_uIDebugPanel.lv_startGameButton, EventPlayer()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libSprt_gf_DEBUGStartGame();
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGStartGamestartgame_Init () {
+    libSprt_gt_DEBUGStartGamestartgame = TriggerCreate("libSprt_gt_DEBUGStartGamestartgame_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGStartGamestartgame, c_playerAny, "startgame", true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - Pause Game Start Timer (pausestart)
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGPauseGameStartTimerpausestart_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    if ((TimerGetRemaining(libGame_gv_openTheGatesTimer) > 0.0)) {
+        if ((TimerIsPaused(libGame_gv_openTheGatesTimer) == true)) {
+            TimerPause(libGame_gv_openTheGatesTimer, false);
+            TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_8C0D6AED"), true);
+        }
+        else {
+            TimerPause(libGame_gv_openTheGatesTimer, true);
+            TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_5AEB882F"), true);
+        }
+    }
+    else {
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGPauseGameStartTimerpausestart_Init () {
+    libSprt_gt_DEBUGPauseGameStartTimerpausestart = TriggerCreate("libSprt_gt_DEBUGPauseGameStartTimerpausestart_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGPauseGameStartTimerpausestart, c_playerAny, "pausestart", true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - Turn On Normal Creep Camps (creepcamp)
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGTurnOnNormalCreepCampscreepcamp_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+
+        if (!((DialogControlIsEnabled(libUIUI_gv_uIDebugPanel.lv_spawnCreepCampsButton, EventPlayer()) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libSprt_gf_DEBUGSpawnCreepCamps();
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGTurnOnNormalCreepCampscreepcamp_Init () {
+    libSprt_gt_DEBUGTurnOnNormalCreepCampscreepcamp = TriggerCreate("libSprt_gt_DEBUGTurnOnNormalCreepCampscreepcamp_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGTurnOnNormalCreepCampscreepcamp, c_playerAny, "creepcamp", true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - Destroy Inventory Items (deleteitems)
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGDestroyInventoryItemsdeleteitems_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    UnitGroupLoopBegin(UnitInventoryGroup(libGame_gv_players[EventPlayer()].lv_heroUnit));
+    for ( ; !UnitGroupLoopDone() ; UnitGroupLoopStep() ) {
+        UnitInventoryRemove(UnitGroupLoopCurrent());
+    }
+    UnitGroupLoopEnd();
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGDestroyInventoryItemsdeleteitems_Init () {
+    libSprt_gt_DEBUGDestroyInventoryItemsdeleteitems = TriggerCreate("libSprt_gt_DEBUGDestroyInventoryItemsdeleteitems_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGDestroyInventoryItemsdeleteitems, c_playerAny, "deleteitems", true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - Spawn Hero (spawnhero)
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGSpawnHerospawnhero_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    string lv_chatString;
+    string lv_hero;
+    int lv_heroIndex;
+    int lv_player;
+
+    // Variable Initialization
+    lv_chatString = "";
+    lv_hero = "";
+
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    if ((StringWord(EventChatMessage(false), 1) != "sh") && (StringWord(EventChatMessage(false), 1) != "spawnhero")) {
+        return true;
+    }
+    else {
+    }
+    lv_chatString = StringWord(EventChatMessage(false), 2);
+    if ((StringSub(lv_chatString, 1, 4) == "Hero")) {
+        lv_hero = lv_chatString;
+    }
+    else {
+        lv_hero = ("Hero" + StringWord(EventChatMessage(false), 2));
+    }
+    lv_heroIndex = libCore_gf_GetHeroIndexForUnitType((lv_hero));
+    lv_player = StringToInt(StringWord(EventChatMessage(false), 3));
+    if ((lv_heroIndex == 0)) {
+        TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_3A7EE5DF"), true);
+        return true;
+    }
+    else {
+    }
+    if (((lv_player <= 0) || (lv_player > libCore_gv_bALMaxEnginePlayerCount))) {
+        TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_ECB650C9"), true);
+        return true;
+    }
+    else {
+    }
+    libUIUI_gf_UIDebugPanelSpawnOrSwapHeroForPlayer(lv_heroIndex, 1, 1, 0.0, lv_player);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGSpawnHerospawnhero_Init () {
+    libSprt_gt_DEBUGSpawnHerospawnhero = TriggerCreate("libSprt_gt_DEBUGSpawnHerospawnhero_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGSpawnHerospawnhero, c_playerAny, "spawnhero", false);
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGSpawnHerospawnhero, c_playerAny, "sh", false);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - Spawn All Heroes (spawnallheroes)
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGSpawnAllHeroesspawnallheroes_Func (bool testConds, bool runActions) {
+    int autoF6F449BE_ae;
+    int autoF6F449BE_ai;
+
+    // Variable Declarations
+    int lv_i;
+
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    autoF6F449BE_ae = libCore_gv_dataHeroesNumberOfHeroes;
+    autoF6F449BE_ai = 1;
+    lv_i = 1;
+    for ( ; ( (autoF6F449BE_ai >= 0 && lv_i <= autoF6F449BE_ae) || (autoF6F449BE_ai <= 0 && lv_i >= autoF6F449BE_ae) ) ; lv_i += autoF6F449BE_ai ) {
+        if ((libCore_gv_dataHeroesHeroData[lv_i].lv_unitType != null)) {
+            libNtve_gf_CreateUnitsWithDefaultFacing(1, libCore_gv_dataHeroesHeroData[lv_i].lv_unitType, 0, EventPlayer(), UnitGetPosition(libGame_gv_players[EventPlayer()].lv_heroUnit));
+        }
+        else {
+        }
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGSpawnAllHeroesspawnallheroes_Init () {
+    libSprt_gt_DEBUGSpawnAllHeroesspawnallheroes = TriggerCreate("libSprt_gt_DEBUGSpawnAllHeroesspawnallheroes_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGSpawnAllHeroesspawnallheroes, c_playerAny, "spawnallheroes", true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - AI Hero Mimic (heromimic)
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGAIHeroMimicheromimic_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_0AC1A4E9"), true);
+    libSprt_gv_dEBUGHeroMimic = true;
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGAIHeroMimicheromimic_Init () {
+    libSprt_gt_DEBUGAIHeroMimicheromimic = TriggerCreate("libSprt_gt_DEBUGAIHeroMimicheromimic_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGAIHeroMimicheromimic, c_playerAny, "heromimic", true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - AI Set Hero (sethero)
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGAISetHerosethero_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    string lv_hero;
+    int lv_player;
+    int lv_heroIndex;
+
+    // Variable Initialization
+    lv_hero = "";
+
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_player = StringToInt(StringWord(EventChatMessage(false), 2));
+    lv_hero = ("Hero" + StringWord(EventChatMessage(false), 3));
+    lv_heroIndex = libCore_gf_GetHeroIndexForUnitType((lv_hero));
+    if ((lv_heroIndex == 0)) {
+        TriggerDebugOutput(1, (StringExternal("Param/Value/lib_Sprt_CDF6A5CC") + StringToText(lv_hero)), true);
+        return true;
+    }
+    else {
+    }
+    if ((!(((lv_player > 0) && (lv_player <= libCore_gv_bALMaxPlayers))))) {
+        TriggerDebugOutput(1, (StringExternal("Param/Value/lib_Sprt_31DF781A") + IntToText(lv_player)), true);
+        return true;
+    }
+    else {
+    }
+    if ((libGame_gv_players[lv_player].lv_heroIndex == 0)) {
+        libGame_gv_players[lv_player].lv_heroIndex = lv_heroIndex;
+        TriggerDebugOutput(1, (StringToText(lv_hero) + StringExternal("Param/Value/lib_Sprt_D31F1B1C") + IntToText(lv_player)), true);
+    }
+    else {
+        libUIUI_gf_UIDebugPanelSpawnOrSwapHeroForPlayer(lv_heroIndex, 1, 1, 0.0, lv_player);
+        TriggerDebugOutput(1, (StringExternal("Param/Value/lib_Sprt_76AC8E49") + IntToText(lv_player) + StringExternal("Param/Value/lib_Sprt_34B092C9") + StringToText(lv_hero) + StringExternal("Param/Value/lib_Sprt_66257F08")), true);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGAISetHerosethero_Init () {
+    libSprt_gt_DEBUGAISetHerosethero = TriggerCreate("libSprt_gt_DEBUGAISetHerosethero_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGAISetHerosethero, c_playerAny, "sethero", false);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - AI Set All Hero (setallheroes)
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGAISetAllHerosetallheroes_Func (bool testConds, bool runActions) {
+    int autoD7C14807_ae;
+
+    // Variable Declarations
+    string lv_hero;
+    int lv_heroIndex;
+    int lv_playerIndex;
+
+    // Variable Initialization
+    lv_hero = "";
+
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_hero = ("Hero" + StringWord(EventChatMessage(false), 2));
+    lv_heroIndex = libCore_gf_GetHeroIndexForUnitType((lv_hero));
+    if ((lv_heroIndex == 0)) {
+        TriggerDebugOutput(1, (StringExternal("Param/Value/lib_Sprt_C8DD3280") + StringToText(lv_hero)), true);
+        return true;
+    }
+    else {
+    }
+    autoD7C14807_ae = libCore_gv_bALMaxPlayers;
+    lv_playerIndex = 1;
+    for ( ; lv_playerIndex <= autoD7C14807_ae ; lv_playerIndex += 1 ) {
+        if ((libGame_gv_players[lv_playerIndex].lv_heroUnit != null)) {
+            libUIUI_gf_UIDebugPanelSpawnOrSwapHeroForPlayer(lv_heroIndex, 1, 1, 0.0, lv_playerIndex);
+            TriggerDebugOutput(1, (StringExternal("Param/Value/lib_Sprt_11581D48") + IntToText(lv_playerIndex) + StringExternal("Param/Value/lib_Sprt_B61E89E0") + StringToText(lv_hero) + StringExternal("Param/Value/lib_Sprt_C30CDE5A")), true);
+        }
+        else {
+            libGame_gv_players[lv_playerIndex].lv_heroIndex = lv_heroIndex;
+            TriggerDebugOutput(1, (StringToText(lv_hero) + StringExternal("Param/Value/lib_Sprt_B12CF695") + IntToText(lv_playerIndex)), true);
+        }
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGAISetAllHerosetallheroes_Init () {
+    libSprt_gt_DEBUGAISetAllHerosetallheroes = TriggerCreate("libSprt_gt_DEBUGAISetAllHerosetallheroes_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGAISetAllHerosetallheroes, c_playerAny, "setallheroes", false);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - Level AI Heros (heroxp)
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGLevelAIHerosheroxp_Func (bool testConds, bool runActions) {
+    int auto455FE030_ae;
+    int auto455FE030_ai;
+
+    // Variable Declarations
+    fixed lv_amount;
+    int lv_loopIndex;
+
+    // Variable Initialization
+    lv_amount = 1000.0;
+
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    if ((StringLength(StringWord(EventChatMessage(false), 2)) > 1)) {
+        lv_amount = StringToInt(StringWord(EventChatMessage(false), 2));
+    }
+    else {
+    }
+    auto455FE030_ae = libCore_gv_bALMaxPlayers;
+    auto455FE030_ai = 1;
+    lv_loopIndex = 1;
+    for ( ; ( (auto455FE030_ai >= 0 && lv_loopIndex <= auto455FE030_ae) || (auto455FE030_ai <= 0 && lv_loopIndex >= auto455FE030_ae) ) ; lv_loopIndex += auto455FE030_ai ) {
+        if ((libGame_gv_players[lv_loopIndex].lv_heroUnit != null) && (libAIAI_gv_aIHeroes[lv_loopIndex].lv_heroState != libAIAI_ge_HeroAIStates_HSUnused)) {
+            libGame_gf_GrantXPToPlayer(lv_amount, lv_loopIndex, libGame_ge_XPSources_Debug);
+        }
+        else {
+        }
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGLevelAIHerosheroxp_Init () {
+    libSprt_gt_DEBUGLevelAIHerosheroxp = TriggerCreate("libSprt_gt_DEBUGLevelAIHerosheroxp_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGLevelAIHerosheroxp, c_playerAny, "heroxp", false);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - Toggle Floating Combat Text (togcombattext)
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGToggleFloatingCombatTexttogcombattext_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libSprt_gv_dEBUGCombatTextEnabled = !(libSprt_gv_dEBUGCombatTextEnabled);
+    if ((libSprt_gv_dEBUGCombatTextEnabled == true)) {
+        TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_7E4733D6"), true);
+    }
+    else {
+        TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_9879EAA2"), true);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGToggleFloatingCombatTexttogcombattext_Init () {
+    libSprt_gt_DEBUGToggleFloatingCombatTexttogcombattext = TriggerCreate("libSprt_gt_DEBUGToggleFloatingCombatTexttogcombattext_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGToggleFloatingCombatTexttogcombattext, c_playerAny, "togcombattext", true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - Toggle Minion Spawning (togminionspawn)
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGToggleMinionSpawningtogminionspawn_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libGame_gv_minionSpawningEnabled = !(libGame_gv_minionSpawningEnabled);
+    if ((libGame_gv_minionSpawningEnabled == true)) {
+        TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_E118941E"), true);
+    }
+    else {
+        TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_1BD47B30"), true);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGToggleMinionSpawningtogminionspawn_Init () {
+    libSprt_gt_DEBUGToggleMinionSpawningtogminionspawn = TriggerCreate("libSprt_gt_DEBUGToggleMinionSpawningtogminionspawn_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGToggleMinionSpawningtogminionspawn, c_playerAny, "togminionspawn", true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - Toggle Minion System Paused (togminionpause)
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGToggleMinionSystemPausedtogminionpause_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    if ((libGame_gv_minionSystemStarted == true)) {
+        libGame_gv_minionSystemPaused = !(libGame_gv_minionSystemPaused);
+        if ((libGame_gv_minionSystemPaused == true)) {
+            TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_E48DDF62"), true);
+            libGame_gf_MinionPauseUnpauseMinionSystem(true);
+        }
+        else {
+            TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_40639798"), true);
+            libGame_gf_MinionPauseUnpauseMinionSystem(false);
+        }
+    }
+    else {
+        TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_004C8FD1"), true);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGToggleMinionSystemPausedtogminionpause_Init () {
+    libSprt_gt_DEBUGToggleMinionSystemPausedtogminionpause = TriggerCreate("libSprt_gt_DEBUGToggleMinionSystemPausedtogminionpause_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGToggleMinionSystemPausedtogminionpause, c_playerAny, "togminionpause", true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - Toggle Minion System On/Off (togminionsystem)
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGToggleMinionSystemOnOfftogminionsystem_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    bool lv_onOff;
+
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_onOff = !(libGame_gv_minionSystemStarted);
+    if ((lv_onOff == true)) {
+        TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_C61F7599"), true);
+        libGame_gf_MinionStartStopMinionSystem(true);
+        libGame_gf_MinionStartStopMinionSpawnCycle(true);
+    }
+    else {
+        TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_F311E8CE"), true);
+        libGame_gf_MinionStartStopMinionSystem(false);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGToggleMinionSystemOnOfftogminionsystem_Init () {
+    libSprt_gt_DEBUGToggleMinionSystemOnOfftogminionsystem = TriggerCreate("libSprt_gt_DEBUGToggleMinionSystemOnOfftogminionsystem_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGToggleMinionSystemOnOfftogminionsystem, c_playerAny, "togminionsystem", true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - Toggle Tower System On/Off (togtowersystem)
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGToggleTowerSystemOnOfftogtowersystem_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libAIAI_gv_towerSystemOn = !(libAIAI_gv_towerSystemOn);
+    if ((libAIAI_gv_towerSystemOn == true)) {
+        TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_AF77925B"), true);
+        libAIAI_gf_TowerTurnTowerSystemOnOff(true);
+    }
+    else {
+        TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_2D16A0B3"), true);
+        libAIAI_gf_TowerTurnTowerSystemOnOff(false);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGToggleTowerSystemOnOfftogtowersystem_Init () {
+    libSprt_gt_DEBUGToggleTowerSystemOnOfftogtowersystem = TriggerCreate("libSprt_gt_DEBUGToggleTowerSystemOnOfftogtowersystem_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGToggleTowerSystemOnOfftogtowersystem, c_playerAny, "togtowersystem", true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - Toggle XP Trickle (togtrickle)
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGToggleXPTrickletogtrickle_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libGame_gv_xPTrickleEnabled = !(libGame_gv_xPTrickleEnabled);
+    if ((libGame_gv_xPTrickleEnabled == true)) {
+        TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_461B26D2"), true);
+    }
+    else {
+        TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_9420B7C3"), true);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGToggleXPTrickletogtrickle_Init () {
+    libSprt_gt_DEBUGToggleXPTrickletogtrickle = TriggerCreate("libSprt_gt_DEBUGToggleXPTrickletogtrickle_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGToggleXPTrickletogtrickle, c_playerAny, "togtrickle", true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - Scale Camps (campscale)
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGScaleCampscampscale_Func (bool testConds, bool runActions) {
+    int auto9C650F90_ae;
+    int auto9C650F90_ai;
+
+    // Variable Declarations
+    int lv_scalingTicks;
+    int lv_i;
+
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_scalingTicks = StringToInt(StringWord(EventChatMessage(false), 2));
+    auto9C650F90_ae = lv_scalingTicks;
+    auto9C650F90_ai = 1;
+    lv_i = 1;
+    for ( ; ( (auto9C650F90_ai >= 0 && lv_i <= auto9C650F90_ae) || (auto9C650F90_ai <= 0 && lv_i >= auto9C650F90_ae) ) ; lv_i += auto9C650F90_ai ) {
+        TriggerExecute(libGame_gt_JungleScalingTimerExpires, true, true);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGScaleCampscampscale_Init () {
+    libSprt_gt_DEBUGScaleCampscampscale = TriggerCreate("libSprt_gt_DEBUGScaleCampscampscale_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGScaleCampscampscale, c_playerAny, "campscale", false);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - Have AI Take Over (-AI)
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGHaveAITakeOverAI_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    if ((libGame_gv_players[EventPlayer()].lv_heroUnit == null)) {
+        return true;
+    }
+    else {
+    }
+    if ((libAIAI_gf_HeroAIIsAIEnabledForPlayer(EventPlayer()) == false)) {
+        libAIAI_gf_HeroAITakeOverHeroForPlayer(EventPlayer());
+    }
+    else {
+        libAIAI_gf_HeroAIReleaseHeroControl(EventPlayer());
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGHaveAITakeOverAI_Init () {
+    libSprt_gt_DEBUGHaveAITakeOverAI = TriggerCreate("libSprt_gt_DEBUGHaveAITakeOverAI_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGHaveAITakeOverAI, c_playerAny, "-AI", true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - AI Swap Hero (swap)
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGAISwapHeroswap_Func (bool testConds, bool runActions) {
+    int autoA6D64C98_ae;
+    int autoA6D64C98_ai;
+
+    // Variable Declarations
+    string lv_heroName;
+    string lv_heroLink;
+    int lv_newHeroIndex;
+    int lv_loopIndex;
+    int lv_playerIndex;
+    int lv_triggeringPlayerHero;
+
+    // Variable Initialization
+    lv_heroName = "";
+    lv_heroLink = "";
+
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    if ((libAIAI_gv_heroAIActive == false)) {
+        return true;
+    }
+    else {
+    }
+    lv_heroName = ("Hero" + StringWord(EventChatMessage(false), 2));
+    autoA6D64C98_ae = libCore_gv_bALMaxPlayers;
+    autoA6D64C98_ai = 1;
+    lv_loopIndex = 1;
+    for ( ; ( (autoA6D64C98_ai >= 0 && lv_loopIndex <= autoA6D64C98_ae) || (autoA6D64C98_ai <= 0 && lv_loopIndex >= autoA6D64C98_ae) ) ; lv_loopIndex += autoA6D64C98_ai ) {
+        if ((PlayerType(lv_loopIndex) == c_playerTypeComputer) && (StringEqual(lv_heroName, (UnitGetType(libGame_gv_players[lv_loopIndex].lv_heroUnit)), c_stringNoCase) == true)) {
+            lv_playerIndex = lv_loopIndex;
+        }
+        else {
+        }
+    }
+    if ((lv_playerIndex == 0)) {
+        TriggerDebugOutput(1, (StringToText(lv_heroName) + StringExternal("Param/Value/lib_Sprt_61199600")), true);
+        return true;
+    }
+    else {
+    }
+    if ((libGame_gv_players[lv_playerIndex].lv_faction == libGame_gv_players[EventPlayer()].lv_faction)) {
+        lv_triggeringPlayerHero = libCore_gf_GetHeroIndexForUnitType(UnitGetType(libGame_gv_players[EventPlayer()].lv_heroUnit));
+        lv_newHeroIndex = libGame_gf_HeroSelectionRandomlyPickUnusedHeroFromClass(lv_playerIndex, libCore_gv_dataHeroesHeroData[lv_triggeringPlayerHero].lv_class);
+    }
+    else {
+    }
+    if ((lv_newHeroIndex == 0)) {
+        lv_newHeroIndex = libGame_gf_HeroSelectionRandomlyPickAnyUnusedHero(lv_playerIndex, false, false);
+        if ((lv_newHeroIndex == 0)) {
+            lv_newHeroIndex = libGame_gf_HeroSelectionRandomlyPickAnyUnusedHero(lv_playerIndex, true, false);
+        }
+        else {
+        }
+    }
+    else {
+    }
+    TriggerDebugOutput(1, (StringToText(lv_heroName) + StringExternal("Param/Value/lib_Sprt_AE48C6C0")), true);
+    libUIUI_gf_UIDebugPanelSpawnOrSwapHeroForPlayer(lv_newHeroIndex, 1, 1, 0.0, lv_playerIndex);
+    libAIAI_gf_HeroAIDisableAIForPlayer(lv_playerIndex);
+    libAIAI_gf_HeroAIEnableAIForPlayer(lv_playerIndex);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGAISwapHeroswap_Init () {
+    libSprt_gt_DEBUGAISwapHeroswap = TriggerCreate("libSprt_gt_DEBUGAISwapHeroswap_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGAISwapHeroswap, c_playerAny, "swap", false);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - AI Avoid Player (solo)
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGAIAvoidPlayersolo_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_teamIndex;
+
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    if ((libAIAI_gv_heroAIActive == false)) {
+        return true;
+    }
+    else {
+    }
+    lv_teamIndex = libAIAI_gf_HeroAIGetAllyTeamIndex(EventPlayer());
+    if ((libAIAI_gv_heroAITeamData[lv_teamIndex].lv_avoidPlayer == EventPlayer())) {
+        libAIAI_gv_heroAITeamData[lv_teamIndex].lv_avoidPlayer = 0;
+        TriggerDebugOutput(1, (StringExternal("Param/Value/lib_Sprt_8E68F664") + IntToText(EventPlayer())), true);
+    }
+    else {
+        libAIAI_gv_heroAITeamData[lv_teamIndex].lv_avoidPlayer = EventPlayer();
+        TriggerDebugOutput(1, (StringExternal("Param/Value/lib_Sprt_5EBB0358") + IntToText(EventPlayer())), true);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGAIAvoidPlayersolo_Init () {
+    libSprt_gt_DEBUGAIAvoidPlayersolo = TriggerCreate("libSprt_gt_DEBUGAIAvoidPlayersolo_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGAIAvoidPlayersolo, c_playerAny, "solo", true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - AI Follow Player (share)
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGAIFollowPlayershare_Func (bool testConds, bool runActions) {
+    int auto99D03F98_ae;
+    int auto99D03F98_ai;
+
+    // Variable Declarations
+    string lv_heroName;
+    string lv_heroLink;
+    int lv_loopIndex;
+    int lv_playerIndex;
+
+    // Variable Initialization
+    lv_heroName = "";
+
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    if ((libAIAI_gv_heroAIActive == false)) {
+        return true;
+    }
+    else {
+    }
+    lv_heroName = ("Hero" + StringWord(EventChatMessage(false), 2));
+    auto99D03F98_ae = libCore_gv_bALMaxPlayers;
+    auto99D03F98_ai = 1;
+    lv_loopIndex = 1;
+    for ( ; ( (auto99D03F98_ai >= 0 && lv_loopIndex <= auto99D03F98_ae) || (auto99D03F98_ai <= 0 && lv_loopIndex >= auto99D03F98_ae) ) ; lv_loopIndex += auto99D03F98_ai ) {
+        if ((libGame_gv_players[lv_loopIndex].lv_faction == libGame_gv_players[EventPlayer()].lv_faction) && (libAIAI_gf_HeroAIIsPlayerActive(lv_loopIndex, 2) == true) && (StringEqual(lv_heroName, (UnitGetType(libGame_gv_players[lv_loopIndex].lv_heroUnit)), c_stringNoCase) == true)) {
+            lv_playerIndex = lv_loopIndex;
+        }
+        else {
+        }
+    }
+    if ((lv_playerIndex == 0)) {
+        TriggerDebugOutput(1, (StringToText(lv_heroName) + StringExternal("Param/Value/lib_Sprt_D42154FA")), true);
+        return true;
+    }
+    else {
+    }
+    if ((libAIAI_gv_aIHeroes[lv_playerIndex].lv_tutorialForceFollowPlayer == EventPlayer())) {
+        libAIAI_gv_aIHeroes[lv_playerIndex].lv_tutorialForceFollowPlayer = 0;
+        TriggerDebugOutput(1, (StringToText(lv_heroName) + StringExternal("Param/Value/lib_Sprt_B658424E")), true);
+    }
+    else {
+        libAIAI_gv_aIHeroes[lv_playerIndex].lv_tutorialForceFollowPlayer = EventPlayer();
+        TriggerDebugOutput(1, (StringToText(lv_heroName) + StringExternal("Param/Value/lib_Sprt_1D9CBCBE") + IntToText(EventPlayer())), true);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGAIFollowPlayershare_Init () {
+    libSprt_gt_DEBUGAIFollowPlayershare = TriggerCreate("libSprt_gt_DEBUGAIFollowPlayershare_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGAIFollowPlayershare, c_playerAny, "share", false);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - AI All Follow Player (group)
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGAIAllFollowPlayergroup_Func (bool testConds, bool runActions) {
+    int auto795061DF_ae;
+    int auto795061DF_ai;
+    int autoB538720F_ae;
+    int autoB538720F_ai;
+    int autoA0720C92_ae;
+    int autoA0720C92_ai;
+
+    // Variable Declarations
+    string lv_heroName;
+    string lv_heroLink;
+    int lv_playerIndex;
+    bool lv_allCurrentlyFollowing;
+
+    // Variable Initialization
+    lv_heroName = "";
+    lv_allCurrentlyFollowing = true;
+
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    if ((libAIAI_gv_heroAIActive == false)) {
+        return true;
+    }
+    else {
+    }
+    auto795061DF_ae = libCore_gv_bALMaxPlayers;
+    auto795061DF_ai = 1;
+    lv_playerIndex = 1;
+    for ( ; ( (auto795061DF_ai >= 0 && lv_playerIndex <= auto795061DF_ae) || (auto795061DF_ai <= 0 && lv_playerIndex >= auto795061DF_ae) ) ; lv_playerIndex += auto795061DF_ai ) {
+        if ((libGame_gv_players[lv_playerIndex].lv_faction == libGame_gv_players[EventPlayer()].lv_faction) && (libAIAI_gf_HeroAIIsPlayerActive(lv_playerIndex, 2) == true) && (libAIAI_gv_aIHeroes[lv_playerIndex].lv_tutorialForceFollowPlayer != EventPlayer())) {
+            lv_allCurrentlyFollowing = false;
+        }
+        else {
+        }
+    }
+    if ((lv_allCurrentlyFollowing == false)) {
+        autoB538720F_ae = libCore_gv_bALMaxPlayers;
+        autoB538720F_ai = 1;
+        lv_playerIndex = 1;
+        for ( ; ( (autoB538720F_ai >= 0 && lv_playerIndex <= autoB538720F_ae) || (autoB538720F_ai <= 0 && lv_playerIndex >= autoB538720F_ae) ) ; lv_playerIndex += autoB538720F_ai ) {
+            if ((libGame_gv_players[lv_playerIndex].lv_faction == libGame_gv_players[EventPlayer()].lv_faction) && (libAIAI_gf_HeroAIIsPlayerActive(lv_playerIndex, 2) == true)) {
+                libAIAI_gv_aIHeroes[lv_playerIndex].lv_tutorialForceFollowPlayer = EventPlayer();
+            }
+            else {
+            }
+        }
+        TriggerDebugOutput(1, (StringExternal("Param/Value/lib_Sprt_3C38E9C6") + IntToText(EventPlayer())), true);
+    }
+    else {
+        autoA0720C92_ae = libCore_gv_bALMaxPlayers;
+        autoA0720C92_ai = 1;
+        lv_playerIndex = 1;
+        for ( ; ( (autoA0720C92_ai >= 0 && lv_playerIndex <= autoA0720C92_ae) || (autoA0720C92_ai <= 0 && lv_playerIndex >= autoA0720C92_ae) ) ; lv_playerIndex += autoA0720C92_ai ) {
+            if ((libGame_gv_players[lv_playerIndex].lv_faction == libGame_gv_players[EventPlayer()].lv_faction) && (PlayerType(lv_playerIndex) == c_playerTypeComputer)) {
+                libAIAI_gv_aIHeroes[lv_playerIndex].lv_tutorialForceFollowPlayer = 0;
+            }
+            else {
+            }
+        }
+        TriggerDebugOutput(1, (StringExternal("Param/Value/lib_Sprt_75E4A0C0")), true);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGAIAllFollowPlayergroup_Init () {
+    libSprt_gt_DEBUGAIAllFollowPlayergroup = TriggerCreate("libSprt_gt_DEBUGAIAllFollowPlayergroup_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGAIAllFollowPlayergroup, c_playerAny, "group", true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - Display Hero AI Debug Info (aidebug)
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGDisplayHeroAIDebugInfoaidebug_Func (bool testConds, bool runActions) {
+    int auto20E84679_ae;
+    int auto20E84679_ai;
+
+    // Variable Declarations
+    int lv_playerIndex;
+
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libAIAI_gv_heroAIDisplayAIStatus = !(libAIAI_gv_heroAIDisplayAIStatus);
+    auto20E84679_ae = libCore_gv_bALMaxPlayers;
+    auto20E84679_ai = 1;
+    lv_playerIndex = 1;
+    for ( ; ( (auto20E84679_ai >= 0 && lv_playerIndex <= auto20E84679_ae) || (auto20E84679_ai <= 0 && lv_playerIndex >= auto20E84679_ae) ) ; lv_playerIndex += auto20E84679_ai ) {
+        libAIAI_gf_HeroAIUpdateAIStatus(lv_playerIndex);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGDisplayHeroAIDebugInfoaidebug_Init () {
+    libSprt_gt_DEBUGDisplayHeroAIDebugInfoaidebug = TriggerCreate("libSprt_gt_DEBUGDisplayHeroAIDebugInfoaidebug_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGDisplayHeroAIDebugInfoaidebug, c_playerAny, "aidebug", false);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - Display Minion AI Debug Info (miniondebug)
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGDisplayMinionAIDebugInfominiondebug_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_playerIndex;
+
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libAIAI_gv_minionAIDisplayAIStatus = !(libAIAI_gv_minionAIDisplayAIStatus);
+    libAIAI_gf_MinionAIToggleAIStatus(libAIAI_gv_minionAIDisplayAIStatus);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGDisplayMinionAIDebugInfominiondebug_Init () {
+    libSprt_gt_DEBUGDisplayMinionAIDebugInfominiondebug = TriggerCreate("libSprt_gt_DEBUGDisplayMinionAIDebugInfominiondebug_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGDisplayMinionAIDebugInfominiondebug, c_playerAny, "miniondebug", false);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - Display Defender AI Debug Info (defenderdebug)
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGDisplayDefenderAIDebugInfodefenderdebug_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_playerIndex;
+
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libAIAI_gv_defenderAIDisplayAIStatus = !(libAIAI_gv_defenderAIDisplayAIStatus);
+    libAIAI_gf_DefenderAIToggleAIStatus(libAIAI_gv_defenderAIDisplayAIStatus);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGDisplayDefenderAIDebugInfodefenderdebug_Init () {
+    libSprt_gt_DEBUGDisplayDefenderAIDebugInfodefenderdebug = TriggerCreate("libSprt_gt_DEBUGDisplayDefenderAIDebugInfodefenderdebug_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGDisplayDefenderAIDebugInfodefenderdebug, c_playerAny, "defenderdebug", false);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - Victory (debug-victory)
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGVictorydebugvictory_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_playerIndex;
+
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    if ((libGame_gv_players[EventPlayer()].lv_faction == libGame_ge_Faction_Order)) {
+        UnitKill(libGame_gv_teams[libGame_gv_teamChaosIndex_C].lv_core);
+    }
+    else {
+        UnitKill(libGame_gv_teams[libGame_gv_teamOrderIndex_C].lv_core);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGVictorydebugvictory_Init () {
+    libSprt_gt_DEBUGVictorydebugvictory = TriggerCreate("libSprt_gt_DEBUGVictorydebugvictory_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGVictorydebugvictory, c_playerAny, "debug-victory", false);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - Refresh Cooldowns (-cdr)
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGRefreshCooldownscdr_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libUIUI_gf_UIDebugPanelRefreshCooldowns(EventPlayer());
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGRefreshCooldownscdr_Init () {
+    libSprt_gt_DEBUGRefreshCooldownscdr = TriggerCreate("libSprt_gt_DEBUGRefreshCooldownscdr_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGRefreshCooldownscdr, c_playerAny, "-cdr", true);
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGRefreshCooldownscdr, c_playerAny, "cdr", true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - Defeat (debug-defeat)
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGDefeatdebugdefeat_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    int lv_playerIndex;
+
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    if ((libGame_gv_players[EventPlayer()].lv_faction == libGame_ge_Faction_Order)) {
+        UnitKill(libGame_gv_teams[libGame_gv_teamOrderIndex_C].lv_core);
+    }
+    else {
+        UnitKill(libGame_gv_teams[libGame_gv_teamChaosIndex_C].lv_core);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGDefeatdebugdefeat_Init () {
+    libSprt_gt_DEBUGDefeatdebugdefeat = TriggerCreate("libSprt_gt_DEBUGDefeatdebugdefeat_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGDefeatdebugdefeat, c_playerAny, "debug-defeat", false);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - Toggle Hero AI (togheroai)
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGToggleHeroAItogheroai_Func (bool testConds, bool runActions) {
+    int auto17C4EA2D_ae;
+    int autoECA3F8F5_ae;
+
+    // Variable Declarations
+    bool lv_heroAICurrentlyActive;
+    int lv_playerIndex;
+
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    auto17C4EA2D_ae = libCore_gv_bALMaxPlayers;
+    lv_playerIndex = 1;
+    for ( ; lv_playerIndex <= auto17C4EA2D_ae ; lv_playerIndex += 1 ) {
+        if ((libAIAI_gf_HeroAIIsPlayerActive(lv_playerIndex, 2) == true) && (libAIAI_gv_aIHeroes[lv_playerIndex].lv_heroState != libAIAI_ge_HeroAIStates_HSUnused)) {
+            lv_heroAICurrentlyActive = true;
+        }
+        else {
+        }
+    }
+    autoECA3F8F5_ae = 10;
+    lv_playerIndex = 1;
+    for ( ; lv_playerIndex <= autoECA3F8F5_ae ; lv_playerIndex += 1 ) {
+        if ((libAIAI_gf_HeroAIIsPlayerActive(lv_playerIndex, 2) == true)) {
+            if ((lv_heroAICurrentlyActive == true)) {
+                if ((libAIAI_gv_aIHeroes[lv_playerIndex].lv_heroState != libAIAI_ge_HeroAIStates_HSUnused)) {
+                    libAIAI_gf_HeroAIDisableAIForPlayer(lv_playerIndex);
+                }
+                else {
+                }
+            }
+            else {
+                if ((libAIAI_gv_aIHeroes[lv_playerIndex].lv_heroState == libAIAI_ge_HeroAIStates_HSUnused)) {
+                    libAIAI_gf_HeroAIEnableAIForPlayer(lv_playerIndex);
+                }
+                else {
+                }
+            }
+        }
+        else {
+        }
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGToggleHeroAItogheroai_Init () {
+    libSprt_gt_DEBUGToggleHeroAItogheroai = TriggerCreate("libSprt_gt_DEBUGToggleHeroAItogheroai_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGToggleHeroAItogheroai, c_playerAny, "togheroai", false);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - Stop Regen (stopregen)
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGStopRegenstopregen_Func (bool testConds, bool runActions) {
+    unitgroup auto89F280D3_g;
+    int auto89F280D3_u;
+
+    // Variable Declarations
+    unit lv_itUnit;
+
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    auto89F280D3_g = UnitGroupSelected(EventPlayer());
+    auto89F280D3_u = 1;
+    for ( ; auto89F280D3_u <= UnitGroupCount(auto89F280D3_g, c_unitCountAll) ; auto89F280D3_u += BoolToInt(lv_itUnit == UnitGroupUnit(auto89F280D3_g, auto89F280D3_u)) ) {
+        lv_itUnit = UnitGroupUnit(auto89F280D3_g, auto89F280D3_u);
+        UnitSetPropertyFixed(lv_itUnit, c_unitPropLifeRegen, 0.0);
+        UnitSetPropertyFixed(lv_itUnit, c_unitPropEnergyRegen, 0.0);
+        UnitSetPropertyFixed(lv_itUnit, c_unitPropShieldsRegen, 0.0);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGStopRegenstopregen_Init () {
+    libSprt_gt_DEBUGStopRegenstopregen = TriggerCreate("libSprt_gt_DEBUGStopRegenstopregen_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGStopRegenstopregen, c_playerAny, "stopregen", true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - Turn Off Weather
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGTurnOffWeather_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libNtve_gf_ShowHideDoodadsInRegion(false, RegionEntireMap(), "Storm_Doodad_KingsCrest_Docks_RollingFog");
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGTurnOffWeather_Init () {
+    libSprt_gt_DEBUGTurnOffWeather = TriggerCreate("libSprt_gt_DEBUGTurnOffWeather_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGTurnOffWeather, c_playerAny, "stopfog", true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - Team Fight Perf Test
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGTeamFightPerfTest_Func (bool testConds, bool runActions) {
+    int autoC249F3ED_ae;
+    int autoC249F3ED_ai;
+    int auto1BC2495B_ae;
+    int auto1BC2495B_ai;
+    int auto760EA7FC_ae;
+    int auto760EA7FC_ai;
+    int autoF13D00DA_ae;
+    int autoF13D00DA_ai;
+
+    // Variable Declarations
+    int lv_playerIndex;
+    int lv_waitTick;
+    point lv_center;
+
+    // Variable Initialization
+    lv_center = Point(119.0, 171.0);
+
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    autoC249F3ED_ae = 10;
+    autoC249F3ED_ai = 1;
+    lv_playerIndex = 1;
+    for ( ; ( (autoC249F3ED_ai >= 0 && lv_playerIndex <= autoC249F3ED_ae) || (autoC249F3ED_ai <= 0 && lv_playerIndex >= autoC249F3ED_ae) ) ; lv_playerIndex += autoC249F3ED_ai ) {
+        if ((libGame_gv_players[lv_playerIndex].lv_heroUnit != null)) {
+            UnitSetPropertyFixed(libGame_gv_players[lv_playerIndex].lv_heroUnit, c_unitPropXP, (UnitGetPropertyFixed(libGame_gv_players[lv_playerIndex].lv_heroUnit, c_unitPropXP, c_unitPropCurrent) + 50000.0));
+        }
+        else {
+        }
+    }
+    ConsoleCommand("speed 8", true, true);
+    libGame_gf_CameraPanCameraForPlayerAndUpdateMapBoundsIfNecessary(1, lv_center, 0.0, -1, 0.0, false);
+    Wait(2.0, c_timeGame);
+    ConsoleCommand("chat startgame", true, true);
+    ConsoleCommand("chat -ai", true, true);
+    ConsoleCommand("sm", true, true);
+    auto1BC2495B_ae = 12;
+    auto1BC2495B_ai = 1;
+    lv_waitTick = 1;
+    for ( ; ( (auto1BC2495B_ai >= 0 && lv_waitTick <= auto1BC2495B_ae) || (auto1BC2495B_ai <= 0 && lv_waitTick >= auto1BC2495B_ae) ) ; lv_waitTick += auto1BC2495B_ai ) {
+        auto760EA7FC_ae = 10;
+        auto760EA7FC_ai = 1;
+        lv_playerIndex = 1;
+        for ( ; ( (auto760EA7FC_ai >= 0 && lv_playerIndex <= auto760EA7FC_ae) || (auto760EA7FC_ai <= 0 && lv_playerIndex >= auto760EA7FC_ae) ) ; lv_playerIndex += auto760EA7FC_ai ) {
+            if ((libGame_gv_players[lv_playerIndex].lv_heroUnit != null)) {
+                UnitSetPosition(libGame_gv_players[lv_playerIndex].lv_heroUnit, libGame_gv_players[lv_playerIndex].lv_spawnPoint, false);
+            }
+            else {
+            }
+        }
+        Wait(3.0, c_timeGame);
+    }
+    ConsoleCommand("speed 1", true, true);
+    ConsoleCommand("chat creepcamp", true, true);
+    Wait(2.0, c_timeGame);
+    autoF13D00DA_ae = 10;
+    autoF13D00DA_ai = 1;
+    lv_playerIndex = 1;
+    for ( ; ( (autoF13D00DA_ai >= 0 && lv_playerIndex <= autoF13D00DA_ae) || (autoF13D00DA_ai <= 0 && lv_playerIndex >= autoF13D00DA_ae) ) ; lv_playerIndex += autoF13D00DA_ai ) {
+        if ((libGame_gv_players[lv_playerIndex].lv_heroUnit != null)) {
+            UnitSetPosition(libGame_gv_players[lv_playerIndex].lv_heroUnit, RegionRandomPoint(RegionCircle(lv_center, 4.0)), false);
+        }
+        else {
+        }
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGTeamFightPerfTest_Init () {
+    libSprt_gt_DEBUGTeamFightPerfTest = TriggerCreate("libSprt_gt_DEBUGTeamFightPerfTest_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGTeamFightPerfTest, c_playerAny, "perftest", false);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - Toggle Jungle Camp Debug (togcampdebug)
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGToggleJungleCampDebugtogcampdebug_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    if ((TriggerIsEnabled(libSprt_gt_DEBUGTargetJungleCreepState) == false)) {
+        TriggerEnable(libSprt_gt_DEBUGTargetJungleCreepState, true);
+        TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_18DF4B42"), true);
+    }
+    else {
+        TriggerEnable(libSprt_gt_DEBUGTargetJungleCreepState, false);
+        TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_1568A9D4"), true);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGToggleJungleCampDebugtogcampdebug_Init () {
+    libSprt_gt_DEBUGToggleJungleCampDebugtogcampdebug = TriggerCreate("libSprt_gt_DEBUGToggleJungleCampDebugtogcampdebug_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGToggleJungleCampDebugtogcampdebug, c_playerAny, "togcampdebug", true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - Target Jungle Creep State
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGTargetJungleCreepState_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    unit lv_creepUnit;
+    int lv_camp;
+
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_creepUnit = UnitGroupUnit(UnitGroupSelected(1), 1);
+    lv_camp = libMapM_gf_JungleGetJungleCampForUnit(lv_creepUnit);
+    if ((lv_camp != 0)) {
+        TextExpressionSetToken("Param/Expression/lib_Sprt_79246586", "A", IntToText(lv_camp));
+        TextExpressionSetToken("Param/Expression/lib_Sprt_79246586", "B", StringToText(libMapM_ge_JungleCampStates_Ident(libMapM_gv_jungleCreepCamps[lv_camp].lv_aIState)));
+        TriggerDebugOutput(1, TextExpressionAssemble("Param/Expression/lib_Sprt_79246586"), true);
+    }
+    else {
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGTargetJungleCreepState_Init () {
+    libSprt_gt_DEBUGTargetJungleCreepState = TriggerCreate("libSprt_gt_DEBUGTargetJungleCreepState_Func");
+    TriggerEnable(libSprt_gt_DEBUGTargetJungleCreepState, false);
+    TriggerAddEventTimePeriodic(libSprt_gt_DEBUGTargetJungleCreepState, 0.0625, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - Minion AI
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGMinionAI_Func (bool testConds, bool runActions) {
+    int autoCA6396F3_val;
+
+    // Variable Declarations
+    unit lv_minion;
+    int lv_minionIndex;
+    point lv_previousWaypoint;
+    point lv_nextWaypoint;
+    point lv_flagbearerPoint;
+
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+
+        if (!((UnitGroupUnit(UnitGroupSelected(1), 1) != libGame_gv_players[1].lv_heroUnit))) {
+            return false;
+        }
+
+        if (!((UnitGetCustomValue(UnitGroupUnit(UnitGroupSelected(1), 1), libCore_gf_CustomValueIndex(libCore_ge_CustomValueIndexes_MinionIndex)) != 0.0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    lv_minion = UnitGroupUnit(UnitGroupSelected(1), 1);
+    lv_minionIndex = FixedToInt(UnitGetCustomValue(lv_minion, libCore_gf_CustomValueIndex(libCore_ge_CustomValueIndexes_MinionIndex)));
+    autoCA6396F3_val = libAIAI_gv_minionAIActiveMinions[lv_minionIndex].lv_state;
+    if (autoCA6396F3_val == libAIAI_ge_MinionAIStates_Advancing) {
+        TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_C35E4D86"), true);
+    }
+    else if (autoCA6396F3_val == libAIAI_ge_MinionAIStates_AttackingMinions) {
+        TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_0AE7674A"), true);
+    }
+    else if (autoCA6396F3_val == libAIAI_ge_MinionAIStates_AttackingHero) {
+        TextExpressionSetToken("Param/Expression/lib_Sprt_26E979BA", "A", UnitTypeGetName(UnitGetType(libAIAI_gv_minionAIActiveMinions[lv_minionIndex].lv_targetUnit)));
+        TriggerDebugOutput(1, TextExpressionAssemble("Param/Expression/lib_Sprt_26E979BA"), true);
+    }
+    else if (autoCA6396F3_val == libAIAI_ge_MinionAIStates_AttackingStructure) {
+        TextExpressionSetToken("Param/Expression/lib_Sprt_C06D1587", "A", UnitTypeGetName(UnitGetType(libAIAI_gv_minionAIActiveMinions[lv_minionIndex].lv_targetUnit)));
+        TriggerDebugOutput(1, TextExpressionAssemble("Param/Expression/lib_Sprt_C06D1587"), true);
+    }
+    else {
+    }
+    lv_previousWaypoint = libAIAI_gf_MinionAIGetPreviousWaypointForMinion(lv_minionIndex);
+    lv_nextWaypoint = libAIAI_gf_MinionAIGetNextWaypointForMinion(lv_minionIndex);
+    lv_flagbearerPoint = libNtve_gf_PointOffsetTowardsPoint(lv_previousWaypoint, (DistanceBetweenPoints(lv_previousWaypoint, lv_nextWaypoint) * libAIAI_gv_minionAIActiveMinions[lv_minionIndex].lv_battleStandardDistancePercentage), lv_nextWaypoint);
+    TriggerDebugOutput(1, (StringExternal("Param/Value/lib_Sprt_5A807A19") + FixedToText(libAIAI_gv_minionAIActiveMinions[lv_minionIndex].lv_battleStandardDistancePercentage, 3)), true);
+    TriggerDebugOutput(1, (StringExternal("Param/Value/lib_Sprt_3C2074EC") + libCore_gf_ConvertPointToText(lv_flagbearerPoint)), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGMinionAI_Init () {
+    libSprt_gt_DEBUGMinionAI = TriggerCreate("libSprt_gt_DEBUGMinionAI_Func");
+    TriggerEnable(libSprt_gt_DEBUGMinionAI, false);
+    TriggerAddEventTimePeriodic(libSprt_gt_DEBUGMinionAI, 0.0625, c_timeGame);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - Unlock Ally Color Settings
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGUnlockAllyColorSettings_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerDebugOutput(1, (StringExternal("Param/Value/lib_Sprt_D5B51D42") + TextWithColor(PlayerName(EventPlayer()), libNtve_gf_ConvertPlayerColorToColor(PlayerGetColorIndex(EventPlayer(), false)))), true);
+    UIUnitColorStyleClearOverride(PlayerGroupSingle(EventPlayer()));
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGUnlockAllyColorSettings_Init () {
+    libSprt_gt_DEBUGUnlockAllyColorSettings = TriggerCreate("libSprt_gt_DEBUGUnlockAllyColorSettings_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGUnlockAllyColorSettings, c_playerAny, "HeroColor", true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - 60 Second Pause
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUG60SecondPause_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    if ((libSprt_gv_dEBUG60SecondPauseOnOff == true)) {
+        libSprt_gv_dEBUG60SecondPauseOnOff = false;
+        TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_158D8409"), true);
+    }
+    else {
+        libSprt_gv_dEBUG60SecondPauseOnOff = true;
+        TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_E94315CF"), true);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUG60SecondPause_Init () {
+    libSprt_gt_DEBUG60SecondPause = TriggerCreate("libSprt_gt_DEBUG60SecondPause_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUG60SecondPause, c_playerAny, "60on", true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - Trigger A Save
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGTriggerASave_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    if ((libCore_gv_dEBUGDebuggingEnabled == false)) {
+        return true;
+    }
+    else {
+    }
+    GameSaveCreate(StringExternal("Param/Value/lib_Sprt_D009FA2B"), StringExternal("Param/Value/lib_Sprt_F0890456"), "", false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGTriggerASave_Init () {
+    libSprt_gt_DEBUGTriggerASave = TriggerCreate("libSprt_gt_DEBUGTriggerASave_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGTriggerASave, c_playerAny, "-savegame", true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - Hero Is Alive
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGHeroIsAlive_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((libCore_gv_dEBUGDebuggingEnabled == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    if ((UnitIsAlive(libGame_gv_players[EventPlayer()].lv_heroUnit) == true)) {
+        TextExpressionSetToken("Param/Expression/lib_Sprt_5A22D656", "A", UnitTypeGetName(UnitGetType(libGame_gv_players[EventPlayer()].lv_heroUnit)));
+        TriggerDebugOutput(1, TextExpressionAssemble("Param/Expression/lib_Sprt_5A22D656"), true);
+    }
+    else {
+        TextExpressionSetToken("Param/Expression/lib_Sprt_69E15644", "A", UnitTypeGetName(UnitGetType(libGame_gv_players[EventPlayer()].lv_heroUnit)));
+        TriggerDebugOutput(1, TextExpressionAssemble("Param/Expression/lib_Sprt_69E15644"), true);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGHeroIsAlive_Init () {
+    libSprt_gt_DEBUGHeroIsAlive = TriggerCreate("libSprt_gt_DEBUGHeroIsAlive_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGHeroIsAlive, c_playerAny, "-heroalive", true);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - Short Hero Death
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGShortHeroDeath_Func (bool testConds, bool runActions) {
+    // Variable Declarations
+    text lv_msg;
+
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!((GameCheatsEnabled(c_gameCheatCategoryDevelopment) == true))) {
+            return false;
+        }
+
+        if (!((StringCompare(StringWord(EventChatMessage(false), 1), EventChatMessage(true), c_stringNoCase) == 0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    libCore_gv_sYSDeathTimerCap = StringToFixed(StringWord(EventChatMessage(false), 2));
+    if ((libCore_gv_sYSDeathTimerCap <= 0.0)) {
+        libCore_gv_sYSDeathTimerCap = 0.0;
+        TriggerDebugOutput(1, StringExternal("Param/Value/lib_Sprt_DB6D955D"), true);
+    }
+    else {
+        TextExpressionSetToken("Param/Expression/lib_Sprt_C2D3C357", "A", FixedToText(libCore_gv_sYSDeathTimerCap, 0));
+        TriggerDebugOutput(1, TextExpressionAssemble("Param/Expression/lib_Sprt_C2D3C357"), true);
+    }
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGShortHeroDeath_Init () {
+    libSprt_gt_DEBUGShortHeroDeath = TriggerCreate("libSprt_gt_DEBUGShortHeroDeath_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGShortHeroDeath, c_playerAny, "SHORTDEATH", false);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - Game Time
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGGameTime_Func (bool testConds, bool runActions) {
+    int auto1E6EF0E0_ae;
+    int auto1E6EF0E0_ai;
+    int autoF862C5F8_ae;
+    int autoF862C5F8_ai;
+    int auto51819663_ae;
+    int auto51819663_ai;
+
+    // Variable Declarations
+    text lv_msg;
+    const int lv_maxLevel_C = 30;
+    int[lv_maxLevel_C + 1] lv_heroLevel;
+    fixed lv_newTime;
+    fixed lv_newTimeDelta;
+    fixed lv_requestedTimeChange;
+    fixed lv_newTimerDuration;
+    int lv_itTick;
+    int lv_heroIndex;
+    int lv_skinIndex;
+    int lv_mountIndex;
+    fixed lv_xP;
+    int lv_itPlayer;
+    int lv_newLevel;
+
+    // Variable Initialization
+
+    // Conditions
+    if (testConds) {
+        if (!((GameCheatsEnabled(c_gameCheatCategoryDevelopment) == true))) {
+            return false;
+        }
+
+        if (!((StringCompare(StringWord(EventChatMessage(false), 1), EventChatMessage(true), c_stringNoCase) == 0))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    TriggerEnable(TriggerGetCurrent(), false);
+    if ((StringCompare(EventChatMessage(false), EventChatMessage(true), c_stringNoCase) == 0)) {
+        TextExpressionSetToken("Param/Expression/lib_Sprt_3FB0E761", "A", TextTimeFormat(StringToText("<min2/>:<sec2/>"), FixedToInt(TimerGetElapsed(libGame_gv_gameTimer))));
+        UIDisplayMessage(PlayerGroupAll(), c_messageAreaSubtitle, TextExpressionAssemble("Param/Expression/lib_Sprt_3FB0E761"));
+        TriggerEnable(TriggerGetCurrent(), true);
+        return true;
+    }
+    else {
+    }
+    lv_newTime = StringToFixed(StringWord(EventChatMessage(false), 2));
+    if ((lv_newTime <= 0.0)) {
+        TextExpressionSetToken("Param/Expression/lib_Sprt_822C3F09", "A", StringToText(StringWord(EventChatMessage(false), 2)));
+        UIDisplayMessage(PlayerGroupAll(), c_messageAreaSubtitle, TextExpressionAssemble("Param/Expression/lib_Sprt_822C3F09"));
+        TriggerEnable(TriggerGetCurrent(), true);
+        return true;
+    }
+    else {
+    }
+    lv_newTimeDelta = ((lv_newTime*60-TimerGetElapsed(libGame_gv_gameTimer))/60);
+    if ((lv_newTimeDelta <= libSprt_gv_debug_GameTimeDelta)) {
+        TextExpressionSetToken("Param/Expression/lib_Sprt_74D22EA0", "A", StringToText(StringWord(EventChatMessage(false), 2)));
+        UIDisplayMessage(PlayerGroupAll(), c_messageAreaSubtitle, TextExpressionAssemble("Param/Expression/lib_Sprt_74D22EA0"));
+        TriggerEnable(TriggerGetCurrent(), true);
+        return true;
+    }
+    else {
+    }
+    TextExpressionSetToken("Param/Expression/lib_Sprt_0B245A95", "A", TextTimeFormat(StringToText("<min2/>:<sec2/>"), FixedToInt((lv_newTime * 60.0))));
+    UIDisplayMessage(PlayerGroupAll(), c_messageAreaSubtitle, TextExpressionAssemble("Param/Expression/lib_Sprt_0B245A95"));
+    if ((libGame_gv_gameStarted == false)) {
+        libSprt_gf_DEBUGStartGame();
+        Wait(2.0, c_timeGame);
+    }
+    else {
+    }
+    if ((lv_newTimeDelta == libSprt_gv_debug_GameTimeDelta)) {
+        TriggerEnable(TriggerGetCurrent(), true);
+        return true;
+    }
+    else {
+    }
+    lv_requestedTimeChange = (lv_newTimeDelta-libSprt_gv_debug_GameTimeDelta);
+    if ((TimerGetRemaining(libGame_gv_jungleCampStartTimer) > 0.0)) {
+        lv_newTimerDuration = MaxF((TimerGetRemaining(libGame_gv_jungleCampStartTimer)-lv_requestedTimeChange*60), 0.0625);
+        TimerStart(libGame_gv_jungleCampStartTimer, lv_newTimerDuration, false, c_timeGame);
+    }
+    else {
+    }
+    if ((TimerGetRemaining(libGame_gv_graveGolemCampStartTimer) > 0.0)) {
+        lv_newTimerDuration = MaxF((TimerGetRemaining(libGame_gv_graveGolemCampStartTimer)-lv_requestedTimeChange*60), 0.0625);
+        TimerStart(libGame_gv_graveGolemCampStartTimer, lv_newTimerDuration, false, c_timeGame);
+    }
+    else {
+    }
+    if ((TimerGetRemaining(libGame_gv_jungleWatchTowerStartTimer) > 0.0)) {
+        lv_newTimerDuration = MaxF((TimerGetRemaining(libGame_gv_jungleWatchTowerStartTimer)-lv_requestedTimeChange*60), 0.0625);
+        TimerStart(libGame_gv_jungleWatchTowerStartTimer, lv_newTimerDuration, false, c_timeGame);
+    }
+    else {
+    }
+    if ((TimerGetRemaining(libGame_gv_xPTrickleStartTimer) > 0.0)) {
+        lv_newTimerDuration = MaxF((TimerGetRemaining(libGame_gv_xPTrickleStartTimer)-lv_requestedTimeChange*60), 0.0625);
+        TimerStart(libGame_gv_xPTrickleStartTimer, lv_newTimerDuration, false, c_timeGame);
+    }
+    else {
+    }
+    Wait(1.0, c_timeGame);
+    libGame_gv_scalingTicks = FixedToInt(lv_newTime);
+    if ((libGame_gv_scalingTicks > libCore_gv_dataScalingMaxScalingTicks)) {
+        libGame_gv_scalingTicks = libCore_gv_dataScalingMaxScalingTicks;
+    }
+    else {
+    }
+    auto1E6EF0E0_ae = FixedToInt(lv_newTimeDelta);
+    auto1E6EF0E0_ai = 1;
+    lv_itTick = FixedToInt((FixedToInt(libSprt_gv_debug_GameTimeDelta) + 1));
+    for ( ; ( (auto1E6EF0E0_ai >= 0 && lv_itTick <= auto1E6EF0E0_ae) || (auto1E6EF0E0_ai <= 0 && lv_itTick >= auto1E6EF0E0_ae) ) ; lv_itTick += auto1E6EF0E0_ai ) {
+        libGame_gf_JungleUpdateScalingForCamps();
+    }
+    autoF862C5F8_ae = FixedToInt(lv_newTimeDelta);
+    autoF862C5F8_ai = 1;
+    lv_itTick = FixedToInt((FixedToInt(libSprt_gv_debug_GameTimeDelta) + 1));
+    for ( ; ( (autoF862C5F8_ai >= 0 && lv_itTick <= autoF862C5F8_ae) || (autoF862C5F8_ai <= 0 && lv_itTick >= autoF862C5F8_ae) ) ; lv_itTick += autoF862C5F8_ai ) {
+        libGame_gf_CoreUpdateScaling();
+    }
+    libSprt_gv_debug_GameTimeDelta = lv_newTimeDelta;
+    lv_newLevel = MinI(30, StringToInt(StringWord(EventChatMessage(false), 3)));
+    if ((lv_newLevel > 0)) {
+        auto51819663_ae = libCore_gv_bALMaxPlayers;
+        auto51819663_ai = 1;
+        lv_itPlayer = 1;
+        for ( ; ( (auto51819663_ai >= 0 && lv_itPlayer <= auto51819663_ae) || (auto51819663_ai <= 0 && lv_itPlayer >= auto51819663_ae) ) ; lv_itPlayer += auto51819663_ai ) {
+            lv_heroIndex = libGame_gv_players[lv_itPlayer].lv_heroIndex;
+            if ((lv_heroIndex == 0)) {
+                continue;
+            }
+            else {
+            }
+            lv_skinIndex = libGame_gv_players[lv_itPlayer].lv_selectedSkin;
+            lv_mountIndex = libGame_gv_players[lv_itPlayer].lv_selectedMount;
+            lv_xP = libCore_gf_GetTotalXPForLevel(lv_newLevel);
+            libUIUI_gf_UIDebugPanelSpawnOrSwapHeroForPlayer(lv_heroIndex, lv_skinIndex, lv_mountIndex, lv_xP, lv_itPlayer);
+        }
+    }
+    else {
+    }
+    Wait(1.0, c_timeGame);
+    TriggerEnable(TriggerGetCurrent(), true);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGGameTime_Init () {
+    libSprt_gt_DEBUGGameTime = TriggerCreate("libSprt_gt_DEBUGGameTime_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGGameTime, c_playerAny, "GAMETIME", false);
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGGameTime, c_playerAny, "-GT", false);
+}
+
+//--------------------------------------------------------------------------------------------------
+// Trigger: DEBUG - Temp
+//--------------------------------------------------------------------------------------------------
+bool libSprt_gt_DEBUGTemp_Func (bool testConds, bool runActions) {
+    // Conditions
+    if (testConds) {
+        if (!((GameCheatsEnabled(c_gameCheatCategoryDevelopment) == true))) {
+            return false;
+        }
+    }
+
+    // Actions
+    if (!runActions) {
+        return true;
+    }
+
+    if ((libStEx_gf_InTutorial03() == true)) {
+        UIDisplayMessage(PlayerGroupAll(), c_messageAreaSubtitle, StringExternal("Param/Value/lib_Sprt_B5600BF0"));
+    }
+    else {
+        UIDisplayMessage(PlayerGroupAll(), c_messageAreaSubtitle, StringExternal("Param/Value/lib_Sprt_36737449"));
+    }
+    TriggerExecute(libStEx_gt_SE_TrainingModeReferenceCardDisplay, false, false);
+    return true;
+}
+
+//--------------------------------------------------------------------------------------------------
+void libSprt_gt_DEBUGTemp_Init () {
+    libSprt_gt_DEBUGTemp = TriggerCreate("libSprt_gt_DEBUGTemp_Func");
+    TriggerAddEventChatMessage(libSprt_gt_DEBUGTemp, c_playerAny, "DEBUGTEMP", true);
+}
+
+void libSprt_InitTriggers () {
+    libSprt_gt_IncludeSupport_Init();
+    libSprt_gt_AutomatedBuildTest_Init();
+    libSprt_gt_PerformanceTestSpawnHeroesForHeroesPerformanceTestMap_Init();
+    libSprt_gt_PerformanceTestRunPerformanceTest_Init();
+    libSprt_gt_PerformanceTestSetHeroChoices_Init();
+    libSprt_gt_PerformanceTestGetFPS_Init();
+    libSprt_gt_PerformanceTestOutputFPSToFile_Init();
+    libSprt_gt_PerformanceTestMaintainHeroHealth_Init();
+    libSprt_gt_DataMiningListenForRegenGlobes_Init();
+    libSprt_gt_DataMiningPeriodicDataSendPeriodicEventTrigger_Init();
+    libSprt_gt_DEBUGHelphelp_Init();
+    libSprt_gt_DEBUGPlayerNumberplayernum_Init();
+    libSprt_gt_DEBUGToggleSelectiontogselection_Init();
+    libSprt_gt_DEBUGToggleMinionDebugtogminiondebug_Init();
+    libSprt_gt_DebugToggleShowXPValuestogshowxpvalues_Init();
+    libSprt_gt_DEBUGStartGamestartgame_Init();
+    libSprt_gt_DEBUGPauseGameStartTimerpausestart_Init();
+    libSprt_gt_DEBUGTurnOnNormalCreepCampscreepcamp_Init();
+    libSprt_gt_DEBUGDestroyInventoryItemsdeleteitems_Init();
+    libSprt_gt_DEBUGSpawnHerospawnhero_Init();
+    libSprt_gt_DEBUGSpawnAllHeroesspawnallheroes_Init();
+    libSprt_gt_DEBUGAIHeroMimicheromimic_Init();
+    libSprt_gt_DEBUGAISetHerosethero_Init();
+    libSprt_gt_DEBUGAISetAllHerosetallheroes_Init();
+    libSprt_gt_DEBUGLevelAIHerosheroxp_Init();
+    libSprt_gt_DEBUGToggleFloatingCombatTexttogcombattext_Init();
+    libSprt_gt_DEBUGToggleMinionSpawningtogminionspawn_Init();
+    libSprt_gt_DEBUGToggleMinionSystemPausedtogminionpause_Init();
+    libSprt_gt_DEBUGToggleMinionSystemOnOfftogminionsystem_Init();
+    libSprt_gt_DEBUGToggleTowerSystemOnOfftogtowersystem_Init();
+    libSprt_gt_DEBUGToggleXPTrickletogtrickle_Init();
+    libSprt_gt_DEBUGScaleCampscampscale_Init();
+    libSprt_gt_DEBUGHaveAITakeOverAI_Init();
+    libSprt_gt_DEBUGAISwapHeroswap_Init();
+    libSprt_gt_DEBUGAIAvoidPlayersolo_Init();
+    libSprt_gt_DEBUGAIFollowPlayershare_Init();
+    libSprt_gt_DEBUGAIAllFollowPlayergroup_Init();
+    libSprt_gt_DEBUGDisplayHeroAIDebugInfoaidebug_Init();
+    libSprt_gt_DEBUGDisplayMinionAIDebugInfominiondebug_Init();
+    libSprt_gt_DEBUGDisplayDefenderAIDebugInfodefenderdebug_Init();
+    libSprt_gt_DEBUGVictorydebugvictory_Init();
+    libSprt_gt_DEBUGRefreshCooldownscdr_Init();
+    libSprt_gt_DEBUGDefeatdebugdefeat_Init();
+    libSprt_gt_DEBUGToggleHeroAItogheroai_Init();
+    libSprt_gt_DEBUGStopRegenstopregen_Init();
+    libSprt_gt_DEBUGTurnOffWeather_Init();
+    libSprt_gt_DEBUGTeamFightPerfTest_Init();
+    libSprt_gt_DEBUGToggleJungleCampDebugtogcampdebug_Init();
+    libSprt_gt_DEBUGTargetJungleCreepState_Init();
+    libSprt_gt_DEBUGMinionAI_Init();
+    libSprt_gt_DEBUGUnlockAllyColorSettings_Init();
+    libSprt_gt_DEBUG60SecondPause_Init();
+    libSprt_gt_DEBUGTriggerASave_Init();
+    libSprt_gt_DEBUGHeroIsAlive_Init();
+    libSprt_gt_DEBUGShortHeroDeath_Init();
+    libSprt_gt_DEBUGGameTime_Init();
+    libSprt_gt_DEBUGTemp_Init();
+}
+
+//--------------------------------------------------------------------------------------------------
+// Library Initialization
+//--------------------------------------------------------------------------------------------------
+bool libSprt_InitLib_completed = false;
+
+void libSprt_InitLib () {
+    if (libSprt_InitLib_completed) {
+        return;
+    }
+
+    libSprt_InitLib_completed = true;
+
+    libSprt_InitLibraries();
+    libSprt_InitVariables();
+    libSprt_InitTriggers();
+}
+
+include "TriggerLibs/HeroesLib"
+include "TriggerLibs/GameLib"
+include "TriggerLibs/MapMechanicsLib"
+include "TriggerLibs/AILib"
+include "TriggerLibs/UILib"
+include "TriggerLibs/StartingExperienceLib"
+

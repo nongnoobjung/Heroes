@@ -1,0 +1,77 @@
+include "TriggerLibs/HeroesLib_h"
+
+//--------------------------------------------------------------------------------------------------
+// Library: Sound
+//--------------------------------------------------------------------------------------------------
+// Constants
+const int libSond_gv_heroVO_TalentChoicePercentChance_C = 20;
+const fixed libSond_gv_heroVO_PissedWindow = 4.5;
+const int libSond_gv_heroVO_SpecialKillLinePercentChance_C = 15;
+const int libSond_gv_heroVO_ComebackLevelGapThreshold_C = 3;
+const fixed libSond_gv_heroVO_CelebrateTownKilledTimerDuration_C = 2.0;
+const fixed libSond_gv_heroVO_HeroIntroLineGateCheckRadius_C = 6.5;
+const fixed libSond_gv_heroVO_HeroIntroLineAllyCheckRadius_C = 7.0;
+const int libSond_gv_heroVO_HeroIntroLineChance_C = 65;
+const fixed libSond_gv_heroVO_GetHitLifePercentThresholdHigh_C = 0.5;
+const fixed libSond_gv_heroVO_GetHitLifePercentThreshold_C = 0.25;
+const fixed libSond_gv_heroVO_GetHitLifePercentThresholdLow_C = 0.1;
+const fixed libSond_gv_heroVO_HeroGoHealCooldownTime_C = 60.0;
+const fixed libSond_gv_heroVO_HeroGoHealHPPercentThreshold_C = 0.6;
+const fixed libSond_gv_heroVO_HealThankYouLineDelay_C = 1.0;
+const int libSond_gv_heroVO_HealThankYouLinePercentChance_C = 35;
+const fixed libSond_gv_heroVO_HealThankYouLineCooldown_C = 10.0;
+
+// Variable Declarations
+timer[libCore_gv_bALMaxPlayers + 1] libSond_gv_heroVO_HeroTakedownVOTimers;
+playergroup[libCore_gv_bALMaxPlayers + 1] libSond_gv_heroVO_HeroTakedownVOAlliesGroup;
+int[libCore_gv_bALMaxPlayers + 1] libSond_gv_heroVO_HeroTakedownVOLastEnemyPlayerKilled;
+bool[libCore_gv_bALMaxPlayers + 1] libSond_gv_heroVO_HeroTakedownVOEnemyWasOnKillingSpree;
+bool[libCore_gv_bALMaxPlayers + 1] libSond_gv_heroVO_HeroTakedownVOWasComebackKill;
+timer[libCore_gv_bALMaxPlayers + 1] libSond_gv_heroVO_TeamKilledVOTimers;
+timer[libCore_gv_bALMaxPlayers + 1] libSond_gv_heroVO_TownKilledVOTimers;
+playergroup[libCore_gv_bALMaxPlayers + 1] libSond_gv_heroVO_TownKilledVOAlliesGroup;
+timer libSond_gv_heroVO_HeroIntroLineTimer;
+int[libCore_gv_bALMaxPlayers + 1] libSond_gv_heroVO_HeroGoHealCalls;
+fixed[libCore_gv_bALMaxPlayers + 1] libSond_gv_heroVOHeroGoHealLastT;
+timer[libCore_gv_bALMaxPlayers + 1] libSond_gv_heroVO_HealThankYouCooldownTimer;
+int libSond_gv_soundtrack_MapSoundtrackIndex;
+bool libSond_gv_soundtrack_MapSoundtrackPlaying;
+bool libSond_gv_soundtrack_IntroSoundtrackPlaying;
+
+// Function Declarations
+void libSond_gf_MuteMostSoundChannelsForGameOverState (bool lp_muteOption);
+void libSond_gf_SoundAnnouncerVOPlayAnnouncerVOForPlayer (int lp_event, int lp_player);
+void libSond_gf_SoundAnnouncerVOPlayAnnouncerVOForPlayerGroup (int lp_event, playergroup lp_playerGroup);
+string libSond_gf_HeroVOHeroLineForEvent (int lp_vOEvent, int lp_speakingPlayer);
+void libSond_gf_HeroVOPlayHeroLine (int lp_vOEvent, int lp_speakingPlayer, playergroup lp_targetPlayerGroup);
+void libSond_gf_HeroVOPlayHeroLineInWorld (int lp_vOEvent, int lp_speakingPlayer, playergroup lp_targetPlayerGroup);
+void libSond_gf_HeroVOPlayHeroLineWithDelay (int lp_vOEvent, int lp_speakingPlayer, playergroup lp_targetPlayerGroup, fixed lp_delay);
+void libSond_gf_HeroVOPlayHeroLineWithDelayAndRandomChance (int lp_vOEvent, int lp_speakingPlayer, playergroup lp_targetPlayerGroup, fixed lp_delay, int lp_chance);
+void libSond_gf_HeroVOHeroPissedLineLogic (int lp_player);
+string libSond_gf_HeroVOHeroTakedownSoundLink (unit lp_killingHero, unit lp_dyingHero);
+void libSond_gf_HeroVORegisterHeroTakedownForPlayer (int lp_player, playergroup lp_awardGroup, int lp_enemyPlayerKilled, int lp_deadPlayerKillingSpreeCount, int lp_levelGap);
+void libSond_gf_HeroVOStartHeroTakedownVOTimerForPlayer (int lp_player, fixed lp_duration);
+void libSond_gf_HeroVOStartTeamKilledVOTimerForPlayer (int lp_player, fixed lp_duration);
+void libSond_gf_HeroVOStartTownKilledVOTimerForPlayer (int lp_player, playergroup lp_allyPlayerGroup);
+void libSond_gf_HeroVOStartHeroIntroLinesTimer (fixed lp_duration);
+void libSond_gf_HeroVOPlayHeroIntroLinesForPlayer (int lp_player, int lp_allyPlayer);
+void libSond_gf_HeroVOHeroGetHitResponse (fixed lp_damagingAmount, unit lp_damagedUnit);
+void libSond_gf_HeroVOPlayHealThankYouLine (int lp_speakingPlayer, playergroup lp_targetPlayerGroup);
+void libSond_gf_SoundtrackUpdateMapSoundtrackIndex (int lp_desiredIndex);
+void libSond_gf_SoundtrackPlayMapIntroSoundtrackForAllPlayers ();
+void libSond_gf_SoundtrackApplyNewDefaultSoundtrackForPlayerGroup (string lp_soundtrack, playergroup lp_playerGroup);
+void libSond_gf_SoundtrackPlayMapSoundtrackAsDefaultSoundtrackForAllPlayers ();
+void libSond_gf_DigitalSoundEffectsEnableDisableSoundStateForPlayer (bool lp_enableDisable, int lp_player, string lp_soundEffect);
+
+// Trigger Declarations
+trigger libSond_gt_IncludeSound;
+trigger libSond_gt_HeroVOHeroTakedownVOTimerExpires;
+trigger libSond_gt_HeroVOHeroTeamKilledVOTimerExpires;
+trigger libSond_gt_HeroVOHeroTownKilledVOTimerExpires;
+trigger libSond_gt_HeroVOHeroIntroLinesTimerExpires;
+trigger libSond_gt_HeroVOHeroGoHeal;
+trigger libSond_gt_HeroVOTalentChosenVO;
+
+// Library Initialization
+void libSond_InitVariables ();
+
